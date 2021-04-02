@@ -5,9 +5,10 @@ import * as React from 'react';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import TablesScreen from '../screens/TablesScreen';
+import GuidesScreen from '../screens/GuidesScreen';
+
+import { BottomTabParamList, TablesParamList, GuidesParamList,GuideParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -16,22 +17,23 @@ export default function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Tables"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
+        name="Tables"
+        component={TablesNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="restaurant" color={color} />,
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
+        name="Guides"
+        component={GuidesNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
         }}
       />
+   
     </BottomTab.Navigator>
   );
 }
@@ -44,30 +46,36 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>();
+const TablesStack = createStackNavigator<TablesParamList>();
 
-function TabOneNavigator() {
+function TablesNavigator() {
   return (
-    <TabOneStack.Navigator>
-      <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+    <TablesStack.Navigator screenOptions={{
+      headerShown: false
+    }}>
+      <TablesStack.Screen
+        name="TablesScreen"
+        component={TablesScreen}
+        options={{ headerTitle: 'Restaurants' }}
+
       />
-    </TabOneStack.Navigator>
+    </TablesStack.Navigator>
   );
 }
 
-const TabTwoStack = createStackNavigator<TabTwoParamList>();
+const GuidesStack = createStackNavigator<GuidesParamList>();
 
-function TabTwoNavigator() {
+function GuidesNavigator() {
   return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+    <GuidesStack.Navigator screenOptions={{
+      headerShown: false
+    }}>
+      <GuidesStack.Screen
+        name="GuidesScreen"
+        component={GuidesScreen}
+        options={{ headerTitle: 'Guides' }}
       />
-    </TabTwoStack.Navigator>
+    </GuidesStack.Navigator>
   );
-}
+  }
+ 
