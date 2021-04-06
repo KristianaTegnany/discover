@@ -10,8 +10,9 @@ import { Navigation } from 'react-native-navigation';
 import { NavigationContainer, useTheme } from '@react-navigation/native';
 import { useThemeColor } from '../components/Themed';
 import { darkColors, lightColors } from '../theme/colorThemes';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-type props = { value: string };
+type props = { value: string , navigation:any };
 type state = { hasLocationPermissions: boolean, latitude: number , longitude: number,guidesList: any };
 export default class GuidesScreen  extends React.Component<props, state>   {
   guidesListCast :any[] = [];
@@ -78,7 +79,13 @@ export default class GuidesScreen  extends React.Component<props, state>   {
       <FlatList
             style={styles.FlatList}
             data={ this.state.guidesList}  
-            renderItem={({ item }) =>     
+            renderItem={({ item }) =>   
+            <TouchableWithoutFeedback 
+            onPress={() => {
+              this.props.navigation.navigate('GuideScreen',
+              { text: 'Hello!',guideId: item.id });          
+              }}
+              >     
             <GuideComponent
             imgUrl={item.attributes.FrontPic._url }
             onPress={() => 
@@ -92,7 +99,7 @@ export default class GuidesScreen  extends React.Component<props, state>   {
             city={item.attributes.cityvenue}
             StyleK={item.attributes.style}
             style={styles.guideComponent}
-          ></GuideComponent>
+          ></GuideComponent></TouchableWithoutFeedback>
           }
           />
            </View>
@@ -187,7 +194,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: "83%",
     fontSize: 22,
-    marginTop: 60,
+    marginTop: 40,
     marginBottom: 0,
   //  color:this.colors.text,
     marginLeft: 'auto',

@@ -5,8 +5,8 @@ var Parse = require("parse/react-native");
 import PostComponent from "../components/PostComponent";
 import { FlatList, StyleSheet,StatusBar, Text,TextInput, View, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Navigation } from 'react-native-navigation';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useThemeColor } from '../components/Themed';
 
 
 type props = { value: string, navigation:any };
@@ -30,10 +30,10 @@ export default class TablesScreen  extends React.Component<props, state>   {
 
   //  this.getLocationAsync();
     this.getIntcusts();
-
   }
 
   async getIntcusts () {
+
     await Parse.Cloud.run("getIntcustsDiscover")
     .then((response: any) => {
       
@@ -65,33 +65,34 @@ export default class TablesScreen  extends React.Component<props, state>   {
 
 
   render() {
-  //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
   return (
     
     <View style={styles.container} >
-        <Text style={styles.bigTitle} 
-       >
-          Trouvez du bonheur autour de vous à mettre dans votre assiette
-        </Text>
-      <View style={styles.searchHeader}>
+      
+      {/* <View style={styles.searchHeader} hidden>
       <Ionicons name="search" style={styles.searchIcon} />
         <TextInput
           placeholder="Rechercher"
           style={styles.searchInput}
         ></TextInput>
-    </View>
+    </View> */}
     <View style={styles.container2} >
-
+    <Text style={styles.bigTitle} 
+       >
+          Trouvez du bonheur autour de vous à mettre dans votre assiette
+        </Text>
       <FlatList
             style={styles.FlatList}
             data={ this.state.restaurantList}  
             
             renderItem={({ item }) => 
-            <TouchableWithoutFeedback onPress={() => {
-              this.props.navigation.navigate('RestoScreen');          
-              }
-            }>    
+            <TouchableWithoutFeedback 
+            onPress={() => {
+              this.props.navigation.navigate('RestoScreen',
+              { text: 'Hello!',restoId: item.id });          
+              }}
+              >    
             <PostComponent
             imgUrl={item.attributes.overviewpic._url }
             
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
     height: 110,
     width: "83%",
     fontSize: 22,
-    marginTop: 60,
+    marginTop: 40,
     marginBottom: 0,
   //  color:this.colors.text,
     marginLeft: 'auto',
