@@ -1,13 +1,14 @@
 import { NavigationState } from '@react-navigation/native';
 import * as React from 'react';
-import {Alert, Button, Image, Route, StyleSheet, ViewComponent } from 'react-native';
-import { CheckBox, ListItem } from 'react-native-elements';
+import { Image, Route, StyleSheet } from 'react-native';
+import { CheckBox } from 'react-native-elements';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
-import {AppContext} from '../components/GlobalContext';
 import { add, store } from '../store';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 interface NavigationParams {
   restoId: string;
@@ -18,66 +19,67 @@ interface Props {
   navigation: Navigation;
   route: Route;
 }
-type state = { restaurant: any , persoMenu:any, formulaChoice:any;line_items:any}
+
+interface IMenu {id: string; imageUrl:any; title : string; description : string; formulaChoiced : [], persoMenu:[], price : number}
+
+export const DishScreen = ({ route, navigation}: Props) => {
+  const [menu, setMenu] = useState <IMenu>();
+
+  async function fetchMenu() {
+
+    var Menu = Parse.Object.extend("Menu");
+    let menu  = new Menu;
+    menu.id = route.params.menuid;
+await menu.fetch();
 
 
-export default class DishScreen  extends React.Component<Props,state>   {
-  restaurantCast :any[] = [];
-  persoMenuCast :any[] = [];
-  formulaChoiceCast: any[] = [];
-  line_itemsCast: any[] = [];
-  static contextType = AppContext;
 
-  state = {     
-    restaurant :this.restaurantCast,
-    persoMenu : this.persoMenuCast, 
-    formulaChoice : this.formulaChoiceCast,
-    line_items : this.line_itemsCast,
+let menuRaw =
+{ id :menu.id,
+  imageUrl: menu.attributes.image._url,
+  title : menu.attributes.title,
+  description : menu.attributes.description,
+  formulaChoiced : menu.attributes.formulaChoice ||[],
+  persoMenu : menu.attributes.persoMenu,
+  price : Number(menu.attributes.price),
+  quantity : 1
 
-      };
-  constructor(Props:any) {
-    super(Props)
-      }
-
-  async componentDidMount() {  
-    console.log(DishScreen.contextType);
-
+ }
+       setMenu(menuRaw);
   }
 
+      useEffect(() => {
+        fetchMenu();
+      }, []);
   
-  addToBasket = (item:any, qty:any) => {
-      //Alert.alert(
-       // 'Ajouté au panier',
-       // `${qty} ${item.name} was added to the basket.`,
-     // );
-     console.log("thiere in add to basket")
-     this.context.addToCart(item, qty);
-    
-  };
-  
-      render() {
-        var Menu = Parse.Object.extend("Menu");
-      let menu  = new Menu;
-      menu.id = this.props.route.params.menuid;
+      async function addToBasket() {  
+      alert("Un plat ajouté. Vous pouvez en rajouter un autre ou revenir sur le menu et votre panier. ")
+        store.dispatch(add(menu))
+       };
 
   return (
     <View style={styles.container}> 
-    {menu.attributes.image ?
+
+    {menu && menu.imageUrl &&
      <Image style={styles.image}
-          source={{uri: menu.attributes.image._url}}
+          source={{uri: menu.imageUrl}}
           />
-          :
-          null}
-          
+         }
+          {menu &&
+      <Text style={styles.title}>{menu.title}  </Text>
+            }
+       
+<ScrollView style={styles.scrollview}>
 
-      <Text style={styles.title}>{menu.attributes.title}  </Text>
-      <ScrollView style={styles.scrollview}>
+        {menu &&
+              <Text style={styles.text}>{menu.description}    </Text>
+        }
 
-      <Text style={styles.text}>{menu.attributes.description}    </Text>
      <View>
-      {menu.attributes.formulaChoice !== null &&
-             menu.attributes.formulaChoice !== undefined &&
-             menu.attributes.formulaChoice.map((fccat:any, index4:any) => 
+       
+      {menu && menu.formulaChoiced !== null &&
+             menu.formulaChoiced !== undefined &&
+             menu.formulaChoiced.map((fccat:any, index4:any) => 
              <View>
        <Text style = {styles.text} key={fccat.cattitle+index4}> {fccat.cattitle} </Text> 
        {fccat !== null &&
@@ -94,16 +96,15 @@ export default class DishScreen  extends React.Component<Props,state>   {
             
               )}
 </View>
-{!(menu.attributes.persoMenu !== null ||  menu.attributes.persoMenu !== undefined ) ?
+{menu && menu.persoMenu  &&
 <View>
       <Text style={styles.text}>Personnalisez votre choix    </Text>
       </View>
-      :
-      null}
+      }
 
-      {menu.attributes.persoMenu !== null &&
-             menu.attributes.persoMenu !== undefined &&
-             menu.attributes.persoMenu.map((pers:any, index4:any) => 
+      {menu && menu.persoMenu  &&
+             menu.persoMenu !== undefined &&
+             menu.persoMenu.map((pers:any, index4:any) => 
              <CheckBox key={pers + index4}
              title={pers.name}
              //checked=
@@ -111,7 +112,7 @@ export default class DishScreen  extends React.Component<Props,state>   {
               )}
       
 
-  <TouchableOpacity onPress={() => store.dispatch(add(menu))} 
+  <TouchableOpacity onPress={() => addToBasket() } 
             style={styles.appButtonContainer}>
     <Text style={styles.appButtonText}>Ajouter au panier</Text>
   </TouchableOpacity>
@@ -119,7 +120,7 @@ export default class DishScreen  extends React.Component<Props,state>   {
   </ScrollView>
     </View>
   );
-}}
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -170,7 +171,8 @@ height:'100%'
     marginVertical: 30,
     height: 1,
     width: '80%',
-  },
-
-  
+  },  
 });
+
+
+export default DishScreen;

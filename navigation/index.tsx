@@ -9,9 +9,11 @@ import DishScreen from '../screens/DishScreen';
 import GuideScreen from '../screens/GuideScreen';
 import hourSelectScreen from '../screens/hourSelectScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
+import paymentScreen from '../screens/paymentScreen';
 import resaScreen from '../screens/resaScreen';
 import RestoScreen from '../screens/RestoScreen';
 import takeawayScreen from '../screens/takeawayScreen';
+import termsScreen from '../screens/termsScreen';
 import {  RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 
@@ -50,6 +52,8 @@ function RootNavigator() {
       <Stack.Screen name="crenSelectScreen"  options={{ headerTitle: 'Choisir un jour' }} component={crenSelectScreen} />
       <Stack.Screen name="hourSelectScreen"  options={{ headerTitle: 'Choisir une heure' }} component={hourSelectScreen} />
       <Stack.Screen name="basketScreen"  options={{ headerTitle: 'Votre panier' }} component={basketScreen} />
+      <Stack.Screen name="paymentScreen"  options={{ headerTitle: 'Votre panier' }} component={paymentScreen} />
+      <Stack.Screen name="termsScreen"  options={{ headerTitle: 'Votre panier' }} component={termsScreen} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );

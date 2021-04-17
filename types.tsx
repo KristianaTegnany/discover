@@ -11,6 +11,8 @@ export type RootStackParamList = {
   DishScreen: undefined;
  basketScreen: undefined;
  AppContextProvider: undefined;
+ termsScreen: undefined;
+ paymentScreen: undefined;
 
 };
 

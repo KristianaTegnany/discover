@@ -5,6 +5,8 @@ import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import {  View } from '../components/Themed';
 import { ListItem} from 'react-native-elements'
+import { useSelector } from 'react-redux';
+import {  ProductItem } from '../global';
 
 interface NavigationParams {
   restoId: string;
@@ -22,7 +24,11 @@ interface IMenus {  id: string, price:number, title: string, order:number, descr
 export const takeawayScreen = ({ route, navigation}: Props) => {
   const [cats, setCats] = useState <ICats[] > ();
   const [menus, setMenus] = useState <IMenus[] > ();
+  const [totalCashBasket, setTotalCashBasket] = useState (0);
+  const [totalQuantityBasket, setTotalQuantityBasket] = useState (0);
+  const products = useSelector((state: ProductItem[]) => state);
 
+  
    function getCountOfMenusOfcat(cattitle:string) {
   if(menus){
       let count = menus.filter((x:any)=>x.category==cattitle).length
@@ -61,10 +67,25 @@ export const takeawayScreen = ({ route, navigation}: Props) => {
 setMenus(sortedMenu);
  }
 
+ async function sum(array:any, key:any) {
+  return array.reduce((a:any, b:any) => a + (b[key] || 0), 0);
+ }
+
+ async function calculusTotalCashBasket() {
+  let sumRaw = await sum(products, 'price');
+  setTotalCashBasket(sumRaw);
+}
+async function calculusTotalQuantityBasket() {
+  let sumRaw = await sum(products, 'quantity');
+  setTotalQuantityBasket(sumRaw);
+}
 
 useEffect(() => {
+  calculusTotalCashBasket();
+  calculusTotalQuantityBasket();
   fetchCatsAndMenus();
-}, []);
+
+}, [products]);
 
 
   return (
@@ -83,7 +104,7 @@ useEffect(() => {
                   <ListItem.Title style = {styles.text}>  
        Voir le panier </ListItem.Title>
                   <ListItem.Subtitle style = {styles.minitext}>
-                  4 articles - €</ListItem.Subtitle>
+                  {totalQuantityBasket} article.s - {totalCashBasket} €</ListItem.Subtitle>
         
                 </ListItem.Content>
                 <ListItem.Chevron />

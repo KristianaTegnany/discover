@@ -5,6 +5,10 @@ export interface ProductItem {
     price: number
     formulaChoiced:[] 
     persoMenu : []
-    imageUrl: string
-    added?: boolean
+    imageUrl: string,
+    quantity: number,
+    added?: boolean,
   }
+
+
+ 

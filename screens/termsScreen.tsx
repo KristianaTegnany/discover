@@ -26,31 +26,19 @@ interface Props {
 }
 
 export const basketScreen = ({ route, navigation}: Props) => {
-  const [totalCashBasket, setTotalCashBasket] = useState (0);
-  const [totalQuantityBasket, setTotalQuantityBasket] = useState (0);
 
   const products = useSelector((state: ProductItem[]) => state);
 
 
- 
-  async function sum(array:any, key:any) {
-    return array.reduce((a:any, b:any) => a + (b[key] || 0), 0);
-   }
-  
-  async function calculusTotalCashBasket() {
-    let sumRaw = await sum(products, 'price');
-    setTotalCashBasket(sumRaw);
+  async function fetchIntcust() {
+
+
   }
-  async function calculusTotalQuantityBasket() {
-    let sumRaw = await sum(products, 'quantity');
-    setTotalQuantityBasket(sumRaw);
-  }
-  
+
 
       useEffect(() => {
-        calculusTotalCashBasket();
-        calculusTotalQuantityBasket();
-      }, [products]);
+    //    console.log(products);
+      }, []);
 
     
 
@@ -71,16 +59,16 @@ export const basketScreen = ({ route, navigation}: Props) => {
                <ListItem.Content >
               
                   <ListItem.Subtitle style = {styles.headertext}>
-                  {totalQuantityBasket} article.s - {totalCashBasket} €</ListItem.Subtitle>
-              
+                  articles -  €</ListItem.Subtitle>
+        
                 </ListItem.Content>
               </ListItem>
       <ScrollView>
       <View >
         {products
          // .filter(product => product.added)
-          .map((product: ProductItem, index) => (
-            <ListItem key={product.id + index } bottomDivider> 
+          .map((product: ProductItem) => (
+            <ListItem key={product.id } bottomDivider> 
      
       <ListItem.Content>
         <ListItem.Title style = {styles.text}>  
@@ -89,9 +77,7 @@ export const basketScreen = ({ route, navigation}: Props) => {
         {product.price} €</ListItem.Subtitle>
 
       </ListItem.Content>
-      <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() => store.dispatch(remove(product))} />
-<Text>{product.quantity}</Text>
-      <Ionicons name="add-circle" style={styles.searchIcon}  onPress={() => store.dispatch(remove(product))} />
+      <Ionicons name="trash" style={styles.searchIcon}  onPress={() => store.dispatch(remove(product))} />
     </ListItem>
           ))}
       
