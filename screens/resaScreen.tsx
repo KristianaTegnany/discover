@@ -5,12 +5,10 @@ import {Button, Image, Route, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
-
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 interface NavigationParams {
-  text: string;
+  restoId: string;
 }
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
@@ -21,7 +19,7 @@ interface Props {
 }
 type state = { restaurant: any };
 
-export default class GuideScreen  extends React.Component<Props,state>   {
+export default class resaScreen  extends React.Component<Props,state>   {
   restaurantCast :any[] = [];
 
 
@@ -36,32 +34,20 @@ export default class GuideScreen  extends React.Component<Props,state>   {
     }
 
       render() {
-        var Guide = Parse.Object.extend("Guide");
-      let guide = new Guide;
-      guide.id = this.props.route.params.guideId;
+        var Intcust = Parse.Object.extend("Intcust");
+        let myintcust = new Intcust;
+        myintcust.id = this.props.route.params.restoId;
 
   return (
     <View style={styles.container}>
        
-          <Image
-            source={{
-              uri: guide.attributes.FrontPic._url ,
-            }}
-            style={styles.image}  
-            resizeMode="cover"
-          
-          ></Image>
-      <Text style={styles.title}>{guide.attributes.title}  </Text>
+         
+      <Text style={styles.title}>Réservez sur place  {myintcust.attributes.corporation} </Text>
       <WebView
     source={{ uri: 'https://www.tablebig.com/guide/BhCb5xYcek/ida-restaurant-italien-martinique' }}
 />
      
 
-<WebView
-    originWhitelist={['*']}
-    source={{ html: guide.attributes.content }}
-/>
-  
 
     </View>
   );

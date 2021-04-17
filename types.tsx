@@ -3,6 +3,14 @@ export type RootStackParamList = {
   NotFound: undefined;
   RestoScreen: undefined;
   GuideScreen: undefined;
+  deliveryScreen: undefined;
+  takeawayScreen: undefined;
+  resaScreen: undefined;
+  crenSelectScreen: undefined;
+  hourSelectScreen: undefined;
+  DishScreen: undefined;
+ basketScreen: undefined;
+ AppContextProvider: undefined;
 
 };
 

@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { StyleSheet, Image, Dimensions } from "react-native";
-import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 
-function PostComponent(props :any) {
+function DishComponent(props :any) {
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.postWrapper}
@@ -19,14 +18,7 @@ function PostComponent(props :any) {
             
           ></Image>
           <View style={styles.headerGroup}>
-          <View style={styles.postTitleWrap}>
-
-            <Text 
-            style={styles.postTitle}
-            lightColor="rgba(0,0,0,0.8)"
-            darkColor="rgba(255,255,255,0.8)"
-            >{props.corponame || "nondef"} </Text>
-            </View>
+            <Text style={styles.postTitle}>{props.menuTitle || "nondef"} </Text>
             <Text style={styles.postDetailsK}>
               {props.StyleK || "Nondef"}            </Text>
               <Text style={styles.postDetailsCity}>
@@ -44,7 +36,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     marginTop:30,
-    width:'100%',
+    width:'100%'
   },
   postWrapper: {
     marginTop:90,
@@ -52,12 +44,12 @@ const styles = StyleSheet.create({
    // alignItems: "flex-start",
     justifyContent: "space-around",
     width: '100%',
+  //  marginLeft:8
+
   },
- 
   postHeader: {
-    width: '100%',
+    width: 321,
     height: 230,
-    
     flexDirection: "row",
     alignSelf: "center",
     justifyContent: "space-between",
@@ -72,25 +64,19 @@ const styles = StyleSheet.create({
     margin: 7
   },
   headerGroup: {
-    margin: 7,
-
     width: "100%",
-    height: 110,
+    height: 90,
     justifyContent: 'center', //Centered vertically
     marginLeft: 10,
-  
-  },
-  postTitleWrap:{
-flexDirection:'row',
-width:200
+    flexShrink: 1
   },
   postTitle: {
-    fontSize: 22,
-    flexWrap: 'wrap',
-    fontFamily: "geometria-bold",
-  //  marginTop:30,
-  // justifyContent: 'center', //Centered vertically
-   // color: "#fff",
+    fontSize: 24,
+    fontFamily: "geometria-regular",
+    marginTop:30,
+    justifyContent: 'center', //Centered vertically
+//  color: "#808080",
+    flexWrap:'wrap'
 
   },
   postDetails: {
@@ -121,4 +107,4 @@ width:200
   }
 });
 
-export default PostComponent;
+export default DishComponent;

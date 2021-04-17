@@ -3,13 +3,11 @@ import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 var Parse = require("parse/react-native");
 import GuideComponent from "../components/GuideComponent";
-import { FlatList, StyleSheet,StatusBar, Text,TextInput, View,ScrollView, Dimensions } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import _ from 'lodash';
-import { Ionicons } from '@expo/vector-icons';
 import { Navigation } from 'react-native-navigation';
-import { NavigationContainer, useTheme } from '@react-navigation/native';
-import { useThemeColor } from '../components/Themed';
-import { darkColors, lightColors } from '../theme/colorThemes';
+import { Text, View } from '../components/Themed';
+
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 type props = { value: string , navigation:any };
@@ -70,9 +68,7 @@ export default class GuidesScreen  extends React.Component<props, state>   {
   return (
     
     <View style={styles.container} >
-        <Text style={styles.bigTitle}>
-          Histoires de cuisine
-        </Text>
+     
    
     <View style={styles.container2} >
 
@@ -170,7 +166,7 @@ const styles = StyleSheet.create({
     marginRight: 1,
     marginLeft: 5,
     fontSize: 14,
-    fontFamily: "work-sans-700"
+    fontFamily: "geometria-regular"
   },
   postSection: {
     flex: 1,
@@ -190,13 +186,12 @@ const styles = StyleSheet.create({
     borderRadius: 25
   },
   bigTitle: {
-    fontFamily: "work-sans-700",
-    height: 50,
+    fontFamily: "geometria-regular",
+    height: 60,
     width: "83%",
-    fontSize: 22,
-    marginTop: 40,
+    fontSize: 16,
+    marginTop: 20,
     marginBottom: 0,
-  //  color:this.colors.text,
     marginLeft: 'auto',
     marginRight: 'auto'
 

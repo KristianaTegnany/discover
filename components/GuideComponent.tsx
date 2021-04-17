@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Image, Text, Dimensions } from "react-native";
+import { StyleSheet, Image, Dimensions } from "react-native";
+import { Text, View } from './Themed';
 
 function PostComponent(props :any) {
   return (
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   },
   postTitle: {
     fontSize: 19,
-    fontFamily: "work-sans-700",
+    fontFamily: "geometria-regular",
     marginTop:5,
     justifyContent: 'center', //Centered vertically
 //  color: "#808080",
@@ -77,14 +78,14 @@ const styles = StyleSheet.create({
   postDetails: {
     color: "#808080",
     fontSize: 12,
-    fontFamily: "work-sans-regular",
+    fontFamily: "geometria-regular",
   //  letterSpacing: 1,
   //  alignSelf: "baseline"
   },
   postDetailsK: {
     color: "#808080",
     fontSize: 18,
-    fontFamily: "work-sans-regular",
+    fontFamily: "geometria-regularr",
   //  letterSpacing: 1,
    // fontStyle:"italic",
    // alignSelf: "baseline"
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
   postDetailsCity: {
     color: "#808080",
     fontSize: 16,
-    fontFamily: "work-sans-regular",
+    fontFamily: "geometria-regularr",
  //   letterSpacing: 1,
     alignSelf: "baseline"
   },

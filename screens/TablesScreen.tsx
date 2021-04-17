@@ -3,14 +3,12 @@ import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 var Parse = require("parse/react-native");
 import PostComponent from "../components/PostComponent";
-import { FlatList, StyleSheet,StatusBar, Text,TextInput, View, } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FlatList, StyleSheet,StatusBar, TextInput } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { useThemeColor } from '../components/Themed';
-
+import { View } from '../components/Themed';
 
 type props = { value: string, navigation:any };
-type state = { hasLocationPermissions: boolean, latitude: number , longitude: number,restaurantList: any };
+type state = { hasLocationPermissions: boolean, latitude: number , longitude: number,restaurantList: any, searchValue: string };
 export default class TablesScreen  extends React.Component<props, state>   {
 
   restaurantListCast :any[] = [];
@@ -20,7 +18,8 @@ export default class TablesScreen  extends React.Component<props, state>   {
       hasLocationPermissions: false,
       latitude: 0,
       longitude: 0,
-      restaurantList :this.restaurantListCast
+      restaurantList :this.restaurantListCast,
+      searchValue:""
         };
       }
 
@@ -62,26 +61,29 @@ export default class TablesScreen  extends React.Component<props, state>   {
     }
   };
 
-
+  async filterResultsSearch(searchtext:any){
+    console.log("ddd")
+  
+  }
 
   render() {
+    const { search } = this.state.searchValue;
 
   return (
     
     <View style={styles.container} >
       
-      {/* <View style={styles.searchHeader} hidden>
+     {/* <View style={styles.searchHeader} >
       <Ionicons name="search" style={styles.searchIcon} />
         <TextInput
-          placeholder="Rechercher"
+          placeholder="Rechercher un restaurant"
           style={styles.searchInput}
+        // value={search}
+         onChangeText={this.filterResultsSearch}
         ></TextInput>
-    </View> */}
+    </View>  */}
     <View style={styles.container2} >
-    <Text style={styles.bigTitle} 
-       >
-          Trouvez du bonheur autour de vous à mettre dans votre assiette
-        </Text>
+   
       <FlatList
             style={styles.FlatList}
             data={ this.state.restaurantList}  
@@ -93,14 +95,17 @@ export default class TablesScreen  extends React.Component<props, state>   {
               { text: 'Hello!',restoId: item.id });          
               }}
               >    
+              {item.attributes.frontpic && 
             <PostComponent
-            imgUrl={item.attributes.overviewpic._url }
+            imgUrl={item.attributes.frontpic._url }
             
             corponame={item.attributes.corporation}
             city={item.attributes.cityvenue}
             StyleK={item.attributes.style}
             style={styles.postComponent}
           ></PostComponent>
+}
+
               </TouchableWithoutFeedback>
 
           }
@@ -113,27 +118,28 @@ export default class TablesScreen  extends React.Component<props, state>   {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    //width: '95%',
+    //flex: 1,
+    width: '100%',
 
    // alignItems: 'left',
     //justifyContent: 'center',
-  //  backgroundColor: "rgba(255,255,255,1)"
+ //   backgroundColor: "rgba(255,255,255,1)"
 
   },
   container2: {
    // flex: 1,
     width: '100%',
-
+marginTop:40,
    // alignItems: 'left',
     //justifyContent: 'center',
-  //  backgroundColor: "rgba(255,255,255,1)"
+ //   backgroundColor: "rgba(255,255,255,1)"
 
   },
   FlatList: {
     width: '100%',
-    marginLeft:0,
-    paddingLeft:0,
+    marginLeft:30,
+    marginRight:30,
+
    // justifyContent: "flex-start",
    // justifyContent: 'center',
   //  backgroundColor: "rgba(255,255,255,1)"
@@ -141,8 +147,9 @@ const styles = StyleSheet.create({
   },
   postComponent: {
     height: 120,
+    width:'100%',
   //  alignSelf: "stretch",
- //   backgroundColor: "rgba(255,255,255,1)"
+ //  backgroundColor: "rgba(255,255,255,1)"
   },
   searchHeader: {
     height: 40,
@@ -151,10 +158,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     borderRadius: 10,
     width: "83%",
-    backgroundColor: "#fff",
-    marginTop: 0,
+    marginTop: 60,
     marginRight: 'auto',
-
+    backgroundColor: "#f4f4f4",
+    color:'black',
     marginLeft: 'auto',
     paddingRight: 20,
     marginBottom:10,
@@ -173,7 +180,8 @@ const styles = StyleSheet.create({
     marginRight: 1,
     marginLeft: 5,
     fontSize: 14,
-    fontFamily: "work-sans-700"
+    fontFamily: "geometria-regular",
+
   },
   postSection: {
     flex: 1,
@@ -193,13 +201,12 @@ const styles = StyleSheet.create({
     borderRadius: 25
   },
   bigTitle: {
-    fontFamily: "work-sans-700",
-    height: 110,
+    fontFamily: "geometria-regular",
+    height: 60,
     width: "83%",
-    fontSize: 22,
-    marginTop: 40,
+    fontSize: 16,
+    marginTop: 20,
     marginBottom: 0,
-  //  color:this.colors.text,
     marginLeft: 'auto',
     marginRight: 'auto'
 

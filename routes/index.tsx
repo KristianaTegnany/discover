@@ -5,4 +5,5 @@ export enum ROUTES {
     ModalMain = "ModalMain",
     TablesResto = "TablesResto",
     GuidesGuide = "GuidesGuide"
+
   }
