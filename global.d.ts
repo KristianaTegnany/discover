@@ -4,7 +4,7 @@ export interface ProductItem {
     description: string
     price: number
     formulaChoiced:[] 
-    persoMenu : []
+    persoMenu : [],
     imageUrl: string,
     quantity: number,
     added?: boolean,

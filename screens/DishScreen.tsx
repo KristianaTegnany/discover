@@ -36,7 +36,7 @@ await menu.fetch();
 
 let menuRaw =
 { id :menu.id,
-  imageUrl: menu.attributes.image._url,
+  imageUrl:  (menu.attributes.image && menu.attributes.image._url ) || false,
   title : menu.attributes.title,
   description : menu.attributes.description,
   formulaChoiced : menu.attributes.formulaChoice ||[],
@@ -132,6 +132,7 @@ height:'20%'
   appButtonContainer:{
     elevation: 8,
     marginTop :30,
+    marginHorizontal :20,
 
     marginBottom :10,
     backgroundColor: "#009688",

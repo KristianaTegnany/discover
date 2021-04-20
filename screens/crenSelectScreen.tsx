@@ -4,7 +4,7 @@ import { Route, ScrollView, StyleSheet } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { View } from '../components/Themed';
-import { ListItem} from 'react-native-elements'
+import { ListItem, ThemeConsumer, useTheme, withTheme} from 'react-native-elements'
 import moment from 'moment';
 import 'moment/locale/fr';
 
@@ -67,15 +67,18 @@ export const crenSelectScreen = ({ route, navigation }: Props) => {
 
               
             { daystobook !== null &&
-               daystobook !== undefined &&
+               daystobook !== undefined && 
              daystobook.map((day,index) => 
-
-              <ListItem key={index} bottomDivider onPress={() => {
+        
+              <ListItem key={index} 
+          
+              bottomDivider onPress={() => {
                 navigation.navigate('hourSelectScreen',
                 { restoId: route.params.restoId , 
                   bookingType:route.params.bookingType, 
                   fday: moment(day.fday).format() });          
                 }} >
+         
         <ListItem.Content >
 
           <ListItem.Title style={styles.text}>{day.day} </ListItem.Title>
@@ -86,8 +89,8 @@ export const crenSelectScreen = ({ route, navigation }: Props) => {
         <ListItem.Chevron 
          />
       </ListItem>
-
-              
+             
+           
               )}
           </ScrollView>
 

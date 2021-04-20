@@ -13,7 +13,8 @@ export type RootStackParamList = {
  AppContextProvider: undefined;
  termsScreen: undefined;
  paymentScreen: undefined;
-
+ custInfoScreen: undefined;
+ successScreen: undefined;
 };
 
 export type BottomTabParamList = {

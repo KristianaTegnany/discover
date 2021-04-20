@@ -13,9 +13,11 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { remove, store } from '../store';
+import { WebView } from 'react-native-webview';
 
 interface NavigationParams {
   restoId: string;
+  paylink: string
 }
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
@@ -25,7 +27,7 @@ interface Props {
   restaurant: []
 }
 
-export const termsScreen = ({ route, navigation}: Props) => {
+export const successScreen = ({ route, navigation}: Props) => {
 
   const products = useSelector((state: ProductItem[]) => state);
 
@@ -43,27 +45,9 @@ export const termsScreen = ({ route, navigation}: Props) => {
     
 
   return (
-    <View style={styles.container}> 
-    <ScrollView>     
-    <Text style={styles.title}>Nous nous engageons à vous faire vivre une expérience délicieuse</Text>
-     <Text style={styles.text}>Pour se faire, merci de respecter les règles suivantes, correspondant aux contraintes de production du restaurant : </Text>
-     <Text style={styles.text}>Fin de commande le midi : </Text>
-     <Text style={styles.text}>Fin de commande le soir : </Text>
-     <Text style={styles.text}>Délai entre la commande et la récupération / livraison : </Text>
-     <Text style={styles.text}>Les créneaux de livraison s'entendent A partir de l'heure sélectionnée, jusqu'au début du créneau suivant. </Text>
-     <Text style={styles.text}>Les livraisons sont assurées par :  </Text>
-     <Text style={styles.text}>Nos prestataires mettent tout en oeuvre pour tenir le délai du créneau.  </Text>
-     <Text style={styles.text}>Celui-ci n'est pas garanti de facto dans les cas suivants : </Text>
-     <Text style={styles.text}>Le restaurant ne se trouve pas dans la commune de livraison. </Text>
-     <Text style={styles.text}>Le restaurant ou le lieu de livraison se situe dans la commune du Lamentin (Martinique). </Text>
-     <Text style={styles.text}>La livraison est programmée pour le vendredi entre 12h et 14h. </Text>
-     <Text style={styles.text}>En cas de retard de livraison, ne relevant pas de ces cas, il est à la discrétion du restaurant et/ou du livreur de vous proposer une compensation. Le contenu de cette compensation est à sa libre définition. </Text>
-     <Text style={styles.text}>Pour compléter une commande, merci d'effectuer une nouvelle commande et d'indiquer une demande de regroupement en note de livraison. Les frais de livraison de la deuxième commande vous seront remboursés à postériori. </Text>
+    <View>
 
-     <Text style={styles.text}>Merci de respecter les gestes barrières et les consignes sanitaires, notamment de porter un masque et de mettre du gel avant et après avoir récupéré votre commande A emporter ou En livraison. </Text>
-
-     </ScrollView>
-
+      <Text>Vous êtes une personne formidable</Text>
     </View>
 );
 }
@@ -71,7 +55,6 @@ export const termsScreen = ({ route, navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
- //   padding:30,
   },
   appButtonContainer:{
     elevation: 8,
@@ -112,7 +95,7 @@ color:"white"
   //  flex:1,
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 25,
+    fontSize: 30,
     padding:20,
     fontFamily: "geometria-bold",
     fontWeight: 'bold',
@@ -134,9 +117,7 @@ color:"white"
   },
   text: {
     flex:1,
-    fontSize: 20,
-    paddingHorizontal:20,
-
+    fontSize: 16,
     top:0,
     fontFamily: "geometria-regular",
 
@@ -150,4 +131,4 @@ color:"white"
   
 });
 
-export default termsScreen;
+export default successScreen;

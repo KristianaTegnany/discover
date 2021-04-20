@@ -4,6 +4,7 @@ import * as React from 'react';
 import {  ColorSchemeName } from 'react-native';
 import basketScreen from '../screens/basketScreen';
 import crenSelectScreen from '../screens/crenSelectScreen';
+import custInfoScreen from '../screens/custInfoScreen';
 import deliveryScreen from '../screens/deliveryScreen';
 import DishScreen from '../screens/DishScreen';
 import GuideScreen from '../screens/GuideScreen';
@@ -12,25 +13,32 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import paymentScreen from '../screens/paymentScreen';
 import resaScreen from '../screens/resaScreen';
 import RestoScreen from '../screens/RestoScreen';
+import successScreen from '../screens/successScreen';
 import takeawayScreen from '../screens/takeawayScreen';
 import termsScreen from '../screens/termsScreen';
 import {  RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
-
+import { useColorScheme } from 'react-native-appearance';
+import {  ThemeProvider } from "react-native-elements";
+import ThemeConsumer from "../components/themeConsumer";
 
 import LinkingConfiguration from './LinkingConfiguration';
-
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+  let colorSchemeX = useColorScheme();
   return (
+
+ //   <ThemeProvider useDark={colorSchemeX === 'dark'}>
+
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <RootNavigator />
-
     </NavigationContainer>
+
+ //   </ThemeProvider>
     
   );
 }
@@ -41,7 +49,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator screenOptions={{ headerShown: true }} >
       <Stack.Screen name="Root" options={{ headerShown: false, headerTitle: 'Accueil' }}   component={BottomTabNavigator} />
       <Stack.Screen name="GuideScreen"  options={{ headerTitle: 'Guide' }} component={GuideScreen} />
       <Stack.Screen name="RestoScreen" options={{ headerTitle: 'Restaurant' }} component={RestoScreen} />
@@ -53,7 +61,10 @@ function RootNavigator() {
       <Stack.Screen name="hourSelectScreen"  options={{ headerTitle: 'Choisir une heure' }} component={hourSelectScreen} />
       <Stack.Screen name="basketScreen"  options={{ headerTitle: 'Votre panier' }} component={basketScreen} />
       <Stack.Screen name="paymentScreen"  options={{ headerTitle: 'Votre panier' }} component={paymentScreen} />
-      <Stack.Screen name="termsScreen"  options={{ headerTitle: 'Votre panier' }} component={termsScreen} />
+      <Stack.Screen name="termsScreen"  options={{ headerTitle: 'CGU' }} component={termsScreen} />
+      <Stack.Screen name="custInfoScreen"  options={{ headerTitle: 'Vos infos' }} component={custInfoScreen} />
+      <Stack.Screen name="successScreen"  options={{ headerTitle: 'Succès' }} component={successScreen} />
+
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );

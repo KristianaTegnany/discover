@@ -40,12 +40,11 @@ export default class RestoScreen  extends React.Component<Props,state>   {
 
   return (
     <View style={styles.container}> 
+    {myintcust.attributes.overviewpic &&
           <Image style={styles.image}
-          
           source={{uri: myintcust.attributes.overviewpic._url}}
-
           />
-            
+    }
 <ScrollView>
       <Text style={styles.title}>{myintcust.attributes.corporation}  </Text>
        <Text style={styles.text}>{myintcust.attributes.introwebsite}    </Text>

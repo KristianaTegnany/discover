@@ -16,7 +16,11 @@ export default {
               GuidesScreen: 'Guides',
             },
           },
-       
+          Success: {
+            screens: {
+              SuccessScreen: 'success',
+            },
+          },
         },
       },
       NotFound: '*',

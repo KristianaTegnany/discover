@@ -13,15 +13,17 @@ import {AppRegistry} from 'react-native';
 import {expo as appName} from './app.json';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { ThemeProvider } from "react-native-elements";
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`;
+Parse.serverURL = `https://pptableserver.osc-fr1.scalingo.io/parse`;
 
 
 export default   function    App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+ 
   loadResourcesAsync() ;
   if (!isLoadingComplete) {
     return null;
@@ -35,6 +37,7 @@ export default   function    App() {
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
         <StatusBar />
+
       </SafeAreaProvider>
       </AppearanceProvider>
       </Provider>

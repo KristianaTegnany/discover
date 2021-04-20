@@ -8,11 +8,11 @@ import { Text, View } from '../components/Themed';
 import { useSelector } from "react-redux"
 
 import { ProductItem } from '../global';
-import { Icon, ListItem } from 'react-native-elements';
+import { Avatar, ListItem } from 'react-native-elements';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { remove, store } from '../store';
+import { add, remove, store } from '../store';
 
 interface NavigationParams {
   restoId: string;
@@ -38,7 +38,11 @@ export const basketScreen = ({ route, navigation}: Props) => {
    }
   
   async function calculusTotalCashBasket() {
-    let sumRaw = await sum(products, 'price');
+    // doit prendre en compte les quantités dans le sum ma gueule ba ouais c mon comportement
+    let sumRaw =0
+     products.map(product => {
+      sumRaw = sumRaw + product.quantity * product.price
+    })
     setTotalCashBasket(sumRaw);
   }
   async function calculusTotalQuantityBasket() {
@@ -81,37 +85,33 @@ export const basketScreen = ({ route, navigation}: Props) => {
          // .filter(product => product.added)
           .map((product: ProductItem, index) => (
             <ListItem key={product.id + index } bottomDivider> 
-     
+            { product && product.imageUrl &&
+       <Avatar rounded source={{ uri: product.imageUrl }} />
+            }
+
       <ListItem.Content>
         <ListItem.Title style = {styles.text}>  
 {product.title} </ListItem.Title>
         <ListItem.Subtitle  style = {styles.textRaw}>
-        {product.price} €</ListItem.Subtitle>
+        {product.price} € </ListItem.Subtitle>
 
       </ListItem.Content>
-      <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() => store.dispatch(remove(product))} />
-<Text>{product.quantity}</Text>
-      <Ionicons name="add-circle" style={styles.searchIcon}  onPress={() => store.dispatch(remove(product))} />
+      <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() =>  store.dispatch(remove(product))} />
+        <ListItem.Subtitle style = {styles.textQuant} >{product.quantity}</ListItem.Subtitle>
+      <Ionicons name="add-circle" style={styles.searchIcon}  onPress={() => store.dispatch(add(product))} />
     </ListItem>
           ))}
       
       </View>
       </ScrollView>
    <TouchableOpacity onPress={() => {
-              navigation.navigate('crenSelectScreen',
-              { restoId: route.params.restoId , bookingType:"Delivery" });          
+              navigation.navigate('custInfoScreen',
+              { restoId: route.params.restoId , bookingType:route.params.bookingType });          
               }} 
             style={styles.appButtonContainer}>
-    <Text style={styles.appButtonText}>💳 🔐Valider et payer</Text>
+    <Text style={styles.appButtonText}>💳 🔐 Continuer</Text>
   </TouchableOpacity> 
-  <ListItem bottomDivider> 
-     
-     <ListItem.Content>
-       <ListItem.Title style = {styles.text}>  ✔︎ En continuant j'accepte les CGU </ListItem.Title>
-       
-     </ListItem.Content>
-     <Ionicons name="information-circle-outline" style={styles.searchIcon}  />
-   </ListItem>
+  
 
     </View>
 );
@@ -121,6 +121,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  textQuant:{
+    fontFamily: "geometria-regular",
+
+  }
+  ,
   appButtonContainer:{
     elevation: 8,
     marginBottom :10,

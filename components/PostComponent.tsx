@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { StyleSheet, Image, Dimensions } from "react-native";
-import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 
 function PostComponent(props :any) {

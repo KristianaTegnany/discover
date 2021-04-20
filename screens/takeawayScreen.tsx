@@ -4,7 +4,9 @@ import {ActivityIndicator, Button, Image, Route, Text,ScrollView, StyleSheet } f
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import {  View } from '../components/Themed';
-import { ListItem} from 'react-native-elements'
+//import {  ListItem } from '../components/Themed';
+
+import { Avatar, ListItem} from 'react-native-elements'
 import { useSelector } from 'react-redux';
 import {  ProductItem } from '../global';
 
@@ -19,7 +21,7 @@ interface Props {
 }
 
 interface ICats { id: string, title: string, order:number}
-interface IMenus {  id: string, price:number, title: string, order:number, description:string, category:string}
+interface IMenus {  id: string, price:number,imageUrl: string,  title: string, order:number, description:string, category:string}
 
 export const takeawayScreen = ({ route, navigation}: Props) => {
   const [cats, setCats] = useState <ICats[] > ();
@@ -58,6 +60,7 @@ export const takeawayScreen = ({ route, navigation}: Props) => {
 "title": menu.attributes.title,
 "category": menu.attributes.category,
 "order": menu.attributes.order,
+"imageUrl": menu.attributes.image && menu.attributes.image._url || ''
  }))
 
     const sortedMenu= rawMenus.sort(function(a:any, b:any){
@@ -72,9 +75,14 @@ setMenus(sortedMenu);
  }
 
  async function calculusTotalCashBasket() {
-  let sumRaw = await sum(products, 'price');
+  let sumRaw =0
+   products.map(product => {
+    sumRaw = sumRaw + product.quantity * product.price
+  });
   setTotalCashBasket(sumRaw);
+
 }
+
 async function calculusTotalQuantityBasket() {
   let sumRaw = await sum(products, 'quantity');
   setTotalQuantityBasket(sumRaw);
@@ -100,6 +108,7 @@ useEffect(() => {
                           });
                         }
                       } >
+                      
                <ListItem.Content >
                   <ListItem.Title style = {styles.text}>  
        Voir le panier </ListItem.Title>
@@ -131,7 +140,9 @@ useEffect(() => {
             {menus.map((menu) => {
                    if(menu.category==cat.title){
             return    <View key={cat.id + menu.id}>            
-            <ListItem key={cat.id + menu.id } bottomDivider  onPress = {
+            <ListItem key={cat.id + menu.id } bottomDivider  
+            
+            onPress = {
               () => {
                navigation.navigate('DishScreen', {
                   restoId: route.params.restoId,
@@ -175,6 +186,7 @@ const styles = StyleSheet.create({
   //  alignItems: 'center',
     justifyContent: 'center',
   },
+ 
   textcattitle:{
 color:"#fff",
 fontWeight: 'bold',
