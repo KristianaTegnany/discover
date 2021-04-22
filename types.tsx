@@ -13,6 +13,9 @@ export type RootStackParamList = {
  AppContextProvider: undefined;
  termsScreen: undefined;
  paymentScreen: undefined;
+ paymentStripeScreen: undefined;
+ loveScreen: undefined;
+  persoScreen:undefined;
  custInfoScreen: undefined;
  successScreen: undefined;
 };
@@ -20,6 +23,9 @@ export type RootStackParamList = {
 export type BottomTabParamList = {
   Tables: undefined;
   Guides: undefined;
+  Love: undefined;
+  Perso: undefined;
+
 };
 
 export type TablesParamList = {
@@ -33,6 +39,15 @@ export type GuidesParamList = {
 export type RestoParamList = {
   RestoScreen: undefined;
 };
+
+export type LoveParamList = {
+  loveScreen: undefined;
+};
+
+export type PersoParamList = {
+  persoScreen: undefined;
+};
+
 
 export type OtherParamList = {
   RestoScreen: undefined;

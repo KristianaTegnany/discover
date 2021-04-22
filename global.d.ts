@@ -12,3 +12,4 @@ export interface ProductItem {
 
 
  
+  declare module 'react-native-stripe-checkout-webview'

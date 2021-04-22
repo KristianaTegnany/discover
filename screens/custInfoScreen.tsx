@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/native';
 import * as React from 'react';
-import { Route, StyleSheet, TextInput } from 'react-native';
+import { Route, StyleSheet,Image,  TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
@@ -9,8 +9,10 @@ import { useSelector } from "react-redux"
 import { ProductItem } from '../global';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import Stripe from 'stripe';
-import {Elements, CardElement} from '@stripe/react-stripe-js';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons'; 
+
 
 interface NavigationParams {
   restoId: string;
@@ -25,6 +27,9 @@ interface Props {
 
 export const custInfoScreen = ({ route, navigation}: Props) => {
   const [email, setEmail] = useState();
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [phone, setPhone] = useState('');
   const [resa, setResa] = useState({ 
     id:'', 
     engagModeResa:'',
@@ -39,16 +44,36 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
     option_DeliveryByNoukarive:false,
     option_DeliveryByToutAlivrer: false, 
     stripeAccId: ''
-
   });
+  const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
 
   const products = useSelector((state: ProductItem[]) => state);
-
-
-  async function onChangeText() {
-
+  function useThemeColor(
+    props: { light?: string; dark?: string },
+    colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  ) {
+    const theme = useColorScheme();
+    const colorFromProps = props[theme];
+  
+    if (colorFromProps) {
+      return colorFromProps;
+    } else {
+      return Colors[theme][colorName];
+    }
   }
-
+  async function onChangeTextEmail(email:any) {
+setEmail(email);
+  }
+  
+  async function onChangeTextFirstname(firstname:any) {
+    setFirstname(firstname);
+      }
+      async function onChangeTextLastname(lastname:any) {
+        setLastname(lastname);
+          }
+          async function onChangeTextPhone(phone:any) {
+            setPhone(phone);
+              }
   async function createResa() {
     var Guest = Parse.Object.extend("Guest");
     let guestRaw = new Guest();
@@ -79,6 +104,8 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
   }
 
   async function goPay() {
+
+    if(email && firstname && lastname && phone){
      //  createResa(); and guest
      if(intcust.paymentChoice=="payplugOptin"){
       getPayPlugPaymentUrl();
@@ -91,10 +118,10 @@ navigation.navigate('paymentScreen',
 
       const params1 = {
         itid: intcust.id ,
-        winl: window.location.host,
+        winl: "window.location.host",
         resaid: resa.id,
         paidtype: "order",
-        customeremail: resa.guestFlat[0].email,
+        customeremail: "satyam.dorville@gmail.com",
         type: "order",
         amount: totalCashBasket,
         mode: resa.engagModeResa,
@@ -102,39 +129,32 @@ navigation.navigate('paymentScreen',
         toutalivrer: intcust.option_DeliveryByToutAlivrer,
        stripeAccount :intcust.stripeAccId
       };
-      const session = await Parse.Cloud.run("createCheckoutSessionStripe", params1);
+      const session = await Parse.Cloud.run("createCheckoutSessionStripeForApp", params1);
 
-      var stripe = new  Stripe('pk_test_51HMSMIB2aw923XhBAjlVUnus2fvYnq0jgaXKGBpKlzBeazoSfSwBsTCBPt79vmKQiwTAsKud98voORkxQ9H2W5Ao005TmW0VfM');
-      }
-
-     // const stripe = require('stripe')(`pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl`);
-      stripe.redirectToCheckout({
-        sessionId: session.id
-      })
-     // navigate and options payLink
- 
-    
+navigation.navigate('paymentStripeScreen',
+{ CHECKOUT_SESSION_ID: session.id , STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl" });        
+  }}else{
+    alert("Merci de saisir tous les champs. ")
   }
-
+  }
   async function getPayPlugPaymentUrl() {
  
     const params1 = {
       itid: intcust.id,
       winl: "window.location.host",
       resaid: "34dUynZnXC",
-      customeremail: "satyam.dorville@gmail.com",
-      customerfirstname: "satyam",
-      customerlastname: "dorville",
-      customerphone: "0000",
+      customeremail: email,
+      customerfirstname: firstname,
+      customerlastname: lastname,
+      customerphone: phone,
       type: "order",
       amount: 100,
       apikeypp: intcust.apikeypp,
-      mode: "Delivery",
-      noukarive: false,
-      toutalivrer: false,
+      mode: route.params.bookingType,
+      noukarive: intcust.option_DeliveryByNoukarive,
+      toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
     const response = await Parse.Cloud.run("getPayPlugPaymentUrl", params1);
-    console.log(response);
     setPaylink(response);
   }
 
@@ -143,20 +163,18 @@ navigation.navigate('paymentScreen',
   var Intcust = Parse.Object.extend("Intcust");
   let intcustRaw = new Intcust();
   intcustRaw.id = route.params.restoId;
-  intcustRaw.map((x:any)=>({
-    'id': x.id,
-    'apikeypp': x.attributes.apikeypp, 
-    'paymentChoice' : x.attributes.paymentChoice, 
-    'option_DeliveryByToutAlivrer': x.attributes.option_DeliveryByToutAlivrer,
-    'stripeAccId': x.attributes.stripeAccId
-  }))
-  setIntcust(intcustRaw);
-  calculusTotalCashBasket();
-
-
-      }, []);
-
     
+  let intcustRawX =[{
+    'id': intcustRaw.id,
+    'apikeypp': intcustRaw.attributes.apikeypp || '', 
+    'paymentChoice' :intcustRaw.attributes.paymentChoice || '', 
+    'option_DeliveryByNoukarive': intcustRaw.attributes.option_DeliveryByNoukarive || false,
+    'option_DeliveryByToutAlivrer': intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
+    'stripeAccId': intcustRaw.attributes.stripeAccId || ''
+  }];
+  setIntcust(intcustRawX[0]);
+  calculusTotalCashBasket();
+      }, []);
 
   return (
     <View style={styles.container}> 
@@ -164,45 +182,91 @@ navigation.navigate('paymentScreen',
 
       <Text style={styles.label}>Votre adresse email</Text>
      <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
+         style={{color: textColor, fontFamily:'geometria-regular',
+         height: 50,
+         marginHorizontal:20,
+         marginTop:4,
+         paddingLeft: 20,
+         borderWidth: 1,
+         borderRadius:10,
+         fontSize:15,
+         borderColor: "grey"}}
+        onChangeText={onChangeTextEmail}
         placeholder="addresse@email.com"
         value={email}
       />
       <Text style={styles.label}>Votre prénom</Text>
 
        <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextFirstname}
         placeholder="Gustavo"
-        value={email}
+        value={firstname}
       />      
 
 <Text style={styles.label}>Votre nom de famille</Text>
 
         <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}        
+        onChangeText={onChangeTextLastname}
         placeholder="Martin"
-        value={email}
+        value={lastname}
       />     
 
 <Text style={styles.label}>Votre numéro de portable</Text>
 
            <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextPhone}
         placeholder="+59X 69X 00 00 00"
-        value={email}
+        value={phone}
       />   
 
-      <TouchableOpacity onPress={() => {
-              navigation.navigate('paymentScreen',
-              { restoId: route.params.restoId , paylink: paylink, bookingType:"Delivery" });          
-              }} 
+      <TouchableOpacity onPress={() => goPay()} 
             style={styles.appButtonContainer}>
-    <Text style={styles.appButtonText}>💳  Valider et payer 🔐</Text>
+    <Text style={styles.appButtonText} > <Text style={styles.payText}>Valider et payer</Text> </Text>
+  
+
   </TouchableOpacity> 
+ {intcust.paymentChoice=="stripeOptin" &&
+  <Text style={styles.appButtonText} > Avec     <FontAwesome5 name="cc-stripe" size={24} color="white"  /> </Text>
+ }
+ {intcust.paymentChoice=="payplugOptin" &&
+  <Text style={styles.appButtonText} > Avec     <Image
+  source={require('../assets/images/pplogo.png')}
+
+  fadeDuration={0}
+  style={{ width: 90, height: 50 }}
+/>
+
+ </Text>
+ }
+
+
   </View>
 
   <TouchableOpacity style = {styles.listitem}  onPress={() => {
@@ -247,7 +311,9 @@ const styles = StyleSheet.create({
 //    paddingTop : 30
 
   },
-
+  payText:{
+    alignSelf: 'center',
+  },
   listitem:{
 padding:5,
 alignItems:"center",
@@ -275,13 +341,13 @@ alignItems:"center",
     marginRight: 1
   },
   appButtonText:{
+    alignContent: 'space-between',
+    display:"flex",
     fontSize: 18,
     color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
-   //textTransform: "uppercase",
     fontFamily: "geometria-bold",
-
   },
  
   title: {
@@ -299,7 +365,6 @@ alignItems:"center",
     top:0,
     fontFamily: "geometria-bold",
     fontWeight: 'bold',
-
     padding: 20
   },
   textRaw:{

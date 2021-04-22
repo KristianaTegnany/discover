@@ -62,7 +62,6 @@ export default class TablesScreen  extends React.Component<props, state>   {
   };
 
   async filterResultsSearch(searchtext:any){
-    console.log("ddd")
   
   }
 

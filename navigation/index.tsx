@@ -19,10 +19,10 @@ import termsScreen from '../screens/termsScreen';
 import {  RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 import { useColorScheme } from 'react-native-appearance';
-import {  ThemeProvider } from "react-native-elements";
-import ThemeConsumer from "../components/themeConsumer";
 
 import LinkingConfiguration from './LinkingConfiguration';
+import paymentStripeScreen from '../screens/paymentStripeScreen';
+import { persoScreen } from '../screens/persoScreen';
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
@@ -64,7 +64,8 @@ function RootNavigator() {
       <Stack.Screen name="termsScreen"  options={{ headerTitle: 'CGU' }} component={termsScreen} />
       <Stack.Screen name="custInfoScreen"  options={{ headerTitle: 'Vos infos' }} component={custInfoScreen} />
       <Stack.Screen name="successScreen"  options={{ headerTitle: 'Succès' }} component={successScreen} />
-
+      <Stack.Screen name="paymentStripeScreen"  options={{ headerTitle: 'Paiement' }} component={paymentStripeScreen} />
+      <Stack.Screen name="persoScreen"  options={{ headerTitle: 'Perso' }} component={persoScreen} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );

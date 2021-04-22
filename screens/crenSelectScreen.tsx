@@ -7,6 +7,8 @@ import { View } from '../components/Themed';
 import { ListItem, ThemeConsumer, useTheme, withTheme} from 'react-native-elements'
 import moment from 'moment';
 import 'moment/locale/fr';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
 
 
 interface NavigationParams {
@@ -17,17 +19,37 @@ type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 interface Props {
   navigation: Navigation;
   route: Route;
+  theme: ThemeProps;
 }
+type ThemeProps = {
+  lightColor?: string;
+  darkColor?: string;
+};
 
 interface IDays {
   day: string;
   fday:{}
 }
-export const crenSelectScreen = ({ route, navigation }: Props) => {
+export const crenSelectScreen = ({ route, navigation, theme }: Props) => {
   const [daystobook, setDaystobook] = useState<IDays[]>();
   const [blockEvents, setBlockEvents] = useState([]);
 
+  const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
+  const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
    
+ function useThemeColor(
+  props: { light?: string; dark?: string },
+  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+) {
+  const theme = useColorScheme();
+  const colorFromProps = props[theme];
+
+  if (colorFromProps) {
+    return colorFromProps;
+  } else {
+    return Colors[theme][colorName];
+  }
+}
   useEffect(() => {   
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
@@ -71,7 +93,7 @@ export const crenSelectScreen = ({ route, navigation }: Props) => {
              daystobook.map((day,index) => 
         
               <ListItem key={index} 
-          
+              containerStyle={{ backgroundColor: backgroundColor }}
               bottomDivider onPress={() => {
                 navigation.navigate('hourSelectScreen',
                 { restoId: route.params.restoId , 
@@ -81,7 +103,7 @@ export const crenSelectScreen = ({ route, navigation }: Props) => {
          
         <ListItem.Content >
 
-          <ListItem.Title style={styles.text}>{day.day} </ListItem.Title>
+          <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 20, fontFamily:'geometria-regular'}}>{day.day} </ListItem.Title>
           <ListItem.Subtitle>
           </ListItem.Subtitle>
 
@@ -118,13 +140,13 @@ const styles = StyleSheet.create({
  
 
   title: {
-    fontSize: 20,
+    fontSize: 34,
     padding:30,
     fontFamily: "geometria-bold",
     fontWeight: 'bold',
   },
   text: {
-    fontSize: 16,
+    fontSize: 22,
     padding: 4,
     fontFamily: "geometria-regular",
 

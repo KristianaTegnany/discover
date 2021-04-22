@@ -23,7 +23,6 @@ type ThemeProps = {
   lightColor?: string;
   darkColor?: string;
 };
-console.log("hello");
 
 
 

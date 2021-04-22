@@ -24,9 +24,6 @@ import {
 } from 'react-native-elements'
 import moment from 'moment';
 import 'moment/locale/fr';
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
-
 
 interface NavigationParams {
   text: string;
@@ -40,24 +37,7 @@ interface Props {
 
 interface IHours {  hour: string;}
 
-export const hourSelectScreen = ({ route, navigation}: Props) => {
-
-  const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
-  const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
-   
- function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme();
-  const colorFromProps = props[theme];
-
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
-  }
-}
+export const persoScreen = ({ route, navigation}: Props) => {
   const [hourstobook, setHourstobook] = useState < IHours[] > ();
   const [goto, setGoto] = useState('Aaa');
 
@@ -103,7 +83,6 @@ export const hourSelectScreen = ({ route, navigation}: Props) => {
       { hourstobook && hourstobook.map((hour,index) =>
        
        <ListItem key = {index}
-       containerStyle={{ backgroundColor: backgroundColor }}
        bottomDivider onPress = {
          () => {
            navigation.navigate(goto, {
@@ -115,7 +94,7 @@ export const hourSelectScreen = ({ route, navigation}: Props) => {
          }
        } >
        <ListItem.Content >
-       <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 20, fontFamily:'geometria-regular'}}> {hour} </ListItem.Title> 
+       <ListItem.Title style = {styles.text}> {hour} </ListItem.Title> 
        </ListItem.Content>        
        <ListItem.Chevron/>
        </ListItem>
@@ -226,4 +205,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default hourSelectScreen;
+export default persoScreen;

@@ -8,7 +8,9 @@ import useColorScheme from '../hooks/useColorScheme';
 import TablesScreen from '../screens/TablesScreen';
 import GuidesScreen from '../screens/GuidesScreen';
 
-import { BottomTabParamList, TablesParamList, GuidesParamList,GuideParamList } from '../types';
+import { BottomTabParamList, TablesParamList, GuidesParamList,LoveParamList, PersoParamList } from '../types';
+import loveScreen from '../screens/loveScreen';
+import { persoScreen } from '../screens/persoScreen';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -19,6 +21,13 @@ export default function BottomTabNavigator() {
     <BottomTab.Navigator
       initialRouteName="Tables"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
+       <BottomTab.Screen
+        name="Love"
+        component={LoveNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+        }}
+      />
       <BottomTab.Screen
         name="Tables"
         component={TablesNavigator}
@@ -30,10 +39,17 @@ export default function BottomTabNavigator() {
         name="Guides"
         component={GuidesNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="reader" color={color} />,
         }}
       />
    
+   <BottomTab.Screen
+        name="Perso"
+        component={PersoNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="people" color={color} />,
+        }}
+      />
     </BottomTab.Navigator>
   );
 }
@@ -57,7 +73,6 @@ function TablesNavigator() {
         name="TablesScreen"
         component={TablesScreen}
         options={{ headerTitle: 'Restaurants' }}
-
       />
     </TablesStack.Navigator>
   );
@@ -79,3 +94,35 @@ function GuidesNavigator() {
   );
   }
  
+  const LoveStack = createStackNavigator<LoveParamList>();
+
+function LoveNavigator() {
+  return (
+    <LoveStack.Navigator screenOptions={{
+      headerShown: false
+    }}>
+      <LoveStack.Screen
+        name="loveScreen"
+        component={loveScreen}
+        options={{ headerTitle: 'Love' }}
+      />
+    </LoveStack.Navigator>
+  );
+  }
+
+
+  const PersoStack = createStackNavigator<PersoParamList>();
+
+function PersoNavigator() {
+  return (
+    <PersoStack.Navigator screenOptions={{
+      headerShown: false
+    }}>
+      <PersoStack.Screen
+        name="persoScreen"
+        component={persoScreen}
+        options={{ headerTitle: 'Perso' }}
+      />
+    </PersoStack.Navigator>
+  );
+  }
