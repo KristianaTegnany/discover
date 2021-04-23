@@ -103,7 +103,9 @@ export const loveScreen = ({ route, navigation}: Props) => {
           renderCard={ (card: [] , index:any) => {{
        return(   <View style={styles.card}>
           {card && card.name &&  card.imageUrl && 
-         <ImageBackground source={card.imageUrl} style={styles.image}>
+         <ImageBackground source={card.imageUrl} 
+         imageStyle={{ borderRadius: 17}}
+         style={styles.image}>
            <View style={styles.wrapperTexts}>
       <Text style={styles.text}>{card.name} </Text>
       <Text style={styles.subtitle}>{card.style}</Text>
@@ -201,12 +203,13 @@ export const loveScreen = ({ route, navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
   //  backgroundColor: '#fff'
   },
   card: {
     flex: 1,
-   // borderRadius: 20,
-    borderWidth: 1,
+    borderRadius:30,
+  //  borderWidth: 1,
     borderColor: 'white',
    // justifyContent: 'center',
     backgroundColor: 'white',
@@ -243,7 +246,7 @@ paddingBottom: 30
   },
   image:{
     flex: 1,
-  //  borderRadius: 20,
+    borderRadius: 20,
 
   },
   done: {

@@ -5,8 +5,10 @@ import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import {  View } from '../components/Themed';
 //import {  ListItem } from '../components/Themed';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
 
-import { Avatar, ListItem} from 'react-native-elements'
+import { ListItem} from 'react-native-elements'
 import { useSelector } from 'react-redux';
 import {  ProductItem } from '../global';
 
@@ -30,6 +32,22 @@ export const takeawayScreen = ({ route, navigation}: Props) => {
   const [totalQuantityBasket, setTotalQuantityBasket] = useState (0);
   const products = useSelector((state: ProductItem[]) => state);
 
+  const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
+  const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
+   
+ function useThemeColor(
+  props: { light?: string; dark?: string },
+  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+) {
+  const theme = useColorScheme();
+  const colorFromProps = props[theme];
+
+  if (colorFromProps) {
+    return colorFromProps;
+  } else {
+    return Colors[theme][colorName];
+  }
+}
   
    function getCountOfMenusOfcat(cattitle:string) {
   if(menus){
@@ -98,7 +116,9 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      <ListItem  bottomDivider onPress = {
+      <ListItem  bottomDivider 
+             containerStyle={{ backgroundColor: backgroundColor, borderColor:"transparent" }}
+      onPress = {
                         () => {
                          navigation.navigate('basketScreen', {
                             restoId: route.params.restoId,
@@ -110,9 +130,9 @@ useEffect(() => {
                       } >
                       
                <ListItem.Content >
-                  <ListItem.Title style = {styles.text}>  
+                  <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 18, fontFamily:'geometria-bold'}}>  
        Voir le panier </ListItem.Title>
-                  <ListItem.Subtitle style = {styles.minitext}>
+                  <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 16, fontFamily:'geometria-regular'}}>
                   {totalQuantityBasket} article.s - {totalCashBasket} €</ListItem.Subtitle>
         
                 </ListItem.Content>
@@ -130,7 +150,8 @@ useEffect(() => {
    cats.map((cat) => {
      if(getCountOfMenusOfcat(cat.title)!==0){
     return   <View key={cat.title+ 'view'}>
-    <ListItem key={cat.title} bottomDivider  containerStyle={{backgroundColor:"#ff5050"}}>
+    <ListItem key={cat.title} bottomDivider  
+    containerStyle={{backgroundColor:"#ff5050", borderColor:"#ff5050"}}>
     <ListItem.Content>
       <ListItem.Title style = {styles.textcattitle}>  
 {cat.title} </ListItem.Title>
@@ -141,7 +162,7 @@ useEffect(() => {
                    if(menu.category==cat.title){
             return    <View key={cat.id + menu.id}>            
             <ListItem key={cat.id + menu.id } bottomDivider  
-            
+                   containerStyle={{ backgroundColor: backgroundColor }}
             onPress = {
               () => {
                navigation.navigate('DishScreen', {
@@ -155,9 +176,9 @@ useEffect(() => {
             } > 
      
       <ListItem.Content>
-        <ListItem.Title style = {styles.text}>  
-{menu.title} </ListItem.Title>
-        <ListItem.Subtitle style = {styles.minitext}>
+      <ListItem.Title style={{marginTop:5, color: textColor, fontSize: 20, fontFamily:'geometria-bold'}}>{menu.title} </ListItem.Title> 
+ 
+        <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}}>
         {menu.price} €</ListItem.Subtitle>
 
       </ListItem.Content>

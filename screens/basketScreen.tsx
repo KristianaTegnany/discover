@@ -6,13 +6,14 @@ import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
 import { useSelector } from "react-redux"
-
 import { ProductItem } from '../global';
 import { Avatar, ListItem } from 'react-native-elements';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { add, remove, store } from '../store';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
 
 interface NavigationParams {
   restoId: string;
@@ -28,7 +29,22 @@ interface Props {
 export const basketScreen = ({ route, navigation}: Props) => {
   const [totalCashBasket, setTotalCashBasket] = useState (0);
   const [totalQuantityBasket, setTotalQuantityBasket] = useState (0);
+  const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
+  const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
+   
+ function useThemeColor(
+  props: { light?: string; dark?: string },
+  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+) {
+  const theme = useColorScheme();
+  const colorFromProps = props[theme];
 
+  if (colorFromProps) {
+    return colorFromProps;
+  } else {
+    return Colors[theme][colorName];
+  }
+}
   const products = useSelector((state: ProductItem[]) => state);
 
 
@@ -61,7 +77,7 @@ export const basketScreen = ({ route, navigation}: Props) => {
   return (
     <View style={styles.container}> 
      <ListItem  bottomDivider 
-     containerStyle={{backgroundColor:"#ff5050"}}
+     containerStyle={{backgroundColor:"#ff5050", borderColor:"transparent"}}
      onPress = {
                         () => {
                          navigation.navigate('basketScreen', {
@@ -84,20 +100,23 @@ export const basketScreen = ({ route, navigation}: Props) => {
         {products
          // .filter(product => product.added)
           .map((product: ProductItem, index) => (
-            <ListItem key={product.id + index } bottomDivider> 
+            <ListItem key={product.id + index } 
+            containerStyle={{ backgroundColor: backgroundColor }}
+
+            bottomDivider> 
             { product && product.imageUrl &&
        <Avatar rounded source={{ uri: product.imageUrl }} />
             }
 
       <ListItem.Content>
-        <ListItem.Title style = {styles.text}>  
+        <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 20, fontFamily:'geometria-bold'}}>  
 {product.title} </ListItem.Title>
-        <ListItem.Subtitle  style = {styles.textRaw}>
+        <ListItem.Subtitle  style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}}>
         {product.price} € </ListItem.Subtitle>
 
       </ListItem.Content>
       <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() =>  store.dispatch(remove(product))} />
-        <ListItem.Subtitle style = {styles.textQuant} >{product.quantity}</ListItem.Subtitle>
+        <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}} >{product.quantity}</ListItem.Subtitle>
       <Ionicons name="add-circle" style={styles.searchIcon}  onPress={() => store.dispatch(add(product))} />
     </ListItem>
           ))}

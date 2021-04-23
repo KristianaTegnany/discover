@@ -1,76 +1,61 @@
 import React, { Component } from "react";
-import { StyleSheet, Image, Dimensions } from "react-native";
+import { StyleSheet, Image, Dimensions, ImageBackground } from "react-native";
 import { Text, View } from './Themed';
 
 function PostComponent(props :any) {
   return (
     <View style={[styles.container, props.style]}>
-      <View style={styles.postWrapper}
-      
-      >
-        <View style={styles.postHeader}>
-          <Image
-            source={{
-              uri: props.imgUrl ,
-            }}
-            resizeMode="cover"
-            style={styles.image}
-          ></Image>
-          <View style={styles.headerGroup}>
-            <Text style={styles.postTitle}>{props.corponame || "nondef"} </Text>
-        
 
-          </View>
-        </View>
+<ImageBackground source={{
+              uri: props.imgUrl ,
+            }} 
+         imageStyle={{ borderRadius: 17}}
+         style={styles.image}>
+           <View style={styles.postHeader}>
+      <Text style={styles.postTitle}>{props.corponame || "nondef"} </Text>
+      <Text style={styles.postDetails}>{props.corponame || "nondef"}</Text>
       </View>
+    </ImageBackground>
+
+    
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "space-around",
+   // alignItems: "center",
+   // justifyContent: "space-around",
     marginTop:30,
     width:'100%'
-  },
-  postWrapper: {
-    marginTop:90,
-    height: 230,
-   // alignItems: "flex-start",
-    justifyContent: "space-around",
-    width: '100%',
-  //  marginLeft:8
-
+    
   },
   postHeader: {
-    width: 321,
-    height: 230,
-    flexDirection: "row",
-    alignSelf: "center",
-    justifyContent: "space-between",
+    width: '100%',
+    height: '100%',
+   // flexDirection: "row",
+   // alignSelf: "center",
+    //justifyContent: "space-between",
+    backgroundColor:'transparent',
     marginRight: 0,
-    marginLeft: 0
+    marginLeft: 0,
+    justifyContent: 'flex-end',
+
   },
   image: {
-    width: 110,
-    height: 110,
+    width: '100%',
+    height: 500,
     borderRadius: 17,
-    padding: 0,
-    margin: 7
+    padding: 20,
+    marginHorizontal: 20
   },
-  headerGroup: {
-    width: "100%",
-    height: 140,
-   // justifyContent: 'center', //Centered vertically
-    marginLeft: 10,
-    flexShrink: 1
-  },
+ 
   postTitle: {
     fontSize: 19,
-    fontFamily: "geometria-regular",
+    fontFamily: "geometria-bold",
     marginTop:5,
-    justifyContent: 'center', //Centered vertically
+    width:'90%',
+  //  justifyContent: 'center', //Centered vertically
 //  color: "#808080",
     flexWrap:'wrap'
 
@@ -82,25 +67,7 @@ const styles = StyleSheet.create({
   //  letterSpacing: 1,
   //  alignSelf: "baseline"
   },
-  postDetailsK: {
-    color: "#808080",
-    fontSize: 18,
-    fontFamily: "geometria-regularr",
-  //  letterSpacing: 1,
-   // fontStyle:"italic",
-   // alignSelf: "baseline"
-  },
-  postDetailsCity: {
-    color: "#808080",
-    fontSize: 16,
-    fontFamily: "geometria-regularr",
- //   letterSpacing: 1,
-    alignSelf: "baseline"
-  },
-  moreIcon: {
-    color: "grey",
-    fontSize: 18
-  }
+ 
 });
 
 export default PostComponent;

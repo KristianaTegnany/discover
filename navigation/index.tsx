@@ -51,7 +51,7 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: true }} >
       <Stack.Screen name="Root" options={{ headerShown: false, headerTitle: 'Accueil' }}   component={BottomTabNavigator} />
-      <Stack.Screen name="GuideScreen"  options={{ headerTitle: 'Guide' }} component={GuideScreen} />
+      <Stack.Screen name="GuideScreen"  options={{ headerTitle: '' ,headerTransparent: true}} component={GuideScreen} />
       <Stack.Screen name="RestoScreen" options={{ headerTitle: 'Restaurant' }} component={RestoScreen} />
       <Stack.Screen name="deliveryScreen" options={{ headerTitle: 'Livraison' }} component={deliveryScreen} />
       <Stack.Screen name="resaScreen" options={{ headerTitle: 'Réservation sur place' }} component={resaScreen} />

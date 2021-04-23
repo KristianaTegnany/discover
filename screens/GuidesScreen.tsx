@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
 
   },
   guideComponent: {
-    height: 120,
+   // height: 120,
   //  alignSelf: "stretch",
  //   backgroundColor: "rgba(255,255,255,1)"
   },

@@ -42,28 +42,7 @@ export const persoScreen = ({ route, navigation}: Props) => {
   const [goto, setGoto] = useState('Aaa');
 
   async function fetchHours() {
-    var Intcust = Parse.Object.extend("Intcust");
-    let intcustRaw = new Intcust();
-    intcustRaw.id = route.params.restoId;
-  
-    let params2 = {
-      itid: route.params.restoId,
-      date: moment(route.params.fday).format(),
-      bookingType: route.params.bookingType
-    };
-    const res3 = await Parse.Cloud.run("getIntcustWithAvailableCren", params2);
-  
-    setHourstobook(res3.crenAvailable);
-
-    if (route.params.bookingType == "TakeAway") {
-      setGoto('takeawayScreen');
-
-    } else if (route.params.bookingType == "Delivery") {
-      setGoto('deliveryScreen');
-
-    } else if (route.params.bookingType == "OnSite") {
-      setGoto('resaScreen');
-    }
+    
   }
 
   useEffect(() => {
