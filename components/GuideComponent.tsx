@@ -13,7 +13,7 @@ function PostComponent(props :any) {
          style={styles.image}>
            <View style={styles.postHeader}>
       <Text style={styles.postTitle}>{props.corponame || "nondef"} </Text>
-      <Text style={styles.postDetails}>{props.corponame || "nondef"}</Text>
+      {/* <Text style={styles.postDetails}>{props.corponame || "nondef"}</Text> */}
       </View>
     </ImageBackground>
 
@@ -51,12 +51,12 @@ const styles = StyleSheet.create({
   },
  
   postTitle: {
-    fontSize: 19,
+    fontSize: 23,
     fontFamily: "geometria-bold",
     marginTop:5,
     width:'90%',
   //  justifyContent: 'center', //Centered vertically
-//  color: "#808080",
+  color: "white",
     flexWrap:'wrap'
 
   },

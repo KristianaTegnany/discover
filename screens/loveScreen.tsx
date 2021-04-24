@@ -22,47 +22,39 @@ interface IIntcust {
  style : string
 }
 export const loveScreen = ({ route, navigation}: Props) => {
-  const [cards, setCards] = useState<[[
+  const [cards, setCards] = useState<[{
     id: string,
     name : string,
     imageUrl: string,
     style : string
-  ]]>();
+  }]>();
   const [swipedAllCards, setSwipedAllCards] = useState(false);
  // const [cardIndex, setcardIndex] = useState(0);
 
   async function getIntcusts() {
-    console.log("lets get")
 
-    let subscription =  await Parse.Cloud.run("getIntcustsDiscover");
-      
+    let subscription =  await Parse.Cloud.run("getIntcustsDiscover");      
     subscription=  subscription.map((intcust:any)=>({
       imageUrl : {uri : intcust.attributes.overviewpic._url} || '',
       name: intcust.attributes.corporation || '',
       style: intcust.attributes.style || '',
       id: intcust.id || ''
     }))
-    console.log( subscription)
     setCards(subscription);
-       console.log(cards)
   }
 
-
   useEffect(() => {
-    console.log("hello")
     getIntcusts();
   }, []);
-
-
     
   async function onSwiped(type: any) {
-    
     return  console.log(`on swiped ${type}`)
   }
 
-  async function gotoResto(index: any) {
-    console.log(index)
+  async function gotoResto(index: number) {
+    
     if(cards){
+      console.log(cards[index])
     navigation.navigate('RestoScreen',
        { restoId: cards[index].id  });   
       }
@@ -72,7 +64,6 @@ export const loveScreen = ({ route, navigation}: Props) => {
 
 
     async function onSwipedAllCards() {
-    console.log("tout")
     setSwipedAllCards(true)
   };
 
@@ -100,7 +91,7 @@ export const loveScreen = ({ route, navigation}: Props) => {
           infinite= {true}
           stackSize={2}
           cardVerticalMargin={80}
-          renderCard={ (card: [] , index:any) => {{
+          renderCard={ (card: any , index:any) => {{
        return(   <View style={styles.card}>
           {card && card.name &&  card.imageUrl && 
          <ImageBackground source={card.imageUrl} 

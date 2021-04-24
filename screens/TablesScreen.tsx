@@ -3,14 +3,14 @@ import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 var Parse = require("parse/react-native");
 import PostComponent from "../components/PostComponent";
-import { FlatList, StyleSheet,StatusBar, TextInput } from 'react-native';
+import { FlatList, StyleSheet,StatusBar, TextInput, ActivityIndicator } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { View } from '../components/Themed';
+import { Ionicons } from '@expo/vector-icons';
 
 type props = { value: string, navigation:any };
-type state = { hasLocationPermissions: boolean, latitude: number , longitude: number,restaurantList: any, searchValue: string };
+type state = { restaurantListOrigin:any, hasLocationPermissions: boolean, latitude: number , longitude: number,restaurantList: any, searchValue: string };
 export default class TablesScreen  extends React.Component<props, state>   {
-
   restaurantListCast :any[] = [];
   constructor(props:any) {
     super(props)
@@ -19,6 +19,7 @@ export default class TablesScreen  extends React.Component<props, state>   {
       latitude: 0,
       longitude: 0,
       restaurantList :this.restaurantListCast,
+      restaurantListOrigin :this.restaurantListCast,
       searchValue:""
         };
       }
@@ -38,12 +39,33 @@ export default class TablesScreen  extends React.Component<props, state>   {
       
         this.setState({
           restaurantList: response,
+          restaurantListOrigin: response,
         });
 
     })
     .catch((error: any)=>console.log(error))
 
   }
+
+  async onChangeSearch(event:any) {
+ //   const {eventCount, target, text} = event.nativeEvent;
+ 
+ if (event=="" || this.state.restaurantList.filter((resto:any)=>resto.attributes.corporation.toLowerCase().includes(event.toLowerCase())).length==0){
+  this.setState({
+    restaurantList: this.state.restaurantListOrigin
+  });
+ }else{
+    this.setState({
+      searchValue: event
+    });
+    this.setState({
+      restaurantList: this.state.restaurantList.filter((resto:any)=>resto.attributes.corporation.toLowerCase().includes(event.toLowerCase()))
+    });
+    this.state.restaurantList.filter((resto:any)=>resto.corporation == event);
+    console.log(this.state.restaurantList);
+    console.log(this.state.searchValue);
+  }
+  };
 
   async getLocationAsync () {
     const { status } = await Permissions.askAsync(
@@ -61,28 +83,33 @@ export default class TablesScreen  extends React.Component<props, state>   {
     }
   };
 
-  async filterResultsSearch(searchtext:any){
-  
-  }
+ 
+ 
 
   render() {
-    const { search } = this.state.searchValue;
+  //  const { search } = this.state.searchValue;
 
   return (
     
     <View style={styles.container} >
       
-     {/* <View style={styles.searchHeader} >
+      <View style={styles.searchHeader} >
       <Ionicons name="search" style={styles.searchIcon} />
         <TextInput
           placeholder="Rechercher un restaurant"
           style={styles.searchInput}
-        // value={search}
-         onChangeText={this.filterResultsSearch}
+          defaultValue={this.state.searchValue}
+          onChangeText={(value)=> this.onChangeSearch(value)}
+
+      //   onChangeText={this.filterResultsSearch}
         ></TextInput>
-    </View>  */}
+    </View>  
     <View style={styles.container2} >
-   
+    {!this.state.restaurantList || this.state.restaurantList.length==0 && 
+   <View style = {styles.wrapindicator}>
+   <ActivityIndicator size="large" color="#F50F50" />
+   </View>
+  }
       <FlatList
             style={styles.FlatList}
             data={ this.state.restaurantList}  
@@ -117,7 +144,7 @@ export default class TablesScreen  extends React.Component<props, state>   {
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
+    flex: 1,
     width: '100%',
 
    // alignItems: 'left',
@@ -128,16 +155,21 @@ const styles = StyleSheet.create({
   container2: {
    // flex: 1,
     width: '100%',
-marginTop:40,
+//marginTop:40,
    // alignItems: 'left',
     //justifyContent: 'center',
  //   backgroundColor: "rgba(255,255,255,1)"
 
   },
+  wrapindicator:{
+    alignItems: 'center',
+    height:'70%',
+  justifyContent: 'center',
+   },
   FlatList: {
     width: '100%',
-    marginLeft:30,
-    marginRight:30,
+    marginLeft:20,
+    marginRight:20,
 
    // justifyContent: "flex-start",
    // justifyContent: 'center',

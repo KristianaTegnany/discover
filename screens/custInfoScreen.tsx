@@ -12,6 +12,7 @@ import { useState } from 'react';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { FontAwesome5 } from '@expo/vector-icons'; 
+import { first } from 'lodash';
 
 
 interface NavigationParams {
@@ -30,6 +31,7 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [phone, setPhone] = useState('');
+
   const [resa, setResa] = useState({ 
     id:'', 
     engagModeResa:'',
@@ -45,9 +47,10 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
     option_DeliveryByToutAlivrer: false, 
     stripeAccId: ''
   });
+  const products = useSelector((state: ProductItem[]) => state);
+
   const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
 
-  const products = useSelector((state: ProductItem[]) => state);
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -77,12 +80,19 @@ setEmail(email);
   async function createResa() {
     var Guest = Parse.Object.extend("Guest");
     let guestRaw = new Guest();
-    guestRaw.set("date","");
-    guestRaw.save();
+    guestRaw.set("firstname",firstname);
+    guestRaw.set("lastname",lastname);
+    guestRaw.set("email",email);
+
+   await  guestRaw.save();
+
+    console.log("guest id " + guestRaw.id)
 
     var Reservation = Parse.Object.extend("Reservation");
     let resaRaw = new Reservation();
     resaRaw.set("date","");
+    resaRaw.set("guest",guestRaw);
+
     resaRaw.set("engagModeResa",route.params.bookingType);
    
     resaRaw.save();
@@ -104,11 +114,13 @@ setEmail(email);
   }
 
   async function goPay() {
-
+console.log("go pay")
     if(email && firstname && lastname && phone){
-     //  createResa(); and guest
-     if(intcust.paymentChoice=="payplugOptin"){
-      getPayPlugPaymentUrl();
+       createResa(); 
+     if(intcust.paymentChoice!=="stripeOptin"  ){
+      console.log("pplug")
+
+    await  getPayPlugPaymentUrl();
 // navigate and options payLink
 navigation.navigate('paymentScreen',
 { restoId: route.params.restoId , paylink: paylink, bookingType:route.params.bookingType });   
@@ -118,7 +130,7 @@ navigation.navigate('paymentScreen',
 
       const params1 = {
         itid: intcust.id ,
-        winl: "window.location.host",
+        winl: "http://www.amazon.com",
         resaid: resa.id,
         paidtype: "order",
         customeremail: "satyam.dorville@gmail.com",
@@ -138,7 +150,7 @@ navigation.navigate('paymentStripeScreen',
   }
   }
   async function getPayPlugPaymentUrl() {
- 
+ console.log("dans payplug")
     const params1 = {
       itid: intcust.id,
       winl: "window.location.host",
@@ -154,7 +166,11 @@ navigation.navigate('paymentStripeScreen',
       noukarive: intcust.option_DeliveryByNoukarive,
       toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
+    console.log(params1);
+
     const response = await Parse.Cloud.run("getPayPlugPaymentUrl", params1);
+    console.log(response);
+console.log("there")
     setPaylink(response);
   }
 
@@ -163,7 +179,8 @@ navigation.navigate('paymentStripeScreen',
   var Intcust = Parse.Object.extend("Intcust");
   let intcustRaw = new Intcust();
   intcustRaw.id = route.params.restoId;
-    
+//  console.log(intcustRaw);
+
   let intcustRawX =[{
     'id': intcustRaw.id,
     'apikeypp': intcustRaw.attributes.apikeypp || '', 
@@ -172,8 +189,10 @@ navigation.navigate('paymentStripeScreen',
     'option_DeliveryByToutAlivrer': intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
     'stripeAccId': intcustRaw.attributes.stripeAccId || ''
   }];
+
   setIntcust(intcustRawX[0]);
   calculusTotalCashBasket();
+
       }, []);
 
   return (
@@ -253,10 +272,10 @@ navigation.navigate('paymentStripeScreen',
 
   </TouchableOpacity> 
  {intcust.paymentChoice=="stripeOptin" &&
-  <Text style={styles.appButtonText} > Avec     <FontAwesome5 name="cc-stripe" size={24} color="white"  /> </Text>
+  <Text style={styles.appButtonText} > Avec <FontAwesome5 name="cc-stripe" size={24} color="white"  /> </Text>
  }
- {intcust.paymentChoice=="payplugOptin" &&
-  <Text style={styles.appButtonText} > Avec     <Image
+ {intcust.paymentChoice!=='stripeOptin' &&
+  <Text style={styles.appButtonText} > Avec <Image
   source={require('../assets/images/pplogo.png')}
 
   fadeDuration={0}
@@ -286,7 +305,6 @@ const styles = StyleSheet.create({
     marginHorizontal:20,
     fontFamily: "geometria-regular",
     marginTop:20,
-
   },
   input: {
     height: 50,
@@ -313,6 +331,7 @@ const styles = StyleSheet.create({
   },
   payText:{
     alignSelf: 'center',
+    color:'white'
   },
   listitem:{
 padding:5,
@@ -329,6 +348,15 @@ alignItems:"center",
     paddingVertical: 13,
     paddingHorizontal: 14
   },
+  appButtonText:{
+    alignContent: 'space-between',
+    display:"flex",
+    fontSize: 18,
+  //  color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    fontFamily: "geometria-bold",
+  },
   minitext: {
     fontSize: 16,
     padding: 4,
@@ -340,15 +368,7 @@ alignItems:"center",
     marginLeft: 5,
     marginRight: 1
   },
-  appButtonText:{
-    alignContent: 'space-between',
-    display:"flex",
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-    alignSelf: "center",
-    fontFamily: "geometria-bold",
-  },
+  
  
   title: {
   //  flex:1,

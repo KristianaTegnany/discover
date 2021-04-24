@@ -9,8 +9,14 @@ import {
   Route,
   ScrollView,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  TextInput,
+  Button,
+  TouchableOpacity,
 } from 'react-native';
+
+import useColorScheme from '../hooks/useColorScheme';
+
 import {
   NavigationScreenProp
 } from 'react-navigation';
@@ -24,6 +30,8 @@ import {
 } from 'react-native-elements'
 import moment from 'moment';
 import 'moment/locale/fr';
+import { Ionicons } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
 
 interface NavigationParams {
   text: string;
@@ -38,15 +46,52 @@ interface Props {
 interface IHours {  hour: string;}
 
 export const persoScreen = ({ route, navigation}: Props) => {
-  const [hourstobook, setHourstobook] = useState < IHours[] > ();
   const [goto, setGoto] = useState('Aaa');
+  const [email, setEmail] = useState();
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [phone, setPhone] = useState('');
 
-  async function fetchHours() {
-    
+  const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
+
+  function useThemeColor(
+    props: { light?: string; dark?: string },
+    colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  ) {
+    const theme = useColorScheme();
+    const colorFromProps = props[theme];
+  
+    if (colorFromProps) {
+      return colorFromProps;
+    } else {
+      return Colors[theme][colorName];
+    }
+  }
+  async function onChangeTextEmail(email:any) {
+setEmail(email);
+  }
+  
+  async function onChangeTextFirstname(firstname:any) {
+    setFirstname(firstname);
+      }
+
+      async function onChangeTextLastname(lastname:any) {
+        setLastname(lastname);
+          }
+      
+          async function onChangeTextPhone(phone:any) {
+            setPhone(phone);
+              }
+
+  async function savePerso() {
+  console.log("Sauvegardé.")  
+  }
+   
+  async function toggleMenu(context:any){
+
   }
 
   useEffect(() => {
-    fetchHours();
   }, []);
 
 
@@ -54,52 +99,84 @@ export const persoScreen = ({ route, navigation}: Props) => {
   return ( 
   
   <View style = {styles.container} > 
-  {
-      hourstobook !== null &&
-      hourstobook !== undefined  && 
-      <ScrollView >
-     
-      { hourstobook && hourstobook.map((hour,index) =>
-       
-       <ListItem key = {index}
-       bottomDivider onPress = {
-         () => {
-           navigation.navigate(goto, {
-             restoId: route.params.restoId,
-             bookingType: route.params.bookingType,
-             day: route.params.day,
-             hour: hour
-           });
-         }
-       } >
-       <ListItem.Content >
-       <ListItem.Title style = {styles.text}> {hour} </ListItem.Title> 
-       </ListItem.Content>        
-       <ListItem.Chevron/>
-       </ListItem>
-        )}
 
+   <View style={styles.searchHeader} >
+        <TextInput
+          placeholder="Saisir votre adresse email"
+          style={styles.searchInput}
+        // value={search}
+        // onChangeText={this.filterResultsSearch}
+        ></TextInput>
+        <Button onPress={ () => console.log("fff")}
+        title={"Chercher"}>ffff
+    </Button>
+    </View>  
 
+<View style= {styles.wrappertexts}>
+  <Text  style = {styles.text} onPress={() => toggleMenu('infos')}>Mes infos </Text>
+  <Text  style = {styles.text} onPress={() => toggleMenu('Commande')}>Mes commandes </Text>
+  </View>
+  
 
-        </ScrollView>
-    }
+  <Text style={styles.label}>Votre prénom</Text>
 
-  {
-   hourstobook && hourstobook.length == 0 && 
-   <View>
-      <Text style = {styles.textstrong}>Plus d'horaires disponibles ! 🤷🏽‍♂️</Text>
-      <Text style = {styles.text}>Les raisons possibles : </Text>
-      <Text style = {styles.text}>➡️ L'heure limite de commande est passée.</Text>
-      <Text style = {styles.text}>➡️ Le restaurant nous a informé d'un nombre limite de commande atteint pour ce créneau.</Text>
-      <Text style = {styles.text}>➡️ Il est fermé exceptionnellement.</Text>
+       <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextFirstname}
+        placeholder="Gustavo"
+        value={firstname}
+      />      
 
-      <Text style = {styles.text}>Vous pouvez choisir un autre jour ou un autre restaurant en revenant en arrière.</Text>
+<Text style={styles.label}>Votre nom de famille</Text>
 
-      </View>
-  }
+        <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}        
+        onChangeText={onChangeTextLastname}
+        placeholder="Martin"
+        value={lastname}
+      />     
 
-{
-   !hourstobook && 
+<Text style={styles.label}>Votre numéro de portable</Text>
+
+           <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextPhone}
+        placeholder="+59X 69X 00 00 00"
+        value={phone}
+      />   
+
+<TouchableOpacity onPress={() => savePerso()} 
+            style={styles.appButtonContainer}>
+    <Text style={styles.appButtonText} > <Text style={styles.payText}>Enregistrer</Text> </Text>
+  
+
+  </TouchableOpacity> 
+  
+{false && 
    <View style = {styles.wrapindicator}>
    <ActivityIndicator size="large" color="#F50F50" />
    </View>
@@ -110,9 +187,53 @@ export const persoScreen = ({ route, navigation}: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    //  flex: 1,
+     flex: 1,
     //  alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+  },
+  wrappertexts:{
+flexDirection:"row",
+alignItems:"center",
+justifyContent: "center",
+
+padding:10
+  },
+  label:{
+    marginHorizontal:20,
+    fontFamily: "geometria-regular",
+    marginTop:20,
+  },
+  searchHeader: {
+    height: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    borderRadius: 10,
+    width: "83%",
+    marginTop: 60,
+    marginRight: 'auto',
+    backgroundColor: "#f4f4f4",
+    color:'black',
+    marginLeft: 'auto',
+    paddingRight: 20,
+    marginBottom:10,
+    alignSelf: "baseline"
+  },
+  searchIcon: {
+    color: "grey",
+    fontSize: 20,
+    marginLeft: 5,
+    marginRight: 1
+  },
+  searchInput: {
+    width: 239,
+    height: 40,
+    color: '#000',
+    marginRight: 1,
+    marginLeft: 9,
+    fontSize: 14,
+    fontFamily: "geometria-regular",
+
   },
   textstrong:{
     fontWeight: "bold",
@@ -136,22 +257,29 @@ const styles = StyleSheet.create({
     //  backgroundColor: "rgba(255,255,255,1)"
 
   },
-  appButtonContainer: {
+  appButtonContainer:{
     elevation: 8,
-    marginBottom: 4,
-    backgroundColor: "#009688",
+    marginBottom :10,
+    marginTop:30,
+    backgroundColor: "#ff5050",
     borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12
-
+    marginRight :20,
+    marginLeft :20,
+    paddingVertical: 13,
+    paddingHorizontal: 14
   },
-  appButtonText: {
+  payText:{
+    alignSelf: 'center',
+    color:'white'
+  },
+  appButtonText:{
+    alignContent: 'space-between',
+    display:"flex",
     fontSize: 18,
-    color: "#fff",
+  //  color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
-    textTransform: "uppercase"
-
+    fontFamily: "geometria-bold",
   },
   title: {
     fontSize: 20,

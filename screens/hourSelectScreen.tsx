@@ -140,8 +140,7 @@ export const hourSelectScreen = ({ route, navigation}: Props) => {
       </View>
   }
 
-{
-   !hourstobook && 
+{ !hourstobook && 
    <View style = {styles.wrapindicator}>
    <ActivityIndicator size="large" color="#F50F50" />
    </View>

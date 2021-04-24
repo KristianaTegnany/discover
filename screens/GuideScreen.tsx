@@ -1,7 +1,7 @@
 import { NavigationState } from '@react-navigation/native';
 import { WebView } from 'react-native-webview'
 import * as React from 'react';
-import {Button, Image, Route, StyleSheet, useWindowDimensions } from 'react-native';
+import {ActivityIndicator, Button, Image, Route, StyleSheet, useWindowDimensions } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
@@ -45,7 +45,12 @@ export default class GuideScreen  extends React.Component<Props,state>   {
   return (
     <View style={styles.container}>
     <ScrollView style={styles.wrap}>
-       
+   
+    { !guide.attributes.FrontPic._url || guide.attributes.FrontPic._url=='' && 
+   <View style = {styles.wrapindicator}>
+   <ActivityIndicator size="large" color="#F50F50" />
+   </View>
+  }
           <Image
             source={{
               uri: guide.attributes.FrontPic._url ,
@@ -55,7 +60,6 @@ export default class GuideScreen  extends React.Component<Props,state>   {
           
           ></Image>
       <Text style={styles.title}>{guide.attributes.title}  </Text>
-      <Text style={styles.title}>{guide.attributes.content}  </Text>
 
 <View   style={styles.wrapwebview}
 >
@@ -91,10 +95,11 @@ const styles = StyleSheet.create({
   },
   wrapwebview:{
     flex:1,
-    width:'100%',
-    backgroundColor:"white"
+    width:'90%',
+    backgroundColor:"white",
    // height:100,
-   
+   marginLeft:20,
+
   },
   webview:{
     flex:1,
@@ -102,7 +107,8 @@ const styles = StyleSheet.create({
    // height:'100%',
    fontSize: 18,
 //backgroundColor:'transparent',
-    color:'white'
+    color:'white',
+
   },
   appButtonText:{
     fontSize: 18,
@@ -130,6 +136,11 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
+  wrapindicator:{
+    alignItems: 'center',
+    height:'100%',
+  justifyContent: 'center',
+   },
   image: {
    flex: 1,
    width:'100%',

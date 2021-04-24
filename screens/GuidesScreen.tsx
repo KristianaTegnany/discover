@@ -3,7 +3,7 @@ import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 var Parse = require("parse/react-native");
 import GuideComponent from "../components/GuideComponent";
-import { FlatList, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
 import _ from 'lodash';
 import { Navigation } from 'react-native-navigation';
 import { Text, View } from '../components/Themed';
@@ -71,7 +71,11 @@ export default class GuidesScreen  extends React.Component<props, state>   {
      
    
     <View style={styles.container2} >
-
+    { !this.state.guidesList || this.state.guidesList.length==0 && 
+   <View style = {styles.wrapindicator}>
+   <ActivityIndicator size="large" color="#F50F50" />
+   </View>
+  }
       <FlatList
             style={styles.FlatList}
             data={ this.state.guidesList}  
@@ -124,6 +128,8 @@ const styles = StyleSheet.create({
 
   },
   FlatList: {
+    marginTop:20,
+
     width: '100%',
     marginLeft:0,
     paddingLeft:0,
@@ -137,6 +143,11 @@ const styles = StyleSheet.create({
   //  alignSelf: "stretch",
  //   backgroundColor: "rgba(255,255,255,1)"
   },
+  wrapindicator:{
+    alignItems: 'center',
+    height:'100%',
+  justifyContent: 'center',
+   },
   searchHeader: {
     height: 40,
     flexDirection: "row",
