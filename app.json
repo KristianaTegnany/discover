@@ -8,7 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/17102-grill.gif",
+      "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

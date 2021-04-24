@@ -43,7 +43,6 @@ interface Props {
   route: Route;
 }
 
-interface IHours {  hour: string;}
 
 export const persoScreen = ({ route, navigation}: Props) => {
   const [goto, setGoto] = useState('Aaa');
@@ -108,13 +107,15 @@ setEmail(email);
         // onChangeText={this.filterResultsSearch}
         ></TextInput>
         <Button onPress={ () => console.log("fff")}
-        title={"Chercher"}>ffff
+        title={"🔍"}>ffff
     </Button>
     </View>  
 
 <View style= {styles.wrappertexts}>
-  <Text  style = {styles.text} onPress={() => toggleMenu('infos')}>Mes infos </Text>
-  <Text  style = {styles.text} onPress={() => toggleMenu('Commande')}>Mes commandes </Text>
+  <Text  style = {styles.text} onPress={() => toggleMenu('infos')}>👩🏽‍🦱 Mes infos </Text>
+  <Text  style = {styles.text} onPress={() => toggleMenu('Commande')}>🛍 Mes commandes </Text>
+  <Text  style = {styles.text} onPress={() => toggleMenu('Commande')}>🙋🏾‍♂️ Aide </Text>
+
   </View>
   
 

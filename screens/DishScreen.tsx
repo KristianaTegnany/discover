@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/native';
 import * as React from 'react';
-import { Image, Route, StyleSheet } from 'react-native';
+import { Alert, Image, Route, StyleSheet } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
@@ -53,14 +53,17 @@ let menuRaw =
       }, []);
   
       async function addToBasket() {  
-      alert("Un plat ajouté. Vous pouvez en rajouter un autre ou revenir sur le menu et votre panier. ")
+      Alert.alert('',"Un plat ajouté. Vous pouvez en rajouter un autre ou revenir sur le menu et votre panier. ")
         store.dispatch(add(menu))
        };
 
   return (
     <View style={styles.container}> 
 
-    {menu && menu.imageUrl &&
+   
+       
+<ScrollView style={styles.scrollview}>
+{menu && menu.imageUrl &&
      <Image style={styles.image}
           source={{uri: menu.imageUrl}}
           />
@@ -68,9 +71,6 @@ let menuRaw =
           {menu &&
       <Text style={styles.title}>{menu.title}  </Text>
             }
-       
-<ScrollView style={styles.scrollview}>
-
         {menu &&
               <Text style={styles.text}>{menu.description}    </Text>
         }
@@ -96,7 +96,7 @@ let menuRaw =
             
               )}
 </View>
-{menu && menu.persoMenu  &&
+{menu && menu.persoMenu && menu.persoMenu.length>-0 &&
 <View>
       <Text style={styles.text}>Personnalisez votre choix    </Text>
       </View>
@@ -112,12 +112,13 @@ let menuRaw =
               )}
       
 
+ 
+  </ScrollView>
   <TouchableOpacity onPress={() => addToBasket() } 
             style={styles.appButtonContainer}>
-    <Text style={styles.appButtonText}>Ajouter au panier</Text>
+    <Text style={styles.appButtonText}>🧺 Ajouter au panier</Text>
   </TouchableOpacity>
 
-  </ScrollView>
     </View>
   );
 }
@@ -127,7 +128,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   image:{
-height:'20%'
+    height:'100%',
+maxHeight:'90%'
   },
   appButtonContainer:{
     elevation: 8,
@@ -135,7 +137,7 @@ height:'20%'
     marginHorizontal :20,
 
     marginBottom :10,
-    backgroundColor: "#009688",
+    backgroundColor: "#ff5050",
     borderRadius: 10,
     paddingVertical: 13,
     paddingHorizontal: 14

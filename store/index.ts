@@ -15,13 +15,17 @@ const basketSlice = createSlice({
       return state
     },
     remove: (state, action) => {
-        state.map(productExistant=> {
-            if(productExistant.id == action.payload.id && productExistant.quantity>1){
-                productExistant.quantity=  productExistant.quantity-1
-            }else if (productExistant.id == action.payload.id && productExistant.quantity==1){
-               state =  state.filter(x=> x.id !== action.payload.id);
-                          }
-        })
+      state.map(productExistant=> {
+          if(productExistant.id == action.payload.id && productExistant.quantity>1){
+              productExistant.quantity=  productExistant.quantity-1
+          }else if (productExistant.id == action.payload.id && productExistant.quantity==1){
+             state =  state.filter(x=> x.id !== action.payload.id);
+                        }
+      })
+      return state
+  },
+    emptyall: (state, action) => {
+        state = [];
         return state
     }
   }
@@ -29,6 +33,6 @@ const basketSlice = createSlice({
 
 const store = configureStore({ reducer: basketSlice.reducer })
 
-export const { add, remove } = basketSlice.actions
+export const { add, remove, emptyall } = basketSlice.actions
 
 export { basketSlice, store }

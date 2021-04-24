@@ -17,7 +17,7 @@ import { ThemeProvider } from "react-native-elements";
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = `https://pptableserver.osc-fr1.scalingo.io/parse`;
+Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`;
 
 
 export default   function    App() {

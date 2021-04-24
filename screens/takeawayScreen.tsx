@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Button, Image, Route, Text,ScrollView, StyleSheet } from 'react-native';
+import {ActivityIndicator, Button, Image, Route, Text,ScrollView, StyleSheet, Alert } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import {  View } from '../components/Themed';
@@ -113,21 +113,25 @@ useEffect(() => {
 
 }, [products]);
 
+function gotoBasket(){
+if(products && products.length>0){    
+navigation.navigate('basketScreen', {
+       restoId: route.params.restoId,
+       bookingType: route.params.bookingType,
+       day: route.params.day,
+       hour: route.params.hour,
+     });
+    }else{
+      Alert.alert('','Votre panier est vide 🤷🏽‍♂️')
+
+    }
+}
 
   return (
     <View style={styles.container}>
       <ListItem  bottomDivider 
              containerStyle={{ backgroundColor: backgroundColor, borderColor:"transparent" }}
-      onPress = {
-                        () => {
-                         navigation.navigate('basketScreen', {
-                            restoId: route.params.restoId,
-                            bookingType: route.params.bookingType,
-                            day: route.params.day,
-                            hour: route.params.hour,
-                          });
-                        }
-                      } >
+      onPress = {gotoBasket} >
                       
                <ListItem.Content >
                   <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 18, fontFamily:'geometria-bold'}}>  
