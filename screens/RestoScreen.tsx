@@ -99,11 +99,10 @@ interface Props {
       <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
        <Text style={styles.textItalic}>{myintcust.introwebsite}    </Text>
-       {myintcust && myintcust.preswebsite &&
 <View style={styles.wrapperHTML}>
        <HTML source={{ html: myintcust.preswebsite }}  tagsStyles={tagsStyles}  />
        </View>
-  }
+  
   
        <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
