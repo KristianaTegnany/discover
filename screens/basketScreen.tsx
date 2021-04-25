@@ -47,8 +47,6 @@ export const basketScreen = ({ route, navigation}: Props) => {
 }
   const products = useSelector((state: ProductItem[]) => state);
 
-
- 
   async function sum(array:any, key:any) {
     return array.reduce((a:any, b:any) => a + (b[key] || 0), 0);
    }
@@ -57,7 +55,7 @@ export const basketScreen = ({ route, navigation}: Props) => {
     // doit prendre en compte les quantités dans le sum ma gueule ba ouais c mon comportement
     let sumRaw =0
      products.map(product => {
-      sumRaw = sumRaw + product.quantity * product.price
+      sumRaw = sumRaw + product.quantity * product.amount
     })
     setTotalCashBasket(sumRaw);
   }
@@ -66,13 +64,10 @@ export const basketScreen = ({ route, navigation}: Props) => {
     setTotalQuantityBasket(sumRaw);
   }
   
-
       useEffect(() => {
         calculusTotalCashBasket();
         calculusTotalQuantityBasket();
       }, [products]);
-
-    
 
   return (
     <View style={styles.container}> 
@@ -110,9 +105,9 @@ export const basketScreen = ({ route, navigation}: Props) => {
 
       <ListItem.Content>
         <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 20, fontFamily:'geometria-bold'}}>  
-{product.title} </ListItem.Title>
+{product.name} </ListItem.Title>
         <ListItem.Subtitle  style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}}>
-        {product.price} € </ListItem.Subtitle>
+        {product.amount} € </ListItem.Subtitle>
 
       </ListItem.Content>
       <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() =>  store.dispatch(remove(product))} />

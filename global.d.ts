@@ -1,13 +1,16 @@
 export interface ProductItem {
     id: string
-    title: string
+    name: string
     description: string
     price: number
+    amount: number
+    currency:string
     formulaChoiced:[] 
-    persoMenu : [],
+    persoData : [],
     imageUrl: string,
     quantity: number,
     added?: boolean,
+    resto:string
   }
 
 

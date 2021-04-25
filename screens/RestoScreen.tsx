@@ -11,6 +11,8 @@ var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
 import { ProductItem } from '../global';
 import { add, remove,emptyall, store } from '../store';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
 
 interface NavigationParams {
   restoId: string;
@@ -26,12 +28,14 @@ interface Props {
 
 
   export const RestoScreen = ({ route, navigation}: Props) => {
+    const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState();
     const [myintcust, setMyintcust] = useState({
       id : '',
       overviewpicUrl: ' ',
       corporation:'',
       EngagModeOnSite:false,
       EngagModeTakeAway:false,
+      EngagModeDelivery:false,
       introwebsite:'',
       style:'',
       adressvenue:'',
@@ -43,17 +47,34 @@ interface Props {
       takeawaynoonblock:'',
       takeawaynightblock:'',
       deliverynightblock :'',
-      deliverynoonblock:''
-
+      deliverynoonblock:'',
+      contactphone:'',
+      noNightTakeAway:false,
+      noNightDelivery:false
     });
+    const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
+    const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
 
+   function useThemeColor(
+    props: { light?: string; dark?: string },
+    colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  ) {
+    const theme = useColorScheme();
+    const colorFromProps = props[theme];
+  
+    if (colorFromProps) {
+      return colorFromProps;
+    } else {
+      return Colors[theme][colorName];
+    }
+  }
     // horaires 
     // Limites de commande 
     const products = useSelector((state: ProductItem[]) => state);
-    const tagsStyles = { p: { fontFamily: 'geometria-regular', fontSize: 18, } };
+    const tagsStyles = { p: { fontFamily: 'geometria-regular', fontSize: 18, color: textColor } };
+    const html =  myintcust.preswebsite
 
     async function fetchIntcust (){
-      console.log("go")
       var Intcust = Parse.Object.extend("Intcust");
       let myintcustRaw = new Intcust;
       myintcustRaw.id = route.params.restoId;
@@ -62,6 +83,7 @@ interface Props {
         overviewpicUrl: myintcustRaw.attributes.overviewpic._url || '',
         corporation: myintcustRaw.attributes.corporation || '',
         EngagModeTakeAway:  myintcustRaw.attributes.EngagModeTakeAway || false,
+        EngagModeDelivery:  myintcustRaw.attributes.EngagModeDelivery || false,
         introwebsite: myintcustRaw.attributes.introwebsite || '',
         EngagModeOnSite : myintcustRaw.attributes.EngagModeOnSite || false,
         style : myintcustRaw.attributes.style || '',
@@ -75,17 +97,28 @@ interface Props {
         takeawaynightblock : myintcustRaw.attributes.takeawaynightblock || '',
         deliverynoonblock:myintcustRaw.attributes.deliverynoonblock || '',
        deliverynightblock : myintcustRaw.attributes.deliverynightblock || '',
+       contactphone : myintcustRaw.attributes.contactphone || '',
+       noNightTakeAway:  myintcustRaw.attributes.noNightTakeAway || false,
+       noNightDelivery:  myintcustRaw.attributes.noNightDelivery || false,
+
       }
       setMyintcust(myintcustRaw);
+
+    //  myintcustRaw.businessHoursTakeAway
+
+  
+
+    
     }
     useEffect(() => {
       fetchIntcust();
+      
         }, []);
 
   return (
     <View style={styles.container}> 
-   
-<ScrollView style={styles.containerScroll}>
+    <View style={{flex:1}}>
+<ScrollView style={{}}>
 {myintcust && myintcust.overviewpicUrl &&
           <Image style={styles.image}
           source={{uri: myintcust.overviewpicUrl}}
@@ -93,38 +126,60 @@ interface Props {
     }
       <Text style={styles.title}>{myintcust.corporation}  </Text>
       <Text style={styles.textSub2}>{myintcust.style}    </Text>
-      <Text style={styles.textMoli}>{myintcust.adressvenue}  </Text>
+      <Text style={styles.textMoli}>📍{myintcust.adressvenue}  </Text>
       <Text style={styles.textMoli}>{myintcust.zipvenue} {myintcust.cityvenue}</Text>
+      <Text style={styles.textMoli}>☎️ {myintcust.contactphone}</Text>
 
       <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
        <Text style={styles.textItalic}>{myintcust.introwebsite}    </Text>
+
 <View style={styles.wrapperHTML}>
-       <HTML source={{ html: myintcust.preswebsite }}  tagsStyles={tagsStyles}  />
+       <HTML   tagsStyles={tagsStyles} source={{html:html|| ' '}}  />
        </View>
   
-  
+       <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+       <Text style={styles.textMoli}>☎️ Au delà de l'heure limite, merci de téléphoner : {myintcust.contactphone}</Text>
        <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
-       <Text style={styles.textSub}>Réservation sur place    </Text>   
+       {myintcust.EngagModeOnSite==true && 
+ <View>
+ <Text style={styles.textSub}>Réservation sur place    </Text>   
        <Text style={styles.textMoli}>Fin de commande le midi : {myintcust.onsitenoonblock}    </Text>   
+       {myintcust.noNightTakeAway!==true && 
        <Text style={styles.textMoli}>Fin de commande le soir : {myintcust.onsitenightblock}    </Text>   
-
+  }
        <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+       </View>
+}
 
+{myintcust.EngagModeTakeAway==true && 
+ <View>
        <Text style={styles.textSub}>Commande à emporter    </Text>   
        <Text style={styles.textMoli}>Fin de commande le midi : {myintcust.takeawaynoonblock}    </Text> 
-       <Text style={styles.textMoli}>Fin de commande le midi : {myintcust.takeawaynightblock}    </Text>   
-  
+       {myintcust.noNightTakeAway!==true && 
+       <Text style={styles.textMoli}>Fin de commande le soir : {myintcust.takeawaynightblock}    </Text>   
+       }
        <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+       </View>
+}
 
+{myintcust.EngagModeDelivery==true && 
+ <View>
 <Text style={styles.textSub}>Commande en livraison    </Text>   
 <Text style={styles.textMoli}>Fin de commande le midi : {myintcust.deliverynoonblock}    </Text>   
+{myintcust.noNightDelivery!==true && 
 <Text style={styles.textMoli}>Fin de commande le soir : {myintcust.deliverynightblock}    </Text>   
+  }
+</View>
+}
 
        </ScrollView>
+       </View>
+       <View style={{flex:0, marginTop:10}}>
 {myintcust && myintcust.EngagModeOnSite &&
-      <TouchableOpacity onPress={() => {
+  
+  <TouchableOpacity onPress={() => {
         if(products.length>0){
 Alert.alert('','Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.',
 [
@@ -144,11 +199,10 @@ Alert.alert('','Vous avez déjà initié une commande avec un autre restaurant. 
     <Text style={styles.appButtonText}>Réservez sur place</Text>
   </TouchableOpacity>
 }
-
 {myintcust && myintcust.EngagModeTakeAway &&
   <TouchableOpacity onPress={() => {
-    // rajouter avec un autre resto test
-    if(products.length>0){
+
+    if(products.length>0 && products[0].resto!==myintcust.id){
 Alert.alert('','Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.',
 [
 {
@@ -171,7 +225,6 @@ style: "cancel"
     <Text style={styles.appButtonText}>Commandez à emporter</Text>
   </TouchableOpacity>
       }
-
 {myintcust && myintcust.EngagModeTakeAway &&
   <TouchableOpacity onPress={() => {
               navigation.navigate('crenSelectScreen',
@@ -181,21 +234,27 @@ style: "cancel"
     <Text style={styles.appButtonText}>Commandez en livraison</Text>
   </TouchableOpacity>
       }
-
     </View>
+       
+     </View>
  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   
+  },
+  containerScrollRaw:{
+    height:'100%',
+
   },
   containerScroll:{
-    height:'100%'
+    height:100,
   },
   image:{
-    height:'20%',
+    height:400,
+    resizeMode:'cover'
+
   },
   appButtonContainer:{
     elevation: 8,
@@ -246,7 +305,8 @@ fontFamily:"geometria-regular"
     fontSize: 18,
     top:0,
     fontFamily: "geometria-regular",
-    paddingLeft: 20
+    paddingLeft: 20,
+    marginRight:10
   },
   textItalic: {
     flex:1,

@@ -8,7 +8,7 @@ import {  View } from '../components/Themed';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 
-import { ListItem} from 'react-native-elements'
+import { Avatar, ListItem} from 'react-native-elements'
 import { useSelector } from 'react-redux';
 import {  ProductItem } from '../global';
 
@@ -95,7 +95,7 @@ setMenus(sortedMenu);
  async function calculusTotalCashBasket() {
   let sumRaw =0
    products.map(product => {
-    sumRaw = sumRaw + product.quantity * product.price
+    sumRaw = sumRaw + product.quantity * product.amount
   });
   setTotalCashBasket(sumRaw);
 
@@ -178,7 +178,10 @@ navigation.navigate('basketScreen', {
                 });
               }
             } > 
-     
+       { menu && menu.imageUrl!=='' &&
+       <Avatar rounded source={{ uri: menu.imageUrl || ' '}} />
+            }
+           
       <ListItem.Content>
       <ListItem.Title style={{marginTop:5, color: textColor, fontSize: 20, fontFamily:'geometria-bold'}}>{menu.title} </ListItem.Title> 
  
