@@ -1,19 +1,13 @@
 import { NavigationState } from '@react-navigation/native';
 import * as React from 'react';
-import { Route, StyleSheet } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { Image, Route, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
 import { useSelector } from "react-redux"
-
 import { ProductItem } from '../global';
-import { Icon, ListItem } from 'react-native-elements';
 import { useEffect } from 'react';
-import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { remove, store } from '../store';
-import { WebView } from 'react-native-webview';
 
 interface NavigationParams {
   restoId: string;
@@ -29,14 +23,6 @@ interface Props {
 
 export const successScreen = ({ route, navigation}: Props) => {
 
-  const products = useSelector((state: ProductItem[]) => state);
-
-
-  async function fetchIntcust() {
-
-
-  }
-
 
       useEffect(() => {
     //    console.log(products);
@@ -45,9 +31,29 @@ export const successScreen = ({ route, navigation}: Props) => {
     
 
   return (
-    <View>
+    <View style ={styles.container}>
+  <Image  source={{
+              uri: "https://media.giphy.com/media/oGO1MPNUVbbk4/giphy.gif" ,
+            }}
+        //    resizeMode="cover"
+            style={styles.image} 
+            
+          ></Image>
+      <Text style ={styles.title}>Vous êtes une personne formidable</Text>
+      <Text style ={styles.title}>Votre numéro de commande :</Text>
 
-      <Text>Vous êtes une personne formidable</Text>
+      <TouchableOpacity 
+       style={styles.appButtonContainer}
+            >
+    <Text 
+     style={{
+      fontSize: 16,
+      fontWeight: "bold",
+      alignSelf: "center",
+      fontFamily: "geometria-regular",
+    }}
+    >Revenir à l'accueil</Text>
+  </TouchableOpacity>
     </View>
 );
 }
@@ -59,24 +65,14 @@ const styles = StyleSheet.create({
   appButtonContainer:{
     elevation: 8,
     marginBottom :10,
-    marginTop:30,
     backgroundColor: "#ff5050",
     borderRadius: 10,
     marginRight :30,
     marginLeft :30,
+
     paddingVertical: 13,
     paddingHorizontal: 14
-  },
-  minitext: {
-    fontSize: 16,
-    padding: 4,
-    fontFamily: "geometria-regular",
-  },
-  searchIcon: {
-    color: "grey",
-    fontSize: 20,
-    marginLeft: 5,
-    marginRight: 1
+
   },
   appButtonText:{
     fontSize: 18,
@@ -87,9 +83,12 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-bold",
 
   },
-  headertext:{
-    fontFamily: "geometria-bold",
-color:"white"
+  image: {
+    width: 400,
+    height: 300,
+//    borderRadius: 17,
+    padding: 0,
+   // margin: 7
   },
   title: {
   //  flex:1,
@@ -100,35 +99,12 @@ color:"white"
     fontFamily: "geometria-bold",
     fontWeight: 'bold',
   },
-  textBold:{
-    flex:1,
-    fontSize: 16,
-    top:0,
-    fontFamily: "geometria-bold",
-    fontWeight: 'bold',
-
-    padding: 20
-  },
-  textRaw:{
-    flex:1,
-    fontSize: 16,
-    top:0,
-    fontFamily: "geometria-regular",
-  },
   text: {
     flex:1,
     fontSize: 16,
     top:0,
     fontFamily: "geometria-regular",
-
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-
-  
 });
 
 export default successScreen;

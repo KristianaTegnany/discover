@@ -53,7 +53,7 @@ async getMenus(){
 
 }
       render() {
-  console.log(this.state.menus)
+ 
   return (
     <View style={styles.container}>
        

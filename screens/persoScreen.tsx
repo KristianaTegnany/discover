@@ -98,7 +98,7 @@ setEmail(email);
   return ( 
   
   <View style = {styles.container} > 
-
+{/* 
    <View style={styles.searchHeader} >
         <TextInput
           placeholder="Saisir votre adresse email"
@@ -111,13 +111,6 @@ setEmail(email);
     </Button>
     </View>  
 
-<View style= {styles.wrappertexts}>
-  <Text  style = {styles.text} onPress={() => toggleMenu('infos')}>👩🏽‍🦱 Mes infos </Text>
-  <Text  style = {styles.text} onPress={() => toggleMenu('Commande')}>🛍 Mes commandes </Text>
-  <Text  style = {styles.text} onPress={() => toggleMenu('Commande')}>🙋🏾‍♂️ Aide </Text>
-
-  </View>
-  
 
   <Text style={styles.label}>Votre prénom</Text>
 
@@ -173,10 +166,15 @@ setEmail(email);
 <TouchableOpacity onPress={() => savePerso()} 
             style={styles.appButtonContainer}>
     <Text style={styles.appButtonText} > <Text style={styles.payText}>Enregistrer</Text> </Text>
-  
+  </TouchableOpacity>  */}
 
-  </TouchableOpacity> 
-  
+<Text style={styles.textBold}>Besoin d'aide ? </Text>
+<View style={styles.wrappertexts}>
+  <Text style={styles.text2Bold}>WhatsApp</Text>
+  <Text style={styles.text2}>0696 09 22 16 du Lundi au Vendredi de 9h à 17h. </Text>
+  <Text style={styles.text2Bold}>Email </Text>
+  <Text style={styles.text2}>hello@tablebig.com du Lundi au Vendredi de 9h à 17h.  </Text>
+  </View>
 {false && 
    <View style = {styles.wrapindicator}>
    <ActivityIndicator size="large" color="#F50F50" />
@@ -193,11 +191,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   wrappertexts:{
-flexDirection:"row",
-alignItems:"center",
-justifyContent: "center",
+
 
 padding:10
+  },
+  textBold:{
+    marginTop:50,
+    fontWeight: "bold",
+    fontFamily: "geometria-bold",
+    fontSize:18,
+    paddingHorizontal:20
   },
   label:{
     marginHorizontal:20,
@@ -292,6 +295,20 @@ padding:10
     padding: 4,
     fontFamily: "geometria-regular",
 
+  },
+  text2: {
+    fontSize: 16,
+    padding: 4,
+    fontFamily: "geometria-regular",
+    marginHorizontal:10,
+    marginTop:10
+  },
+  text2Bold: {
+    fontSize: 16,
+    padding: 4,
+    fontFamily: "geometria-bold",
+    marginHorizontal:10,
+    marginTop:10
   },
   separator: {
     marginVertical: 30,

@@ -98,7 +98,7 @@ export const crenSelectScreen = ({ route, navigation, theme }: Props) => {
                 navigation.navigate('hourSelectScreen',
                 { restoId: route.params.restoId , 
                   bookingType:route.params.bookingType, 
-                  fday: moment(day.fday).format() });          
+                  day: moment(day.fday).format() });          
                 }} >
          
         <ListItem.Content >

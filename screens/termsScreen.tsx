@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { remove, store } from '../store';
+import { Divider } from 'react-native-elements/dist/divider/Divider';
 
 interface NavigationParams {
   restoId: string;
@@ -28,7 +29,29 @@ interface Props {
 export const termsScreen = ({ route, navigation}: Props) => {
 
   const products = useSelector((state: ProductItem[]) => state);
-
+  const [myintcust, setMyintcust] = useState({
+    id : '',
+    overviewpicUrl: ' ',
+    corporation:'',
+    EngagModeOnSite:false,
+    EngagModeTakeAway:false,
+    EngagModeDelivery:false,
+    introwebsite:'',
+    style:'',
+    adressvenue:'',
+    zipvenue:'',
+    cityvenue:'',
+    onsitenoonblock: '',
+    onsitenightblock:'',
+    preswebsite:'',
+    takeawaynoonblock:'',
+    takeawaynightblock:'',
+    deliverynightblock :'',
+    deliverynoonblock:'',
+    contactphone:'',
+    noNightTakeAway:false,
+    noNightDelivery:false
+  });
 
   async function fetchIntcust() {
 
@@ -37,7 +60,33 @@ export const termsScreen = ({ route, navigation}: Props) => {
 
 
       useEffect(() => {
-    //    console.log(products);
+        var Intcust = Parse.Object.extend("Intcust");
+        let myintcustRaw = new Intcust;
+        myintcustRaw.id = route.params.restoId;
+        myintcustRaw={
+          id: myintcustRaw.id || '',
+          overviewpicUrl: myintcustRaw.attributes.overviewpic._url || '',
+          corporation: myintcustRaw.attributes.corporation || '',
+          EngagModeTakeAway:  myintcustRaw.attributes.EngagModeTakeAway || false,
+          EngagModeDelivery:  myintcustRaw.attributes.EngagModeDelivery || false,
+          introwebsite: myintcustRaw.attributes.introwebsite || '',
+          EngagModeOnSite : myintcustRaw.attributes.EngagModeOnSite || false,
+          style : myintcustRaw.attributes.style || '',
+          adressvenue : myintcustRaw.attributes.adressvenue || '',
+          zipvenue : myintcustRaw.attributes.zipvenue || '',
+          cityvenue : myintcustRaw.attributes.cityvenue || '',
+          preswebsite : myintcustRaw.attributes.preswebsite || '',
+          onsitenoonblock : myintcustRaw.attributes.onsitenoonblock || '',
+          onsitenightblock:myintcustRaw.attributes.onsitenightblock || '',
+          takeawaynoonblock:myintcustRaw.attributes.takeawaynoonblock || '',
+          takeawaynightblock : myintcustRaw.attributes.takeawaynightblock || '',
+          deliverynoonblock:myintcustRaw.attributes.deliverynoonblock || '',
+         deliverynightblock : myintcustRaw.attributes.deliverynightblock || '',
+         contactphone : myintcustRaw.attributes.contactphone || '',
+         noNightTakeAway:  myintcustRaw.attributes.noNightTakeAway || false,
+         noNightDelivery:  myintcustRaw.attributes.noNightDelivery || false,
+        }
+        setMyintcust(myintcustRaw);
       }, []);
 
     
@@ -47,9 +96,10 @@ export const termsScreen = ({ route, navigation}: Props) => {
     <ScrollView>     
     <Text style={styles.title}>Nous nous engageons à vous faire vivre une expérience délicieuse</Text>
      <Text style={styles.text}>Pour se faire, merci de respecter les règles suivantes, correspondant aux contraintes de production du restaurant : </Text>
-     <Text style={styles.text}>Fin de commande le midi : </Text>
+     <Text style={styles.text}>Fin de commande le midi :{myintcust.takeawaynightblock} </Text>
      <Text style={styles.text}>Fin de commande le soir : </Text>
      <Text style={styles.text}>Délai entre la commande et la récupération / livraison : </Text>
+    
      <Text style={styles.text}>Les créneaux de livraison s'entendent A partir de l'heure sélectionnée, jusqu'au début du créneau suivant. </Text>
      <Text style={styles.text}>Les livraisons sont assurées par :  </Text>
      <Text style={styles.text}>Nos prestataires mettent tout en oeuvre pour tenir le délai du créneau.  </Text>

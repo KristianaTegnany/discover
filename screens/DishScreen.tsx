@@ -12,7 +12,9 @@ import { useState } from 'react';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
-import Checkbox from 'expo-checkbox';
+import darkColors from 'react-native-elements/dist/config/colorsDark';
+import { useSelector } from 'react-redux';
+import { ProductItem } from '../global';
 
 
 interface NavigationParams {
@@ -30,6 +32,7 @@ interface IMenu {id: string; imageUrl:any; title : string; description : string;
 
 export const DishScreen = ({ route, navigation}: Props) => {
   const [menu, setMenu] = useState <IMenu>();
+  const [initied, setInitied] = useState (false);
   const [persoMenu, setPersoMenu] = useState <any[]>();
   const [formulaChoiced, setFormulaChoiced] = useState<any[]> ();
   const [checkboxBackColor, setcheckboxBackColor] = useState ('transparent');
@@ -37,7 +40,8 @@ export const DishScreen = ({ route, navigation}: Props) => {
 
   const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
   const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
-   
+  const products = useSelector((state: ProductItem[]) => state);
+
  function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -70,82 +74,139 @@ let menuRaw =
   resto:menu.attributes.intcust.id
  }
        setMenu(menuRaw);
-       let persoMenuRaw=[{}];
-       persoMenuRaw.pop();
-  menuRaw.persoMenu.map((pm:any)=>
-{
-pm.values.map((val:any)=>{
-    persoMenuRaw.push({name : pm.name, values : [
-    {value : val.value, checked : false }
-  ]});
-})
-setPersoMenu(persoMenuRaw);
-})  }
+      setFormulaChoiced(menuRaw.formulaChoiced)
+     setPersoMenu(menuRaw.persoMenu);
+ }
 
   function handleChangePersoMenu(pers:any, value:any){
     if(persoMenu){
     const i = persoMenu?.findIndex((item:any)=> item.name==pers);
-    const j = persoMenu[i].values.findIndex((item:any)=> item.name==pers);
-    persoMenu[i].values[0].checked=! persoMenu[i].values[0].checked;
-    setPersoMenu(persoMenu);
-    if( persoMenu[i].values[0].checked==true){
-      setcheckboxBackColor('#ff5050')
-      setcheckboxBorderColor('transparent')
-    }else{
-      setcheckboxBackColor('transparent');
-      setcheckboxBorderColor('grey')
+    const j = persoMenu[i].values.findIndex((item:any)=> item.value==value);
+    persoMenu[i].values[j].checked=! persoMenu[i].values[j].checked;
+    persoMenu[i].numChecked= (persoMenu[i].numChecked ||0 )+1;
+    if(pers.price==0 || !pers.price){
+      persoMenu[i].numCheckedFree=(persoMenu[i].numCheckedFree || 0)+1;
+    }else if (pers.price && pers.price>0){
+      persoMenu[i].numCheckedPaid= (persoMenu[i].numCheckedPaid ||0) +1;
     }
+    setPersoMenu([...persoMenu]);
+    
 }
   }
       useEffect(() => {
         fetchMenu();
       }, []);
   
-      function addFormulaChoice(cattitle: any, menutitle:any,menuprice:any,menuid:any){
-        console.log(menuid)
-      console.log("add " + menutitle)
-      console.log("add " + cattitle)
-      if(!formulaChoiced){
-      let formulaChoicedRaw=[]
-      formulaChoicedRaw.push({
-        cattitle : cattitle,
-        sumtot : menuprice || 0,
-        numChoiced : 1,
-        menus:[{
-          title : menutitle,
-          menuid :menuid,
-          tar:menuprice ||0, 
-          quantity : 1
-        }],
-      });
-      setFormulaChoiced(formulaChoicedRaw)
-       }else{
-         // existe deja 
-       }
-       console.log(formulaChoiced)
+      function addFormulaChoice(cattitle: any, menutitle:any){
+      if(formulaChoiced && initied==false){
+        const i = formulaChoiced.findIndex((item:any)=> item.cattitle==cattitle);
+        const j = formulaChoiced[i].menus.findIndex((item:any)=> item.title==menutitle);  
+        formulaChoiced[i].numChoiced=1;
+        formulaChoiced[i].sumtot= formulaChoiced[i].menus[j].tar ||0 ;
+        formulaChoiced[i].menus[j].quantity=1;
+        setFormulaChoiced([...formulaChoiced])
+        setInitied(true);
+       }else if (formulaChoiced && initied==true){
+         const i = formulaChoiced.findIndex((item:any)=> item.cattitle==cattitle);
+         const j = formulaChoiced[i].menus.findIndex((item:any)=> item.title==menutitle);
+         formulaChoiced[i].menus[j].quantity= (formulaChoiced[i].menus[j].quantity ||0) +1;
+         formulaChoiced[i].numChoiced= (formulaChoiced[i].numChoiced||0) +1;
+         formulaChoiced[i].sumtot= (formulaChoiced[i].sumtot||0) + (formulaChoiced[i].menus[j].tar || 0);
+         setInitied(true);
+         setFormulaChoiced([...formulaChoiced])
+         console.log(formulaChoiced)
+
+        }
       }
       
       function removeFormulaChoice(cattitle: any, menutitle:any){
-        console.log("remove " + menu?.title)
-
+        if(formulaChoiced && initied==false){
+          
+         }else if (formulaChoiced && initied==true){
+           const i = formulaChoiced.findIndex((item:any)=> item.cattitle==cattitle);
+           const j = formulaChoiced[i].menus.findIndex((item:any)=> item.title==menutitle);
+           formulaChoiced[i].menus[j].quantity= (formulaChoiced[i].menus[j].quantity ||0) -1;
+           if(formulaChoiced[i].menus[j].quantity<0){
+            formulaChoiced[i].menus[j].quantity=0;
+           }
+           formulaChoiced[i].numChoiced= (formulaChoiced[i].numChoiced||0) -1;
+           if(formulaChoiced[i].numChoiced<0){
+            formulaChoiced[i].numChoiced=0;
+           }
+           formulaChoiced[i].sumtot= (formulaChoiced[i].sumtot||0) - (formulaChoiced[i].menus[j].tar ||0);
+           if(formulaChoiced[i].sumtot<0){
+            formulaChoiced[i].sumtot=0;
+           }
+           setInitied(true);
+           setFormulaChoiced([...formulaChoiced])
+           console.log(formulaChoiced)
+         }
       }
       async function addToBasket() { 
+         let Stop = false; 
 
+         formulaChoiced?.forEach(fc=>{
+          if(fc.numChoiced>fc.numExact){
+            Alert.alert("Vous ne pouvez sélectionner que "+ fc.numExact + " " + fc.cattitle) + ". Merci de corriger votre choix."
+         Stop = true;
+          }
+          if(!fc.numChoiced && fc.numExact>0){
+            Alert.alert("Vous devez choisir "+ fc.numExact + " " + fc.cattitle)+ ". Merci de corriger votre choix"
+            Stop = true;
+          }
+          if(fc.numChoiced && fc.numChoiced<fc.numExact){
+            Alert.alert("Vous devez choisir "+ fc.numExact + " " + fc.cattitle)+ ". Merci de corriger votre choix"
+            Stop = true;
+          }
+        })
+
+        persoMenu?.forEach(perso=>{
+          if(perso.mandatory== true && (!perso.numChecked || perso.numChecked<1)){
+            Alert.alert("Vous devez sélectionner : " + perso.name + ". Merci de corriger votre choix.");
+         Stop = true;
+          }})
+
+        if(Stop== false){
+      
+      formulaChoiced?.forEach((fc:any, index:any )=>{
+        fc.menus = fc.menus.filter((menu:any)=> menu.quantity)  
+                    } )      
+
+      let fcRaw = formulaChoiced?.filter((x:any)=>
+        x.menus.length>0
+      )  
+
+      console.log(persoMenu)
+      persoMenu?.forEach((pers:any, index:any )=>{
+        pers.values = pers.values.filter((value:any)=> value.checked==true)  
+                    } )      
+
+
+      let persoRaw = persoMenu?.filter((x:any)=>
+        x.values.length>0
+      )  
+    
+      console.log(persoRaw);
         let menuRaw = {
           id : menu?.id,
+          restoId : route.params.restoId,
           name : menu?.title,
           description :menu?.description, 
           amount : menu?.price,
           currency: 'eur',
-          quantity: 2,
-          persoData : persoMenu||[],
-          formulaChoiced: formulaChoiced ||[]
+          quantity: 1,
+          persoData : persoRaw||[],
+          formulaChoiced: fcRaw ||[]
         };
 
-        console.log(menuRaw) 
-      Alert.alert('',"Un plat ajouté. Vous pouvez en rajouter un autre ou revenir sur le menu et votre panier. ")
-        store.dispatch(add(menuRaw))
-       };
+
+      Alert.alert('',"Très bon choix 👌🏽");
+
+        store.dispatch(add(menuRaw));
+
+        navigation.goBack();
+      };
+      };
 
   return (
     <View style={styles.container}> 
@@ -163,21 +224,32 @@ setPersoMenu(persoMenuRaw);
         }
 
      <View>
-      {menu && menu.formulaChoiced !== null &&
-             menu.formulaChoiced !== undefined &&
-             menu.formulaChoiced.map((fccat:any, index4:any) => 
+      {formulaChoiced &&
+             formulaChoiced.map((fccat:any, index4:any) => 
              <View key={fccat.cattitle+index4}>
 
        <ListItem key={fccat.cattitle+index4} bottomDivider  
     containerStyle={{backgroundColor:"#ff5050", borderColor:"#ff5050"}}>
     <ListItem.Content>
-      <ListItem.Title style = {styles.textCat}> {fccat.cattitle} </ListItem.Title>
+      <ListItem.Title style = {styles.textCat}> {fccat.cattitle}  </ListItem.Title>
     </ListItem.Content>
   </ListItem>  
-       {fccat !== null &&
-            fccat !== undefined &&
-            fccat.menus.map((menu:any, index4:any) => 
-            <ListItem key={menu.title + index4 } 
+  {fccat.numExact >0 &&
+  <ListItem key={fccat.cattitle+index4 + "numexcr"} bottomDivider  
+    containerStyle={{backgroundColor:"#ffc1c1", borderColor:"#ffc1c1"}}>
+    <ListItem.Content>
+      { fccat.numExact>1 && 
+      <ListItem.Title style = {styles.textCat}>  {fccat.numExact} choix exact.s obligatoire.s</ListItem.Title>
+    }
+          { fccat.numExact<2 && 
+      <ListItem.Title style = {styles.textCat}>  {fccat.numExact} choix exact.s obligatoire.s</ListItem.Title>
+    }
+    </ListItem.Content>
+  </ListItem>  
+  }
+
+       {fccat && fccat.menus.map((menu:any, index5:any) => 
+            <ListItem key={menu.title + index5 } 
             containerStyle={{ backgroundColor: backgroundColor }}
             bottomDivider> 
             
@@ -189,11 +261,10 @@ setPersoMenu(persoMenuRaw);
         <ListItem.Subtitle  style={{marginTop:2, color: textColor, fontSize: 14, fontFamily:'geometria-regular'}}>
         {menu.tar} € </ListItem.Subtitle>
       }
-
       </ListItem.Content>
       <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() =>  removeFormulaChoice(fccat.cattitle,menu.title)} />
-        <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}} >{menu.quantity}</ListItem.Subtitle>
-      <Ionicons name="add-circle" style={styles.searchIcon}  onPress={() =>  addFormulaChoice(fccat.cattitle, menu.title,menu.tar,menu.menuid)} />
+      <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}} > {formulaChoiced[index4].menus[index5].quantity ||0}</ListItem.Subtitle>
+      <Ionicons name="add-circle" style={styles.searchIcon}  onPress={() =>  addFormulaChoice(fccat.cattitle, menu.title)} />
     </ListItem>
             )}
      </View>
@@ -208,9 +279,20 @@ setPersoMenu(persoMenuRaw);
     <ListItem.Content>
       <ListItem.Title style = {styles.textCat}> {pers.name} </ListItem.Title>
     </ListItem.Content>
-  </ListItem>    
+  </ListItem>  
+
+  {pers.mandatory==true && 
+   <ListItem key={pers.name + 'mandatory'} bottomDivider  
+    containerStyle={{backgroundColor:"#ffc1c1", borderColor:"#ff5050"}}>
+    <ListItem.Content>
+      <ListItem.Title style = {styles.textCat}>Sélection obligatoire. Max Gratuit :{pers.max} - Payant : {pers.maxpaid} </ListItem.Title>
+    </ListItem.Content>
+  </ListItem>   
+}
+
             {pers.values && pers.values.map((value:any, index8:any) =>               
             <View key={value.value  + "view"} >             
+          {value.checked == true && 
           <TouchableOpacity onPress={() => handleChangePersoMenu(pers.name, value.value) } 
             style={{
               elevation: 8,
@@ -218,15 +300,49 @@ setPersoMenu(persoMenuRaw);
               marginHorizontal :9,
               marginBottom :10,
               borderWidth:1,
-              backgroundColor:checkboxBackColor,
-              borderColor:checkboxBorderColor,
+              backgroundColor:'#ff5050',
+              borderColor:'transparent',
               borderRadius: 10,
               padding: 5,
-        
             }}>
-    <Text style={styles.appButtonTextCheckbox}>{value.value}</Text>
+              
+    <Text 
+     style={{
+      fontSize: 16,
+      fontWeight: "bold",
+      alignSelf: "center",
+      fontFamily: "geometria-regular",
+      color: textColor
+    }}
+    >{value.value} { value.tar && value.tar>0 && +'+'+ value.tar+ '€'}</Text>
   </TouchableOpacity>
-            
+}
+
+           {(value.checked == false || !value.checked) && 
+          <TouchableOpacity onPress={() => handleChangePersoMenu(pers.name, value.value) } 
+            style={{
+              elevation: 8,
+              marginTop :10,
+              marginHorizontal :9,
+              marginBottom :10,
+              borderWidth:1,
+              backgroundColor:'transparent',
+              borderColor:'grey',
+              borderRadius: 10,
+              padding: 5,
+            }}>
+              
+    <Text 
+     style={{
+      fontSize: 16,
+      fontWeight: "bold",
+      alignSelf: "center",
+      fontFamily: "geometria-regular",
+      color: textColor
+    }}
+    >{value.value} { value.tar && value.tar>0 && +'+'+ value.tar+ '€'}</Text>
+  </TouchableOpacity>
+}  
     </View>
 )}           
   
@@ -254,7 +370,6 @@ const styles = StyleSheet.create({
  
   appButtonTextCheckbox:{
     fontSize: 16,
-    color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-regular",
@@ -271,7 +386,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     color: "grey",
-    fontSize: 20,
+    fontSize: 30,
     marginLeft: 5,
     marginRight: 1
   },

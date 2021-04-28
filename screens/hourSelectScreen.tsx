@@ -68,7 +68,7 @@ export const hourSelectScreen = ({ route, navigation}: Props) => {
   
     let params2 = {
       itid: route.params.restoId,
-      date: moment(route.params.fday).format(),
+      date: moment(route.params.day).format(),
       bookingType: route.params.bookingType
     };
     const res3 = await Parse.Cloud.run("getIntcustWithAvailableCren", params2);

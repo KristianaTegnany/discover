@@ -15,12 +15,7 @@ interface Props {
   navigation: Navigation;
   route: Route;
 }
-interface IIntcust {
- id: string,
- name : string,
- imageUrl: string,
- style : string
-}
+
 export const loveScreen = ({ route, navigation}: Props) => {
   const [cards, setCards] = useState<[{
     id: string,
@@ -35,7 +30,7 @@ export const loveScreen = ({ route, navigation}: Props) => {
 
     let subscription =  await Parse.Cloud.run("getIntcustsDiscover");      
     subscription=  subscription.map((intcust:any)=>({
-      imageUrl : {uri : intcust.attributes.overviewpic._url} || '',
+      imageUrl : {uri : intcust.attributes.Frontpic._url} || '',
       name: intcust.attributes.corporation || '',
       style: intcust.attributes.style || '',
       id: intcust.id || ''
@@ -52,23 +47,16 @@ export const loveScreen = ({ route, navigation}: Props) => {
   }
 
   async function gotoResto(index: number) {
-    
     if(cards){
-      console.log(cards[index])
     navigation.navigate('RestoScreen',
        { restoId: cards[index].id  });   
       }
-
     return  console.log(`on swiped right`)
   }
-
 
     async function onSwipedAllCards() {
     setSwipedAllCards(true)
   };
-
-   
- // const image = { uri: cards[0].imageUrl };
 
     return (
 <View>

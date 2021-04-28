@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Button, Image, Route, Text,ScrollView, StyleSheet, Alert } from 'react-native';
+import {ActivityIndicator, Route,ScrollView, StyleSheet, Alert } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import {  View } from '../components/Themed';
@@ -22,7 +22,7 @@ interface Props {
   route: Route;
 }
 
-interface ICats { id: string, title: string, order:number}
+interface ICats { id: string, title: string, order:number, numExact:number}
 interface IMenus {  id: string, price:number,imageUrl: string,  title: string, order:number, description:string, category:string}
 
 export const takeawayScreen = ({ route, navigation}: Props) => {
@@ -66,7 +66,6 @@ export const takeawayScreen = ({ route, navigation}: Props) => {
     if(a.order > b.order) { return 1; }   
   })
   setCats(sortedCats);
-
   let params = {
     itid: route.params.restoId,
   }
@@ -86,6 +85,7 @@ export const takeawayScreen = ({ route, navigation}: Props) => {
       if(a.order > b.order) { return 1; }
   })
 setMenus(sortedMenu);
+
  }
 
  async function sum(array:any, key:any) {
@@ -93,11 +93,29 @@ setMenus(sortedMenu);
  }
 
  async function calculusTotalCashBasket() {
+  // doit prendre en compte les quantités dans le sum ma gueule ba ouais c mon comportement
   let sumRaw =0
    products.map(product => {
     sumRaw = sumRaw + product.quantity * product.amount
-  });
-  setTotalCashBasket(sumRaw);
+    if(product.persoData){
+     product.persoData.forEach((pers:any)=> {
+       pers.values.forEach((value:any)=> {
+       if(value.price && value.price>0){
+      sumRaw = sumRaw + value.price* product.quantity
+    }
+  })      })      } 
+
+    if(product.formulaChoiced){
+      product.formulaChoiced.forEach((fc:any)=>{
+        fc.menus.forEach((menu:any)=> {
+          if(menu.tar && menu.tar>0){
+            sumRaw =sumRaw + menu.tar * product.quantity
+          }
+        })
+      })
+}
+})
+setTotalCashBasket(sumRaw);
 
 }
 
@@ -110,7 +128,6 @@ useEffect(() => {
   calculusTotalCashBasket();
   calculusTotalQuantityBasket();
   fetchCatsAndMenus();
-
 }, [products]);
 
 function gotoBasket(){
@@ -123,7 +140,6 @@ navigation.navigate('basketScreen', {
      });
     }else{
       Alert.alert('','Votre panier est vide 🤷🏽‍♂️')
-
     }
 }
 
@@ -136,9 +152,15 @@ navigation.navigate('basketScreen', {
                <ListItem.Content >
                   <ListItem.Title style={{marginTop:9, color: textColor, fontSize: 18, fontFamily:'geometria-bold'}}>  
        Voir le panier </ListItem.Title>
+       { totalQuantityBasket >1 && 
                   <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 16, fontFamily:'geometria-regular'}}>
-                  {totalQuantityBasket} article.s - {totalCashBasket} €</ListItem.Subtitle>
-        
+                  {totalQuantityBasket} articles - {totalCashBasket} €</ListItem.Subtitle>
+}
+
+{ totalQuantityBasket <2 && 
+                  <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 16, fontFamily:'geometria-regular'}}>
+                  {totalQuantityBasket} article - {totalCashBasket} €</ListItem.Subtitle>
+}
                 </ListItem.Content>
                 <ListItem.Chevron />
               </ListItem>
@@ -158,7 +180,7 @@ navigation.navigate('basketScreen', {
     containerStyle={{backgroundColor:"#ff5050", borderColor:"#ff5050"}}>
     <ListItem.Content>
       <ListItem.Title style = {styles.textcattitle}>  
-{cat.title} </ListItem.Title>
+{cat.title}{cat.numExact} </ListItem.Title>
     </ListItem.Content>
   </ListItem>    
 

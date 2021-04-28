@@ -202,7 +202,8 @@ Alert.alert('','Vous avez déjà initié une commande avec un autre restaurant. 
 {myintcust && myintcust.EngagModeTakeAway &&
   <TouchableOpacity onPress={() => {
 
-    if(products.length>0 && products[0].resto!==myintcust.id){
+
+    if(products.length>0 && products[0].restoId!==myintcust.id){
 Alert.alert('','Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.',
 [
 {

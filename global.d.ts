@@ -10,7 +10,7 @@ export interface ProductItem {
     imageUrl: string,
     quantity: number,
     added?: boolean,
-    resto:string
+    restoId:string
   }
 
 

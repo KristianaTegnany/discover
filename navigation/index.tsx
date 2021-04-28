@@ -55,7 +55,7 @@ function RootNavigator() {
       <Stack.Screen name="RestoScreen" options={{ headerTitle: '' ,headerTransparent: true}} component={RestoScreen} />
       <Stack.Screen name="deliveryScreen" options={{ headerTitle: 'Livraison' }} component={deliveryScreen} />
       <Stack.Screen name="resaScreen" options={{ headerTitle: 'Réservation sur place' }} component={resaScreen} />
-      <Stack.Screen name="takeawayScreen"  options={{ headerTitle: 'A emporter' }} component={takeawayScreen} />
+      <Stack.Screen name="takeawayScreen"  options={{ title: 'A emporter' }} component={takeawayScreen} />
       <Stack.Screen name="DishScreen"  options={{ headerTitle: '😋' }} component={DishScreen}  />
       <Stack.Screen name="crenSelectScreen"  options={{ headerTitle: 'Choisir un jour' }} component={crenSelectScreen} />
       <Stack.Screen name="hourSelectScreen"  options={{ headerTitle: 'Choisir une heure' }} component={hourSelectScreen} />
@@ -63,7 +63,7 @@ function RootNavigator() {
       <Stack.Screen name="paymentScreen"  options={{ headerTitle: 'Votre panier' }} component={paymentScreen} />
       <Stack.Screen name="termsScreen"  options={{ headerTitle: 'CGU' }} component={termsScreen} />
       <Stack.Screen name="custInfoScreen"  options={{ headerTitle: 'Vos infos' }} component={custInfoScreen} />
-      <Stack.Screen name="successScreen"  options={{ headerTitle: 'Succès' }} component={successScreen} />
+      <Stack.Screen name="successScreen"  options={{ headerTitle: '' ,headerTransparent: true}}  component={successScreen} />
       <Stack.Screen name="paymentStripeScreen"  options={{ headerTitle: 'Paiement' }} component={paymentStripeScreen} />
       <Stack.Screen name="persoScreen"  options={{ headerTitle: 'Perso' }} component={persoScreen} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />

@@ -13,8 +13,6 @@ interface ICart {
     useEffect(() => {  })
     
     async function addToCart(item: { id: any; }, qty: any) {
-
-    console.log("we in cart")
     let found = '';
     if (found.length == 0) {
       setCart([]);

@@ -6,7 +6,6 @@ import { Route } from 'react-native';
 import { NavigationScreenProp, NavigationState } from 'react-navigation';
 
 interface NavigationParams {
-
 }
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
@@ -17,10 +16,8 @@ interface Props {
 
 export const paymentStripeScreen = ({ route, navigation}: Props) => {
 
-
   useEffect(() => {
       }, []);
-
     
   return (
   <StripeCheckout
@@ -29,7 +26,10 @@ export const paymentStripeScreen = ({ route, navigation}: Props) => {
       sessionId: route.params.CHECKOUT_SESSION_ID,
     }}
     onSuccess={() => {
+      
       console.log(`Stripe checkout session succeeded. session id: .`);
+      navigation.navigate('successScreen');   
+   
     }}
     onCancel={() => {
       console.log(`Stripe checkout session cancelled.`);

@@ -62,8 +62,7 @@ export default class TablesScreen  extends React.Component<props, state>   {
       restaurantList: this.state.restaurantList.filter((resto:any)=>resto.attributes.corporation.toLowerCase().includes(event.toLowerCase()))
     });
     this.state.restaurantList.filter((resto:any)=>resto.corporation == event);
-    console.log(this.state.restaurantList);
-    console.log(this.state.searchValue);
+    
   }
   };
 

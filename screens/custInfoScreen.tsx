@@ -12,7 +12,7 @@ import { useState } from 'react';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { FontAwesome5 } from '@expo/vector-icons'; 
-import { first } from 'lodash';
+import moment from 'moment';
 
 
 interface NavigationParams {
@@ -65,7 +65,7 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
     }
   }
   async function onChangeTextEmail(email:any) {
-setEmail(email);
+setEmail(email.trim().toLowerCase());
   }
   
   async function onChangeTextFirstname(firstname:any) {
@@ -77,48 +77,63 @@ setEmail(email);
           async function onChangeTextPhone(phone:any) {
             setPhone(phone);
               }
-  async function createResa() {
-    var Guest = Parse.Object.extend("Guest");
-    let guestRaw = new Guest();
+  async function createResa() {  
+   
+    let params = {
+      email: email,
+      itid: intcust.id
+    };
+  
+    const res = await Parse.Cloud.run("getGuest", params);
+  
+     var Guest = Parse.Object.extend("Guest");
+     let guestRaw = new Guest();
+     if(res.length==0){  
     guestRaw.set("firstname",firstname);
     guestRaw.set("lastname",lastname);
     guestRaw.set("email",email);
-
    await  guestRaw.save();
+ 
+  }else if(res.length>0){
+    guestRaw.id = res[0].id
+  }
 
-    console.log("guest id " + guestRaw.id)
-
-    var Reservation = Parse.Object.extend("Reservation");
+  var Reservation = Parse.Object.extend("Reservation");
     let resaRaw = new Reservation();
-    resaRaw.set("date","");
+    resaRaw.set("date",moment(route.params.day).toDate());
     resaRaw.set("guest",guestRaw);
+    let arrayGuest = [{
+      "firstname": firstname,
+      "lastname": lastname,
+      "mobilephone": phone,
+      "email": email,
+    }];
 
+     resaRaw.set("guestFlat", arrayGuest);
+     resaRaw.set("status", "En cours"); // en cours
     resaRaw.set("engagModeResa",route.params.bookingType);
    
-    resaRaw.save();
-    resaRaw.map((x:any)=>({
-      'id' : x.id,
-      'engagModeResa':x.attributes.engagModeResa,
-      'guestFlat':x.attributes.guestFlat
-    }))
-    setResa(resaRaw);
+   await resaRaw.save();
+    setResa({
+      'id' : resaRaw.id || '',
+      'engagModeResa':resaRaw.attributes.engagModeResa || '',
+      'guestFlat':resaRaw.attributes.guestFlat ||[]
+    });
   }
 
   async function calculusTotalCashBasket() {
-    // doit prendre en compte les quantités dans le sum ma gueule ba ouais c mon comportement
-    let sumRaw =0
+
+    let sumRaw =0;
      products.map(product => {
-      sumRaw = sumRaw + product.quantity * product.price
+      sumRaw = sumRaw + product.quantity * product.amount
     })
     setTotalCashBasket(sumRaw);
   }
 
   async function goPay() {
-console.log("go pay")
     if(email && firstname && lastname && phone){
        createResa(); 
      if(intcust.paymentChoice!=="stripeOptin"  ){
-      console.log("pplug")
 
     await  getPayPlugPaymentUrl();
 // navigate and options payLink
@@ -150,7 +165,6 @@ navigation.navigate('paymentStripeScreen',
   }
   }
   async function getPayPlugPaymentUrl() {
- console.log("dans payplug")
     const params1 = {
       itid: intcust.id,
       winl: "window.location.host",
@@ -166,11 +180,9 @@ navigation.navigate('paymentStripeScreen',
       noukarive: intcust.option_DeliveryByNoukarive,
       toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
-    console.log(params1);
 
     const response = await Parse.Cloud.run("getPayPlugPaymentUrl", params1);
-    console.log(response);
-console.log("there")
+ 
     setPaylink(response);
   }
 
@@ -179,7 +191,6 @@ console.log("there")
   var Intcust = Parse.Object.extend("Intcust");
   let intcustRaw = new Intcust();
   intcustRaw.id = route.params.restoId;
-//  console.log(intcustRaw);
 
   let intcustRawX =[{
     'id': intcustRaw.id,
@@ -271,27 +282,25 @@ console.log("there")
   
 
   </TouchableOpacity> 
- {intcust.paymentChoice=="stripeOptin" &&
-  <Text style={styles.appButtonText} > Avec <FontAwesome5 name="cc-stripe" size={24} color="white"  /> </Text>
+ {intcust && intcust.paymentChoice=="stripeOptin" &&
+  <Text style={styles.appButtonText} > Avec <FontAwesome5 name="cc-stripe" size={24} color={textColor}  /> </Text>
+
  }
- {intcust.paymentChoice!=='stripeOptin' &&
+ {intcust && intcust.paymentChoice!=='stripeOptin' &&
   <Text style={styles.appButtonText} > Avec <Image
   source={require('../assets/images/pplogo.png')}
-
   fadeDuration={0}
   style={{ width: 90, height: 50 }}
 />
-
  </Text>
  }
-
-
   </View>
 
   <TouchableOpacity style = {styles.listitem}  onPress={() => {
-              navigation.navigate('termsScreen'
-              );          
-              }}> 
+              navigation.navigate('termsScreen',
+              { restoId: route.params.restoId , 
+                bookingType:route.params.bookingType
+              })}}> 
      
        <Text style = {styles.text}>En continuant j'accepte les CGU 👀➡️ </Text>
        

@@ -56,7 +56,25 @@ export const basketScreen = ({ route, navigation}: Props) => {
     let sumRaw =0
      products.map(product => {
       sumRaw = sumRaw + product.quantity * product.amount
-    })
+      if(product.persoData){
+       product.persoData.forEach((pers:any)=> {
+         pers.values.forEach((value:any)=> {
+         if(value.price && value.price>0){
+        sumRaw = sumRaw + value.price* product.quantity
+      }
+    })      })      } 
+
+      if(product.formulaChoiced){
+        product.formulaChoiced.forEach((fc:any)=>{
+          fc.menus.forEach((menu:any)=> {
+            if(menu.tar && menu.tar>0){
+              sumRaw =sumRaw + menu.tar * product.quantity
+            }
+          })
+        })
+
+}
+})
     setTotalCashBasket(sumRaw);
   }
   async function calculusTotalQuantityBasket() {
@@ -67,6 +85,7 @@ export const basketScreen = ({ route, navigation}: Props) => {
       useEffect(() => {
         calculusTotalCashBasket();
         calculusTotalQuantityBasket();
+
       }, [products]);
 
   return (
@@ -108,7 +127,46 @@ export const basketScreen = ({ route, navigation}: Props) => {
 {product.name} </ListItem.Title>
         <ListItem.Subtitle  style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}}>
         {product.amount} € </ListItem.Subtitle>
+        {product.formulaChoiced && product.formulaChoiced.map((fc:any, index:any)=>(
+          <View key={fc.cattitle+'view'}> 
+<ListItem.Subtitle key={fc.cattitle+'listitemsub'}  style={{marginTop:2, color: textColor, fontSize: 12, fontFamily:'geometria-bold'}}>
+{fc.cattitle}  </ListItem.Subtitle>
+{fc.menus && fc.menus.map((menu:any,index2:any)=>(
+  <View key={fc.cattitle+menu.title+'view2'}>
+  {menu.tar>0 && 
+ <ListItem.Subtitle  key={fc.cattitle+'listitemsub 2 menusup0'}  style={{marginTop:2, color: textColor, fontSize: 12, fontFamily:'geometria-regular'}}>
+{menu.quantity} x {menu.title}  +{menu.tar}€  </ListItem.Subtitle>
+  }
+    {menu.tar==0 && 
+<ListItem.Subtitle  key={fc.cattitle+'listitemsub 2 menusub0'} style={{marginTop:2, color: textColor, fontSize: 12, fontFamily:'geometria-regular'}}>
+{menu.quantity} x {menu.title} </ListItem.Subtitle>
+}
+</View>
+))}
+    
+     </View>
+        ))}
 
+{product.persoData && product.persoData.map((pers:any, index:any)=>(
+          <View key={pers.name + 'view'}>
+<ListItem.Subtitle  key={pers.name + 'lisub'} style={{marginTop:2, color: textColor, fontSize: 12, fontFamily:'geometria-bold'}}>
+{pers.name}  </ListItem.Subtitle>
+{pers.values && pers.values.map((value:any,index2:any)=>(
+  <View key={pers.name + value.value + 'view'}>
+  {value.price>0 && 
+ <ListItem.Subtitle  key={pers.name + value.value + 'lisub'}  style={{marginTop:2, color: textColor, fontSize: 12, fontFamily:'geometria-regular'}}>
+ {value.value}  +{value.price}€  </ListItem.Subtitle>
+  }
+    {(value.price==0 || !value.price) && 
+<ListItem.Subtitle  key={pers.name + value.value + 'lisub pnull'}  style={{marginTop:2, color: textColor, fontSize: 12, fontFamily:'geometria-regular'}}>
+{value.value} </ListItem.Subtitle>
+}
+</View>
+))}
+    
+     </View>
+        ))}
+       
       </ListItem.Content>
       <Ionicons name="remove-circle" style={styles.searchIcon}  onPress={() =>  store.dispatch(remove(product))} />
         <ListItem.Subtitle style={{marginTop:2, color: textColor, fontSize: 18, fontFamily:'geometria-regular'}} >{product.quantity}</ListItem.Subtitle>
@@ -120,7 +178,9 @@ export const basketScreen = ({ route, navigation}: Props) => {
       </ScrollView>
    <TouchableOpacity onPress={() => {
               navigation.navigate('custInfoScreen',
-              { restoId: route.params.restoId , bookingType:route.params.bookingType });          
+              { restoId: route.params.restoId , bookingType:route.params.bookingType,
+                day: route.params.day,
+                hour: route.params.hour,});          
               }} 
             style={styles.appButtonContainer}>
     <Text style={styles.appButtonText}>💳 🔐 Continuer</Text>
@@ -158,7 +218,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     color: "grey",
-    fontSize: 20,
+    fontSize: 30,
     marginLeft: 5,
     marginRight: 1
   },
