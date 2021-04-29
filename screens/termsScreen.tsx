@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { remove, store } from '../store';
-import { Divider } from 'react-native-elements/dist/divider/Divider';
+import { Divider } from 'react-native-elements';
 
 interface NavigationParams {
   restoId: string;
@@ -65,17 +65,11 @@ export const termsScreen = ({ route, navigation}: Props) => {
         myintcustRaw.id = route.params.restoId;
         myintcustRaw={
           id: myintcustRaw.id || '',
-          overviewpicUrl: myintcustRaw.attributes.overviewpic._url || '',
           corporation: myintcustRaw.attributes.corporation || '',
           EngagModeTakeAway:  myintcustRaw.attributes.EngagModeTakeAway || false,
           EngagModeDelivery:  myintcustRaw.attributes.EngagModeDelivery || false,
           introwebsite: myintcustRaw.attributes.introwebsite || '',
           EngagModeOnSite : myintcustRaw.attributes.EngagModeOnSite || false,
-          style : myintcustRaw.attributes.style || '',
-          adressvenue : myintcustRaw.attributes.adressvenue || '',
-          zipvenue : myintcustRaw.attributes.zipvenue || '',
-          cityvenue : myintcustRaw.attributes.cityvenue || '',
-          preswebsite : myintcustRaw.attributes.preswebsite || '',
           onsitenoonblock : myintcustRaw.attributes.onsitenoonblock || '',
           onsitenightblock:myintcustRaw.attributes.onsitenightblock || '',
           takeawaynoonblock:myintcustRaw.attributes.takeawaynoonblock || '',
@@ -96,21 +90,52 @@ export const termsScreen = ({ route, navigation}: Props) => {
     <ScrollView>     
     <Text style={styles.title}>Nous nous engageons à vous faire vivre une expérience délicieuse</Text>
      <Text style={styles.text}>Pour se faire, merci de respecter les règles suivantes, correspondant aux contraintes de production du restaurant : </Text>
-     <Text style={styles.text}>Fin de commande le midi :{myintcust.takeawaynightblock} </Text>
-     <Text style={styles.text}>Fin de commande le soir : </Text>
-     <Text style={styles.text}>Délai entre la commande et la récupération / livraison : </Text>
-    
-     <Text style={styles.text}>Les créneaux de livraison s'entendent A partir de l'heure sélectionnée, jusqu'au début du créneau suivant. </Text>
-     <Text style={styles.text}>Les livraisons sont assurées par :  </Text>
-     <Text style={styles.text}>Nos prestataires mettent tout en oeuvre pour tenir le délai du créneau.  </Text>
-     <Text style={styles.text}>Celui-ci n'est pas garanti de facto dans les cas suivants : </Text>
-     <Text style={styles.text}>Le restaurant ne se trouve pas dans la commune de livraison. </Text>
-     <Text style={styles.text}>Le restaurant ou le lieu de livraison se situe dans la commune du Lamentin (Martinique). </Text>
-     <Text style={styles.text}>La livraison est programmée pour le vendredi entre 12h et 14h. </Text>
-     <Text style={styles.text}>En cas de retard de livraison, ne relevant pas de ces cas, il est à la discrétion du restaurant et/ou du livreur de vous proposer une compensation. Le contenu de cette compensation est à sa libre définition. </Text>
-     <Text style={styles.text}>Pour compléter une commande, merci d'effectuer une nouvelle commande et d'indiquer une demande de regroupement en note de livraison. Les frais de livraison de la deuxième commande vous seront remboursés à postériori. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
-     <Text style={styles.text}>Merci de respecter les gestes barrières et les consignes sanitaires, notamment de porter un masque et de mettre du gel avant et après avoir récupéré votre commande A emporter ou En livraison. </Text>
+     <Text style={styles.text}>Fin de commande le midi :{myintcust.takeawaynoonblock} </Text>
+     <Text style={styles.text}>Fin de commande le soir :  {myintcust.takeawaynightblock} </Text>
+     <Text style={styles.text}>Délai entre la commande et la récupération / livraison : {myintcust.takeawaynightblock} </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Les créneaux de livraison s'entendent A partir de l'heure sélectionnée, jusqu'au début du créneau suivant. Il n'y pas d'heure précise de livraison mais bien un créneau. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Votre livraison sera assurée par la société suivante :  </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Nos partenaires de livraison mettent tout en oeuvre pour tenir le délai du créneau.  </Text>
+     <Text style={styles.text}>Celui-ci n'est pas garanti de facto dans les cas suivants : </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Le restaurant ne se trouve pas dans la commune de livraison. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Le restaurant ou le lieu de livraison se situe dans la commune du Lamentin (Martinique). </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>La livraison est programmée pour le vendredi entre 12h et 14h. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>En cas de retard de livraison, ne relevant pas de ces cas, il est à la discrétion du restaurant et/ou du livreur de vous proposer une compensation. Le contenu de cette compensation est à sa libre définition. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Pour compléter une commande en livraison, merci d'effectuer une nouvelle commande en A emporter et d'indiquer une demande de regroupement en note de livraison avec le numéro de la commande intiale. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Merci de respecter les gestes barrières et les consignes sanitaires, notamment porter un masque et mettre du gel avant et après avoir récupéré votre commande A emporter ou En livraison. </Text>
+
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Soyez courtois et polis en toute circonstance, en particulier avec les livreurs qui font un métier difficile. </Text>
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>En cas de soucis avec le contenu de votre commande, la qualité des plats, contactez le restaurant directement :  {myintcust.corporation} - {myintcust.contactphone} </Text>
+
+     <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+     <Text style={styles.text}>Un commentaire ? Un problème ? Une suggestion ? Contactez-nous à hello@tablebig.com ou par WhatsApp au 0696 09 22 16. On vous répond du Lundi au Vendredi de 9h à 17h. </Text>
+
+
 
      </ScrollView>
 
