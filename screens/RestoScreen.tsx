@@ -180,21 +180,11 @@ interface Props {
 {myintcust && myintcust.EngagModeOnSite &&
   
   <TouchableOpacity onPress={() => {
-        if(products.length>0){
-Alert.alert('','Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.',
-[
-  {
-    text: "Revenir",
-    onPress: () => console.log("Cancel Pressed"),
-    style: "cancel"
-  },
-  { text: "Continuer", onPress: () => console.log("OK Pressed") }
-])
-        }else{
+      
               navigation.navigate('crenSelectScreen',
               { restoId: myintcust.id , bookingType:"OnSite" });          
               }}
-            } 
+            
             style={styles.appButtonContainer}>
     <Text style={styles.appButtonText}>Réservez sur place</Text>
   </TouchableOpacity>

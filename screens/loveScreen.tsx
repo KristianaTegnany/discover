@@ -30,7 +30,7 @@ export const loveScreen = ({ route, navigation}: Props) => {
 
     let subscription =  await Parse.Cloud.run("getIntcustsDiscover");      
     subscription=  subscription.map((intcust:any)=>({
-      imageUrl : {uri : intcust.attributes.Frontpic._url} || '',
+      imageUrl : {uri : intcust.attributes.overviewpic._url} || '',
       name: intcust.attributes.corporation || '',
       style: intcust.attributes.style || '',
       id: intcust.id || ''
