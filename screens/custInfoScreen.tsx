@@ -1,7 +1,7 @@
 import { NavigationState } from '@react-navigation/native';
 import * as React from 'react';
 import { Route, StyleSheet,Image,  TextInput } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
@@ -31,6 +31,9 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [phone, setPhone] = useState('');
+  const [line1, setLine1] = useState();
+  const [city, setCity] = useState();
+  const [zip, setZip] = useState();
 
   const [resa, setResa] = useState({ 
     id:'', 
@@ -71,6 +74,15 @@ setEmail(email.trim().toLowerCase());
   async function onChangeTextFirstname(firstname:any) {
     setFirstname(firstname);
       }
+      async function onChangeTextCity(city:any) {
+        setCity(city);
+          }
+          async function onChangeTextZip(zip:any) {
+            setZip(zip);
+              }
+              async function onChangeTextline1(line1:any) {
+                setLine1(line1);
+                  }
       async function onChangeTextLastname(lastname:any) {
         setLastname(lastname);
           }
@@ -207,9 +219,10 @@ navigation.navigate('paymentStripeScreen',
       }, []);
 
   return (
+    <ScrollView>
+
     <View style={styles.container}> 
         <View style={styles.container2}> 
-
       <Text style={styles.label}>Votre adresse email</Text>
      <TextInput
          style={{color: textColor, fontFamily:'geometria-regular',
@@ -276,6 +289,79 @@ navigation.navigate('paymentStripeScreen',
         value={phone}
       />   
 
+
+<Text style={styles.label}>Votre numéro de portable</Text>
+
+           <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextPhone}
+        placeholder="+59X 69X 00 00 00"
+        value={phone}
+      />   
+
+{route.params.BookingType=="Delivery" && 
+<View>
+<Text style={styles.label}>L'adresse à laquelle vous souhaitez être livré</Text>
+
+<TextInput
+style={{color: textColor, fontFamily:'geometria-regular',
+height: 50,
+marginHorizontal:20,
+marginTop:4,
+paddingLeft: 20,
+borderWidth: 1,
+borderRadius:10,
+fontSize:15,
+borderColor: "grey"}}
+onChangeText={onChangeTextline1}
+placeholder="5 rue des accacias"
+value={line1}
+/>   
+
+<Text style={styles.label}>Code Postal</Text>
+
+           <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextZip}
+        placeholder="97200"
+        value={zip}
+      />   
+
+
+<Text style={styles.label}>Ville</Text>
+
+           <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextCity}
+        placeholder="Fort-de-france"
+        value={city}
+      />   
+</View>
+}
       <TouchableOpacity onPress={() => goPay()} 
             style={styles.appButtonContainer}>
     <Text style={styles.appButtonText} > <Text style={styles.payText}>Valider et payer</Text> </Text>
@@ -305,7 +391,7 @@ navigation.navigate('paymentStripeScreen',
        <Text style = {styles.text}>En continuant j'accepte les CGU 👀➡️ </Text>
        
    </TouchableOpacity>
-    </View>
+    </View></ScrollView>
 );
 }
 

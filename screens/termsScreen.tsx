@@ -50,7 +50,10 @@ export const termsScreen = ({ route, navigation}: Props) => {
     deliverynoonblock:'',
     contactphone:'',
     noNightTakeAway:false,
-    noNightDelivery:false
+    noNightDelivery:false,
+    onsite_delayorder:0,
+    delayorderDelivery:0,
+    confirmModeOrderOptions_delayorder:0
   });
 
   async function fetchIntcust() {
@@ -79,6 +82,9 @@ export const termsScreen = ({ route, navigation}: Props) => {
          contactphone : myintcustRaw.attributes.contactphone || '',
          noNightTakeAway:  myintcustRaw.attributes.noNightTakeAway || false,
          noNightDelivery:  myintcustRaw.attributes.noNightDelivery || false,
+         onsite_delayorder: myintcustRaw.attributes.onsite_delayorder || 0,
+         delayorderDelivery: myintcustRaw.attributes.delayorderDelivery || 0,
+         confirmModeOrderOptions_delayorder: myintcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
         }
         setMyintcust(myintcustRaw);
       }, []);
@@ -92,9 +98,36 @@ export const termsScreen = ({ route, navigation}: Props) => {
      <Text style={styles.text}>Pour se faire, merci de respecter les règles suivantes, correspondant aux contraintes de production du restaurant : </Text>
      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
-     <Text style={styles.text}>Fin de commande le midi :{myintcust.takeawaynoonblock} </Text>
+{route.params.BookingType=="Onsite" && 
+  <View>
+      <Text style={styles.title}>Réservation sur place </Text>
+      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+  <Text style={styles.text}>Fin de commande le midi :{myintcust.onsitenoonblock} </Text>
+     <Text style={styles.text}>Fin de commande le soir :  {myintcust.onsitenightblock} </Text>
+     <Text style={styles.text}>Délai entre la commande et la réception : {myintcust.onsite_delayorder} </Text>
+     </View>
+  }
+{route.params.BookingType=="TakeAway" && 
+  <View>
+        <Text style={styles.title}>Commande à emporter </Text>
+      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+  <Text style={styles.text}>Fin de commande le midi :{myintcust.takeawaynoonblock} </Text>
      <Text style={styles.text}>Fin de commande le soir :  {myintcust.takeawaynightblock} </Text>
-     <Text style={styles.text}>Délai entre la commande et la récupération / livraison : {myintcust.takeawaynightblock} </Text>
+     <Text style={styles.text}>Délai entre la commande et la récupération / livraison : {myintcust.confirmModeOrderOptions_delayorder} </Text>
+     </View>
+  }
+
+{route.params.BookingType=="Delivery" && 
+  <View>
+        <Text style={styles.title}>Commande en livraison </Text>
+      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+
+  <Text style={styles.text}>Fin de commande le midi :{myintcust.deliverynoonblock} </Text>
+     <Text style={styles.text}>Fin de commande le soir :  {myintcust.deliverynightblock} </Text>
+     <Text style={styles.text}>Délai entre la commande et la récupération / livraison : {myintcust.delayorderDelivery} </Text>
+ 
      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
      <Text style={styles.text}>Les créneaux de livraison s'entendent A partir de l'heure sélectionnée, jusqu'au début du créneau suivant. Il n'y pas d'heure précise de livraison mais bien un créneau. </Text>
@@ -127,13 +160,16 @@ export const termsScreen = ({ route, navigation}: Props) => {
      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
      <Text style={styles.text}>Soyez courtois et polis en toute circonstance, en particulier avec les livreurs qui font un métier difficile. </Text>
+     </View>
+
+    }
      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
      <Text style={styles.text}>En cas de soucis avec le contenu de votre commande, la qualité des plats, contactez le restaurant directement :  {myintcust.corporation} - {myintcust.contactphone} </Text>
 
      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
 
-     <Text style={styles.text}>Un commentaire ? Un problème ? Une suggestion ? Contactez-nous à hello@tablebig.com ou par WhatsApp au 0696 09 22 16. On vous répond du Lundi au Vendredi de 9h à 17h. </Text>
+     <Text style={styles.text}>Un commentaire ? Un problème ? Une suggestion sur le site ou l'application Table Discover ? Contactez-nous à hello@tablebig.com ou par WhatsApp au 0696 09 22 16. On vous répond du Lundi au Vendredi de 9h à 17h. </Text>
 
 
 

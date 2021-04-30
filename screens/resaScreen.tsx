@@ -13,6 +13,7 @@ import moment from 'moment';
 import NumericInput from 'react-native-numeric-input'
 import * as EmailValidator from 'email-validator';
 
+
 interface NavigationParams {
   restoId: string;
 }
@@ -32,7 +33,6 @@ interface Props {
     const [notecom, setNote] = useState('');
     const [nbcover, setNbCouver] = useState(0);
 
-    
     const [myintcust, setMyintcust] = useState({
       id : '',
       onsite_shift: 0,
@@ -96,7 +96,7 @@ interface Props {
                     }
                     // controler le nombre de places dispo sur la journée 
                     let params01 = {
-                      dateres: moment(route.params.day).format(),
+//                      dateres: dayjs(route.params.day).tz("America/New_York"),
                       shift: myintcust.onsite_shift,
                       itid: myintcust.id
                     };
@@ -104,7 +104,7 @@ interface Props {
                     // controler le nombre de places dispo sur le creneau 
                     
                     // controler heure limite noon bloc night block
-                    // creer la resa 
+                
 
                     if(blockGo==false){
 
@@ -130,6 +130,7 @@ interface Props {
                            await  guest.save();
                             console.log(guest.id)
                             let Reservation = Parse.Object.extend("Reservation"); // 
+
                             let res = new Reservation();
                             res.set("guest", guest);
                             await guest.fetch();
@@ -139,11 +140,12 @@ interface Props {
                               "mobilephone": guest.attributes.mobilephone,
                               "email": guest.attributes.email,
                             }];
+                            console.log(it)
+                            res.set("intcust", it);
                             res.set("guestFlat", arrayGuest);
                             res.set("process", "selfcare");
                             res.set("numguest", nbcover);
                             res.set("engagModeResa", "SurPlace");
-
                             res.set("date", moment(route.params.day).toDate());
                             res.set("notes", notecom);
                             res.set("status", "Confirmé"); // en cours
@@ -179,6 +181,8 @@ interface Props {
                             }];
                             res.set("guestFlat", arrayGuest);
                             res.set("numguest", nbcover);
+                            res.set("intcust", it);
+                            res.set("notes", notecom);
                             res.set("engagModeResa", "SurPlace");
                             res.set("date", moment(route.params.day).toDate());
                             res.set("process", "selfcare");
@@ -205,7 +209,7 @@ interface Props {
                     }
                   }
   useEffect(() => {
-    console.log(route.params);
+
     var Intcust = Parse.Object.extend("Intcust");
   let myintcust = new Intcust;
   myintcust.id = route.params.restoId;

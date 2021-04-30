@@ -10,6 +10,7 @@ const basketSlice = createSlice({
   reducers: {
     add:  (state, action) => {
             // vérifier le choix des fc et des persomenu si différent créer un product différent 
+            
            let stateNew=cloneDeep(state);
             console.log("state start")
           if (stateNew.length==0){

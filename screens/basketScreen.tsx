@@ -83,6 +83,7 @@ export const basketScreen = ({ route, navigation}: Props) => {
   }
   
       useEffect(() => {
+        console.log(products)
         calculusTotalCashBasket();
         calculusTotalQuantityBasket();
 
