@@ -9,7 +9,7 @@ import { ColorSchemeName } from "react-native";
 import basketScreen from "../screens/basketScreen";
 import crenSelectScreen from "../screens/crenSelectScreen";
 import custInfoScreen from "../screens/custInfoScreen";
-import deliveryScreen from "../screens/deliveryScreen";
+import orderScreen from "../screens/orderScreen";
 import DishScreen from "../screens/DishScreen";
 import GuideScreen from "../screens/GuideScreen";
 import hourSelectScreen from "../screens/hourSelectScreen";
@@ -18,7 +18,6 @@ import paymentScreen from "../screens/paymentScreen";
 import resaScreen from "../screens/resaScreen";
 import RestoScreen from "../screens/RestoScreen";
 import successScreen from "../screens/successScreen";
-import takeawayScreen from "../screens/takeawayScreen";
 import termsScreen from "../screens/termsScreen";
 import { RootStackParamList } from "../types";
 import BottomTabNavigator from "./BottomTabNavigator";
@@ -73,19 +72,14 @@ function RootNavigator() {
         component={RestoScreen}
       />
       <Stack.Screen
-        name="deliveryScreen"
-        options={{ headerTitle: "Livraison" }}
-        component={deliveryScreen}
+        name="orderScreen"
+        options={orderScreen.navigationOptions}
+        component={orderScreen}
       />
       <Stack.Screen
         name="resaScreen"
         options={{ headerTitle: "Réservation sur place" }}
         component={resaScreen}
-      />
-      <Stack.Screen
-        name="takeawayScreen"
-        options={{ title: "A emporter" }}
-        component={takeawayScreen}
       />
       <Stack.Screen
         name="DishScreen"
