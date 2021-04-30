@@ -3,9 +3,14 @@ import * as React from 'react';
 import { Image, Route, StyleSheet } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
+var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
+import { useSelector } from "react-redux"
+import { ProductItem } from '../global';
 import { useEffect } from 'react';
 import { Divider } from 'react-native-elements';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
 import moment from 'moment';
 interface NavigationParams {
   restoId: string;
@@ -21,9 +26,12 @@ interface Props {
 
 export const successScreen = ({ route, navigation}: Props) => {
 
+
       useEffect(() => {
 console.log(route.params)
       }, []);
+
+    
 
   return (
     <View style ={styles.container}>
@@ -51,7 +59,7 @@ console.log(route.params)
       <Text style ={styles.text}>Votre numéro de commande : {route.params.resaId}</Text>
 
        }
-      <Divider style={{ backgroundColor: 'grey' , marginVertical:20}} />
+      <Divider style={{ backgroundColor: '#ff50f50' , marginVertical:20}} />
              <Text style ={styles.text}>Notez bien votre numéro de réservation, il vous sert de confirmation. Prenez une copie d'écran. Vous ne recevrez pas d'email de confirmation. Votre boite email est déjà bien assez remplie comme cela 😉</Text>
              <Divider style={{ backgroundColor: '#ff50f50' , marginVertical:20}} />
 
