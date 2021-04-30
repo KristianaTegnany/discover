@@ -21,7 +21,6 @@ import successScreen from "../screens/successScreen";
 import termsScreen from "../screens/termsScreen";
 import { RootStackParamList } from "../types";
 import BottomTabNavigator from "./BottomTabNavigator";
-import { useColorScheme } from "react-native-appearance";
 
 import LinkingConfiguration from "./LinkingConfiguration";
 import paymentStripeScreen from "../screens/paymentStripeScreen";
@@ -34,18 +33,13 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
-  let colorSchemeX = useColorScheme();
   return (
-    //   <ThemeProvider useDark={colorSchemeX === 'dark'}>
-
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
       <RootNavigator />
     </NavigationContainer>
-
-    //   </ThemeProvider>
   );
 }
 

@@ -12,7 +12,6 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
-import darkColors from "react-native-elements/dist/config/colorsDark";
 import { useSelector } from "react-redux";
 import { ProductItem } from "../global";
 
@@ -42,16 +41,13 @@ export const DishScreen = ({ route, navigation }: Props) => {
   const [initied, setInitied] = useState(false);
   const [persoMenu, setPersoMenu] = useState<any[]>();
   const [formulaChoiced, setFormulaChoiced] = useState<any[]>();
-  const [checkboxBackColor, setcheckboxBackColor] = useState("transparent");
-  const [checkboxBorderColor, setcheckboxBorderColor] = useState("grey");
-
+  
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
     "background"
   );
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
-  const products = useSelector((state: ProductItem[]) => state);
-
+  
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
