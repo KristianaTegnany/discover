@@ -1,70 +1,58 @@
-import { NavigationState } from '@react-navigation/native';
-import * as React from 'react';
-import { Route, StyleSheet } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { NavigationScreenProp } from 'react-navigation';
+import { NavigationState } from "@react-navigation/native";
+import * as React from "react";
+import { Route, StyleSheet } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
-import { Text, View } from '../components/Themed';
-import { useSelector } from "react-redux"
+import { Text, View } from "../components/Themed";
+import { useSelector } from "react-redux";
 
-import { ProductItem } from '../global';
-import { Icon, ListItem } from 'react-native-elements';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { remove, store } from '../store';
-import { WebView } from 'react-native-webview';
+import { ProductItem } from "../global";
+import { Icon, ListItem } from "react-native-elements";
+import { useEffect } from "react";
+import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { remove, store } from "../store";
+import { WebView } from "react-native-webview";
 
 interface NavigationParams {
   restoId: string;
-  paylink: string
+  paylink: string;
 }
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
 interface Props {
   navigation: Navigation;
   route: Route;
-  restaurant: []
+  restaurant: [];
 }
 
-export const basketScreen = ({ route, navigation}: Props) => {
-
+export const basketScreen = ({ route, navigation }: Props) => {
   const products = useSelector((state: ProductItem[]) => state);
 
+  async function fetchIntcust() {}
 
-  async function fetchIntcust() {
-
-
-  }
-
-
-      useEffect(() => {
-      }, []);
-
-    
+  useEffect(() => {}, []);
 
   return (
-    <WebView
-    source={{ uri: route.params.paylink }}
-    style={{ marginTop: 0 }}
-  />
-);
-}
+    <WebView source={{ uri: route.params.paylink }} style={{ marginTop: 0 }} />
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  appButtonContainer:{
+  appButtonContainer: {
     elevation: 8,
-    marginBottom :10,
-    marginTop:30,
+    marginBottom: 10,
+    marginTop: 30,
     backgroundColor: "#ff5050",
     borderRadius: 10,
-    marginRight :30,
-    marginLeft :30,
+    marginRight: 30,
+    marginLeft: 30,
     paddingVertical: 13,
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
   },
   minitext: {
     fontSize: 16,
@@ -75,59 +63,55 @@ const styles = StyleSheet.create({
     color: "grey",
     fontSize: 20,
     marginLeft: 5,
-    marginRight: 1
+    marginRight: 1,
   },
-  appButtonText:{
+  appButtonText: {
     fontSize: 18,
     color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
-   //textTransform: "uppercase",
+    //textTransform: "uppercase",
     fontFamily: "geometria-bold",
-
   },
-  headertext:{
+  headertext: {
     fontFamily: "geometria-bold",
-color:"white"
+    color: "white",
   },
   title: {
-  //  flex:1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    //  flex:1,
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 30,
-    padding:20,
+    padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-  textBold:{
-    flex:1,
+  textBold: {
+    flex: 1,
     fontSize: 16,
-    top:0,
+    top: 0,
     fontFamily: "geometria-bold",
-    fontWeight: 'bold',
+    fontWeight: "bold",
 
-    padding: 20
+    padding: 20,
   },
-  textRaw:{
-    flex:1,
+  textRaw: {
+    flex: 1,
     fontSize: 16,
-    top:0,
+    top: 0,
     fontFamily: "geometria-regular",
   },
   text: {
-    flex:1,
+    flex: 1,
     fontSize: 16,
-    top:0,
+    top: 0,
     fontFamily: "geometria-regular",
-
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
-
-  
 });
 
 export default basketScreen;
