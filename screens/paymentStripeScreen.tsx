@@ -1,12 +1,10 @@
+const { StripeCheckout } = require("react-native-stripe-checkout-webview");
+import * as React from "react";
+import { useEffect } from "react";
+import { Route } from "react-native";
+import { NavigationScreenProp, NavigationState } from "react-navigation";
 
-const {StripeCheckout} = require('react-native-stripe-checkout-webview');
-import * as React from 'react';
-import { useEffect } from 'react';
-import { Route } from 'react-native';
-import { NavigationScreenProp, NavigationState } from 'react-navigation';
-
-interface NavigationParams {
-}
+interface NavigationParams {}
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
 interface Props {
@@ -14,27 +12,23 @@ interface Props {
   route: Route;
 }
 
-export const paymentStripeScreen = ({ route, navigation}: Props) => {
+export const paymentStripeScreen = ({ route, navigation }: Props) => {
+  useEffect(() => {}, []);
 
-  useEffect(() => {
-      }, []);
-    
   return (
-  <StripeCheckout
-    stripePublicKey={route.params.STRIPE_PUBLIC_KEY}
-    checkoutSessionInput={{
-      sessionId: route.params.CHECKOUT_SESSION_ID,
-    }}
-    onSuccess={() => {
-      
-      console.log(`Stripe checkout session succeeded. session id: .`);
-      navigation.navigate('successScreen');   
-   
-    }}
-    onCancel={() => {
-      console.log(`Stripe checkout session cancelled.`);
-    }}
-  />
-);
-  }
+    <StripeCheckout
+      stripePublicKey={route.params.STRIPE_PUBLIC_KEY}
+      checkoutSessionInput={{
+        sessionId: route.params.CHECKOUT_SESSION_ID,
+      }}
+      onSuccess={() => {
+        console.log(`Stripe checkout session succeeded. session id: .`);
+        navigation.navigate("successScreen");
+      }}
+      onCancel={() => {
+        console.log(`Stripe checkout session cancelled.`);
+      }}
+    />
+  );
+};
 export default paymentStripeScreen;

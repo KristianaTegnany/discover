@@ -21,7 +21,7 @@ type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 interface Props {
   navigation: Navigation;
   route: Route;
-  restaurant: []
+  restaurant: [];
 }
 
   export const resaScreen = ({ route, navigation}: Props) => {
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color:'white'
   },
-  appButtonContainer:{
+  appButtonContainer: {
     elevation: 8,
     marginBottom :10,
     marginTop:30,
@@ -360,24 +360,24 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    padding:30,
-    fontWeight: 'bold',
+    padding: 30,
+    fontWeight: "bold",
   },
   text: {
     fontSize: 16,
-    padding: 4
+    padding: 4,
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
   image: {
-   flex: 1,
-   width:400,
-paddingTop:110,
-   // marginBottom: 47,
-   // marginTop: -252
+    flex: 1,
+    width: 400,
+    paddingTop: 110,
+    // marginBottom: 47,
+    // marginTop: -252
   },
   label:{
     marginHorizontal:20,

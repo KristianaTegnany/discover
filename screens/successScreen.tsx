@@ -14,14 +14,14 @@ import useColorScheme from '../hooks/useColorScheme';
 import moment from 'moment';
 interface NavigationParams {
   restoId: string;
-  paylink: string
+  paylink: string;
 }
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
 interface Props {
   navigation: Navigation;
   route: Route;
-  restaurant: []
+  restaurant: [];
 }
 
 export const successScreen = ({ route, navigation}: Props) => {
@@ -34,10 +34,11 @@ console.log(route.params)
     
 
   return (
-    <View style ={styles.container}>
-  <Image  source={{
-              uri: "https://media.giphy.com/media/oGO1MPNUVbbk4/giphy.gif" ,
-            }}
+    <View style={styles.container}>
+      <Image
+        source={{
+          uri: "https://media.giphy.com/media/oGO1MPNUVbbk4/giphy.gif",
+        }}
         //    resizeMode="cover"
             style={styles.image} 
             
@@ -81,49 +82,47 @@ console.log(route.params)
     >Revenir à l'accueil</Text>
   </TouchableOpacity>
     </View>
-);
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  appButtonContainer:{
+  appButtonContainer: {
     elevation: 8,
-    marginBottom :10,
+    marginBottom: 10,
     backgroundColor: "#ff5050",
     borderRadius: 10,
-    marginRight :30,
-    marginLeft :30,
+    marginRight: 30,
+    marginLeft: 30,
 
     paddingVertical: 13,
-    paddingHorizontal: 14
-
+    paddingHorizontal: 14,
   },
-  appButtonText:{
+  appButtonText: {
     fontSize: 18,
     color: "#fff",
     fontWeight: "bold",
     alignSelf: "center",
-   //textTransform: "uppercase",
+    //textTransform: "uppercase",
     fontFamily: "geometria-bold",
-
   },
   image: {
     width: 400,
     height: 300,
-//    borderRadius: 17,
+    //    borderRadius: 17,
     padding: 0,
-   // margin: 7
+    // margin: 7
   },
   title: {
-  //  flex:1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    //  flex:1,
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 30,
-    padding:20,
+    padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-bold",
   },
   text: {
-    flex:1,
+    flex: 1,
     fontSize: 16,
     marginHorizontal:20,
     top:0,
