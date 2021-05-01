@@ -28,7 +28,6 @@ export const successScreen = ({ route, navigation}: Props) => {
 
 
       useEffect(() => {
-console.log(route.params)
       }, []);
 
     

@@ -76,12 +76,10 @@ interface Props {
                       }
                   
                   async function onChangeTextNbCouverts(nbcover:any) {
-                    console.log(nbcover)
                     setNbCouver(nbcover);
                       }
                   
                   async function goResa(){
-                    console.log("go resa")
                     let blockGo=false;
 
                     if(email){
@@ -125,10 +123,8 @@ interface Props {
                             guest.set("email", email);
                             let  it = new Intcust();
                             it.id = myintcust.id;
-                            console.log(3)
                             guest.set("intcust", it);
                            await  guest.save();
-                            console.log(guest.id)
                             let Reservation = Parse.Object.extend("Reservation"); // 
                             let res = new Reservation();
                             res.set("guest", guest);
@@ -190,7 +186,6 @@ interface Props {
                       )
                       .then(
                         (res:any) => {
-                          console.log(res)
                           navigation.navigate('successScreen',
                           { BookingType: "Onsite" , resaId:res.id, restoname:myintcust.corporation, heure: route.params.hour, nbcover: nbcover,  name: lastname});   
 
@@ -198,14 +193,12 @@ interface Props {
 
                         },
                         (error:any) => {
-                          console.log(error)
                           return error;
                         }
                       );
                     }
                   }
   useEffect(() => {
-    console.log(route.params);
     var Intcust = Parse.Object.extend("Intcust");
   let myintcust = new Intcust;
   myintcust.id = route.params.restoId;
