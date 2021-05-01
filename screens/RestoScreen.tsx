@@ -364,7 +364,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
             <View>
               <Text style={styles.textSub}>Commande à emporter </Text>
               {businessHoursTakeAway && businessHoursTakeAway.length!==0 && businessHoursTakeAway.map((bh2:any)=> (
-              <Text style={styles.textMoli}>{bh2.daysOfWeek} {bh2.startTime}-{bh2.endTime}</Text>
+              <Text style={styles.textMoli} key={bh2.daysOfWeek + bh2.startTime}>{bh2.daysOfWeek} {bh2.startTime}-{bh2.endTime}</Text>
               ))}
               <Text style={styles.textMoli}>
                 Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
@@ -384,7 +384,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
             <View>
               <Text style={styles.textSub}>Commande en livraison </Text>
               {businessHoursDelivery && businessHoursDelivery.length!==0 && businessHoursDelivery.map((bh:any)=> (
-              <Text style={styles.textMoli}>{bh.daysOfWeek} {bh.startTime}-{bh.endTime}</Text>
+              <Text style={styles.textMoli} key={bh.daysOfWeek + bh.startTime}>{bh.daysOfWeek} {bh.startTime}-{bh.endTime}</Text>
               ))}
               <Text style={styles.textMoli}>
                 Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
@@ -402,28 +402,10 @@ export const RestoScreen = ({ route, navigation }: Props) => {
         {myintcust && myintcust.EngagModeOnSite && (
           <TouchableOpacity
             onPress={() => {
-              if (products.length > 0) {
-                Alert.alert(
-                  "",
-                  "Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.",
-                  [
-                    {
-                      text: "Revenir",
-                      onPress: () => console.log("Cancel Pressed"),
-                      style: "cancel",
-                    },
-                    {
-                      text: "Continuer",
-                      onPress: () => console.log("OK Pressed"),
-                    },
-                  ]
-                );
-              } else {
                 navigation.navigate("crenSelectScreen", {
                   restoId: myintcust.id,
                   bookingType: "OnSite",
                 });
-              }
             }}
             style={styles.appButtonContainer}
           >

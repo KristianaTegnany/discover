@@ -87,7 +87,6 @@ export const termsScreen = ({ route, navigation}: Props) => {
          confirmModeOrderOptions_delayorder: myintcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
         }
         setMyintcust(myintcustRaw);
-        console.log(route.params)
       }, []);
 
     

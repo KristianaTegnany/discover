@@ -40,6 +40,8 @@ interface Props {
       EngagModeOnSite:false,
       onsitenoonblock: '',
       onsitenightblock:'',
+      onsite_maxguestbyday:0,
+      onsite_maxresbycren:0
     });
 
     const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, 'background');
@@ -76,7 +78,6 @@ interface Props {
                       }
                   
                   async function onChangeTextNbCouverts(nbcover:any) {
-                    console.log(nbcover)
                     setNbCouver(nbcover);
                       }
                   
@@ -86,7 +87,7 @@ interface Props {
 
                     if(email){
                       if(EmailValidator.validate(email)==false){
-                        let blockGo=true;
+                        blockGo=true;
                       Alert.alert("Merci de vérifier votre adresse email. Le format est incorrect.");
                     }}
                   
@@ -95,20 +96,44 @@ interface Props {
                       blockGo=true;
                     }
                     // controler le nombre de places dispo sur la journée 
+                    console.log(myintcust.id)
+                    console.log(route.params.day)
+                    console.log(route.params.hour)
+
+                    let starttime = moment(route.params.day).clone().hours(route.params.hour.substring(0, 2)).minute(route.params.hour.substring(3))
+                    console.log(starttime)
+
+
                     let params01 = {
-//                      dateres: dayjs(route.params.day).tz("America/New_York"),
-                      shift: myintcust.onsite_shift,
-                      itid: myintcust.id
+                      itid: myintcust.id,
+                      dateres: starttime.toDate(),
+                      shift:myintcust.onsite_shift
                     };
-                //    const myres = await Parse.Cloud.run("getReservationsSafeOnsiteByDateAndCren", params01);
-                    // controler le nombre de places dispo sur le creneau 
-                    
-                    // controler heure limite noon bloc night block
-                
+                    const coversForCren = await Parse.Cloud.run("getReservationsSafeOnsiteByDateAndCren", params01);
+                    console.log('coversForCren' + coversForCren)
+                    console.log('onsite_shift' + myintcust.onsite_shift)
 
-                    if(blockGo==false){
-
-
+                    console.log('myintcust.onsite_maxresbycren' + myintcust.onsite_maxresbycren)
+                    if(coversForCren+nbcover>myintcust.onsite_maxresbycren){
+                      blockGo=true
+                      Alert.alert( "Vous avez été coiffé au chapeau ! Il n'y a plus de places pour ce créneau, vous pouvez en choisir un autre en revenant en arrière. ")                    
+                      navigation.navigate('hourSelectScreen',
+                      { BookingType: "Onsite" ,  restoname:myintcust.corporation, day: route.params.day, nbcover: nbcover,  name: lastname})
+                    }
+                    let params3 = {
+                      itid: myintcust.id,
+                      date:  starttime.format(),    
+                    };
+                    const numOfGuestsForDay = await Parse.Cloud.run("getNumOfGuestsForDay", params3);
+                    console.log('numOfGuestsForDay' + numOfGuestsForDay)
+                    console.log('myintcust.onsite_maxguestbyday' + myintcust.onsite_maxguestbyday)
+                   
+                    if(numOfGuestsForDay+nbcover>myintcust.onsite_maxguestbyday){
+                      blockGo=true
+                      Alert.alert("Vous avez été coiffé au chapeau ! Il n'y a plus de places pour ce jour, vous pouvez en choisir un autre en revenant en arrière. ")
+                      navigation.navigate('crenSelectScreen',
+                      { BookingType: "Onsite" ,  restoname:myintcust.corporation,  nbcover: nbcover,  name: lastname})}
+                     if(blockGo==false){
                     const Guest = Parse.Object.extend("Guest");
                     const Intcust = Parse.Object.extend("Intcust");
                   
@@ -121,14 +146,11 @@ interface Props {
                             guest.set("firstname", firstname);
                             guest.set("lastname", lastname);
                             guest.set("mobilephone", phone);
-                         
                             guest.set("email", email);
                             let  it = new Intcust();
                             it.id = myintcust.id;
-                            console.log(3)
                             guest.set("intcust", it);
                            await  guest.save();
-                            console.log(guest.id)
                             let Reservation = Parse.Object.extend("Reservation"); // 
 
                             let res = new Reservation();
@@ -140,11 +162,11 @@ interface Props {
                               "mobilephone": guest.attributes.mobilephone,
                               "email": guest.attributes.email,
                             }];
-                            console.log(it)
                             res.set("intcust", it);
                             res.set("guestFlat", arrayGuest);
                             res.set("process", "selfcare");
                             res.set("numguest", nbcover);
+                            res.set("withapp", true);
                             res.set("engagModeResa", "SurPlace");
                             res.set("date", moment(route.params.day).toDate());
                             res.set("notes", notecom);
@@ -183,6 +205,7 @@ interface Props {
                             res.set("numguest", nbcover);
                             res.set("intcust", it);
                             res.set("notes", notecom);
+                            res.set("withapp", true);
                             res.set("engagModeResa", "SurPlace");
                             res.set("date", moment(route.params.day).toDate());
                             res.set("process", "selfcare");
@@ -194,7 +217,6 @@ interface Props {
                       )
                       .then(
                         (res:any) => {
-                          console.log(res)
                           navigation.navigate('successScreen',
                           { BookingType: "Onsite" , resaId:res.id, restoname:myintcust.corporation, heure: route.params.hour, nbcover: nbcover,  name: lastname});   
 
@@ -209,7 +231,6 @@ interface Props {
                     }
                   }
   useEffect(() => {
-
     var Intcust = Parse.Object.extend("Intcust");
   let myintcust = new Intcust;
   myintcust.id = route.params.restoId;
@@ -220,9 +241,11 @@ interface Props {
     'EngagModeOnSite':myintcust.attributes.EngagModeOnSite || false,
     'onsitenoonblock':myintcust.attributes.onsitenoonblock || '',
     'onsitenightblock':myintcust.attributes.onsitenightblock || '',
+    'onsite_maxguestbyday':myintcust.attributes.onsite_maxguestbyday || 0,
+    "onsite_maxresbycren": myintcust.attributes.onsite_maxresbycren || 0,
   }];
   setMyintcust(intcustRawX[0]);
-  }, []);
+  }, [])
 
 
   return (
