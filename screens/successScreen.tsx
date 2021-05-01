@@ -1,14 +1,17 @@
-import { NavigationState } from "@react-navigation/native";
-import * as React from "react";
-import { Image, Route, StyleSheet } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { NavigationScreenProp } from "react-navigation";
+import { NavigationState } from '@react-navigation/native';
+import * as React from 'react';
+import { Image, Route, StyleSheet } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
-import { Text, View } from "../components/Themed";
-import { useSelector } from "react-redux";
-import { ProductItem } from "../global";
-import { useEffect } from "react";
-
+import { Text, View } from '../components/Themed';
+import { useSelector } from "react-redux"
+import { ProductItem } from '../global';
+import { useEffect } from 'react';
+import { Divider } from 'react-native-elements';
+import Colors from '../constants/Colors';
+import useColorScheme from '../hooks/useColorScheme';
+import moment from 'moment';
 interface NavigationParams {
   restoId: string;
   paylink: string;
@@ -21,10 +24,13 @@ interface Props {
   restaurant: [];
 }
 
-export const successScreen = ({ route, navigation }: Props) => {
-  useEffect(() => {
-    //    console.log(products);
-  }, []);
+export const successScreen = ({ route, navigation}: Props) => {
+
+
+      useEffect(() => {
+      }, []);
+
+    
 
   return (
     <View style={styles.container}>
@@ -33,23 +39,47 @@ export const successScreen = ({ route, navigation }: Props) => {
           uri: "https://media.giphy.com/media/oGO1MPNUVbbk4/giphy.gif",
         }}
         //    resizeMode="cover"
-        style={styles.image}
-      ></Image>
-      <Text style={styles.title}>Vous êtes une personne formidable</Text>
-      <Text style={styles.title}>Votre numéro de commande :</Text>
+            style={styles.image} 
+            
+          ></Image>
+          <ScrollView>
+      <Text style ={styles.title}>Vous êtes une personne formidable</Text>
+      
+      {route.params.BookingType=="Onsite" && 
+     <View>
+            <Text style ={styles.textBold}>Récapitulatif de réservation au restaurant {route.params.restoname}</Text>
 
-      <TouchableOpacity style={styles.appButtonContainer}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "bold",
-            alignSelf: "center",
-            fontFamily: "geometria-regular",
-          }}
-        >
-          Revenir à l'accueil
-        </Text>
-      </TouchableOpacity>
+     <Text style ={styles.text}>{moment(route.params.day).format('dddd DD MMM')} à {route.params.heure} - {route.params.nbcover} couverts</Text>
+     <Text style ={styles.text}>Au nom de {route.params.name}</Text>
+
+      <Text style ={styles.text}>Réservation n° {route.params.resaId}</Text>
+      </View>
+       }
+        {route.params.BookingType=="TakeAway" || route.params.BookingType=="Delivery" && 
+      <Text style ={styles.text}>Votre numéro de commande : {route.params.resaId}</Text>
+
+       }
+      <Divider style={{ backgroundColor: '#ff50f50' , marginVertical:20}} />
+             <Text style ={styles.text}>Notez bien votre numéro de réservation, il vous sert de confirmation. Prenez une copie d'écran. Vous ne recevrez pas d'email de confirmation. Votre boite email est déjà bien assez remplie comme cela 😉</Text>
+             <Divider style={{ backgroundColor: '#ff50f50' , marginVertical:20}} />
+
+             <Text style ={styles.text}>Modifier ou annuler : hello@tablebig.com ou par WhatsApp 0696 09 22 16.</Text>
+
+             </ScrollView>
+      <TouchableOpacity 
+       style={styles.appButtonContainer}
+       onPress={() => {
+        navigation.navigate('TablesScreen'
+        )} } >
+    <Text 
+     style={{
+      fontSize: 16,
+      fontWeight: "bold",
+      alignSelf: "center",
+      fontFamily: "geometria-regular",
+    }}
+    >Revenir à l'accueil</Text>
+  </TouchableOpacity>
     </View>
   );
 };
@@ -108,7 +138,8 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     fontSize: 16,
-    top: 0,
+    marginHorizontal:20,
+    top:0,
     fontFamily: "geometria-regular",
   },
 });

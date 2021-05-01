@@ -38,13 +38,14 @@ export const loveScreen = ({ route, navigation }: Props) => {
   // const [cardIndex, setcardIndex] = useState(0);
 
   async function getIntcusts() {
-    let subscription = await Parse.Cloud.run("getIntcustsDiscover");
-    subscription = subscription.map((intcust: any) => ({
-      imageUrl: { uri: intcust.attributes.Frontpic._url } || "",
-      name: intcust.attributes.corporation || "",
-      style: intcust.attributes.style || "",
-      id: intcust.id || "",
-    }));
+
+    let subscription =  await Parse.Cloud.run("getIntcustsDiscover");      
+    subscription=  subscription.map((intcust:any)=>({
+      imageUrl : {uri : intcust.attributes.overviewpic._url} || '',
+      name: intcust.attributes.corporation || '',
+      style: intcust.attributes.style || '',
+      id: intcust.id || ''
+    }))
     setCards(subscription);
   }
 

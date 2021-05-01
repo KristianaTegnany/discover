@@ -66,8 +66,7 @@ export const GuideScreen = ({ route, navigation }: Props) => {
     var Guide = Parse.Object.extend("Guide");
     let guideRaw = new Guide();
     guideRaw.id = route.params.guideId;
-    console.log(guideRaw);
-    console.log(guideRaw.id);
+
 
     setGuide({
       id: guideRaw.id || "",
