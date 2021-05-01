@@ -344,7 +344,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
               <Text style={styles.textSub}>Réservation sur place </Text>
 
               {businessHours && businessHours.length!==0  && businessHours.map((bh)=> (
-              <Text style={styles.textMoli}>{bh.daysOfWeek} {bh.startTime}-{bh.endTime}</Text>
+              <Text style={styles.textMoli} key={bh.daysOfWeek + bh.startTime}>{bh.daysOfWeek} {bh.startTime}-{bh.endTime}</Text>
               ))}
               <Text style={styles.textMoli}>
                 Fin de commande le midi : {myintcust.onsitenoonblock}{" "}

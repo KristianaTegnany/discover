@@ -13,6 +13,7 @@ import moment from 'moment';
 import NumericInput from 'react-native-numeric-input'
 import * as EmailValidator from 'email-validator';
 
+
 interface NavigationParams {
   restoId: string;
 }
@@ -21,7 +22,7 @@ type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 interface Props {
   navigation: Navigation;
   route: Route;
-  restaurant: [];
+  restaurant: []
 }
 
   export const resaScreen = ({ route, navigation}: Props) => {
@@ -32,7 +33,6 @@ interface Props {
     const [notecom, setNote] = useState('');
     const [nbcover, setNbCouver] = useState(0);
 
-    
     const [myintcust, setMyintcust] = useState({
       id : '',
       onsite_shift: 0,
@@ -76,10 +76,12 @@ interface Props {
                       }
                   
                   async function onChangeTextNbCouverts(nbcover:any) {
+                    console.log(nbcover)
                     setNbCouver(nbcover);
                       }
                   
                   async function goResa(){
+                    console.log("go resa")
                     let blockGo=false;
 
                     if(email){
@@ -94,7 +96,7 @@ interface Props {
                     }
                     // controler le nombre de places dispo sur la journée 
                     let params01 = {
-                      dateres: moment(route.params.day).format(),
+//                      dateres: dayjs(route.params.day).tz("America/New_York"),
                       shift: myintcust.onsite_shift,
                       itid: myintcust.id
                     };
@@ -102,7 +104,7 @@ interface Props {
                     // controler le nombre de places dispo sur le creneau 
                     
                     // controler heure limite noon bloc night block
-                    // creer la resa 
+                
 
                     if(blockGo==false){
 
@@ -123,9 +125,12 @@ interface Props {
                             guest.set("email", email);
                             let  it = new Intcust();
                             it.id = myintcust.id;
+                            console.log(3)
                             guest.set("intcust", it);
                            await  guest.save();
+                            console.log(guest.id)
                             let Reservation = Parse.Object.extend("Reservation"); // 
+
                             let res = new Reservation();
                             res.set("guest", guest);
                             await guest.fetch();
@@ -135,11 +140,12 @@ interface Props {
                               "mobilephone": guest.attributes.mobilephone,
                               "email": guest.attributes.email,
                             }];
+                            console.log(it)
+                            res.set("intcust", it);
                             res.set("guestFlat", arrayGuest);
                             res.set("process", "selfcare");
                             res.set("numguest", nbcover);
                             res.set("engagModeResa", "SurPlace");
-
                             res.set("date", moment(route.params.day).toDate());
                             res.set("notes", notecom);
                             res.set("status", "Confirmé"); // en cours
@@ -175,6 +181,8 @@ interface Props {
                             }];
                             res.set("guestFlat", arrayGuest);
                             res.set("numguest", nbcover);
+                            res.set("intcust", it);
+                            res.set("notes", notecom);
                             res.set("engagModeResa", "SurPlace");
                             res.set("date", moment(route.params.day).toDate());
                             res.set("process", "selfcare");
@@ -186,6 +194,7 @@ interface Props {
                       )
                       .then(
                         (res:any) => {
+                          console.log(res)
                           navigation.navigate('successScreen',
                           { BookingType: "Onsite" , resaId:res.id, restoname:myintcust.corporation, heure: route.params.hour, nbcover: nbcover,  name: lastname});   
 
@@ -193,12 +202,14 @@ interface Props {
 
                         },
                         (error:any) => {
+                          console.log(error)
                           return error;
                         }
                       );
                     }
                   }
   useEffect(() => {
+
     var Intcust = Parse.Object.extend("Intcust");
   let myintcust = new Intcust;
   myintcust.id = route.params.restoId;
@@ -331,7 +342,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color:'white'
   },
-  appButtonContainer: {
+  appButtonContainer:{
     elevation: 8,
     marginBottom :10,
     marginTop:30,
@@ -353,24 +364,24 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    padding: 30,
-    fontWeight: "bold",
+    padding:30,
+    fontWeight: 'bold',
   },
   text: {
     fontSize: 16,
-    padding: 4,
+    padding: 4
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: "80%",
+    width: '80%',
   },
   image: {
-    flex: 1,
-    width: 400,
-    paddingTop: 110,
-    // marginBottom: 47,
-    // marginTop: -252
+   flex: 1,
+   width:400,
+paddingTop:110,
+   // marginBottom: 47,
+   // marginTop: -252
   },
   label:{
     marginHorizontal:20,
