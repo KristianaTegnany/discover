@@ -114,11 +114,11 @@ interface Props {
                     console.log('onsite_shift' + myintcust.onsite_shift)
 
                     console.log('myintcust.onsite_maxresbycren' + myintcust.onsite_maxresbycren)
-                    if(coversForCren+nbcover>myintcust.onsite_maxresbycren){
+                    if(blockGo==false && coversForCren+nbcover>myintcust.onsite_maxresbycren){
                       blockGo=true
-                      Alert.alert( "Vous avez été coiffé au chapeau ! Il n'y a plus de places pour ce créneau, vous pouvez en choisir un autre en revenant en arrière. ")                    
+                      Alert.alert( "Vous avez été coiffé au poteau ! Il n'y a plus de places pour ce créneau, vous pouvez en choisir un autre en revenant en arrière. ")                    
                       navigation.navigate('hourSelectScreen',
-                      { BookingType: "Onsite" ,  restoname:myintcust.corporation, day: route.params.day, nbcover: nbcover,  name: lastname})
+                      { bookingType: "Onsite" ,  restoname:myintcust.corporation, day: route.params.day, nbcover: nbcover,  name: lastname})
                     }
                     let params3 = {
                       itid: myintcust.id,
@@ -130,9 +130,9 @@ interface Props {
                    
                     if(numOfGuestsForDay+nbcover>myintcust.onsite_maxguestbyday){
                       blockGo=true
-                      Alert.alert("Vous avez été coiffé au chapeau ! Il n'y a plus de places pour ce jour, vous pouvez en choisir un autre en revenant en arrière. ")
+                      Alert.alert("Vous avez été coiffé au poteau ! Il n'y a plus de places pour ce jour, vous pouvez en choisir un autre en revenant en arrière. ")
                       navigation.navigate('crenSelectScreen',
-                      { BookingType: "Onsite" ,  restoname:myintcust.corporation,  nbcover: nbcover,  name: lastname})}
+                      { bookingType: "Onsite" ,  restoname:myintcust.corporation,  nbcover: nbcover,  name: lastname})}
                      if(blockGo==false){
                     const Guest = Parse.Object.extend("Guest");
                     const Intcust = Parse.Object.extend("Intcust");
@@ -218,7 +218,7 @@ interface Props {
                       .then(
                         (res:any) => {
                           navigation.navigate('successScreen',
-                          { BookingType: "Onsite" , resaId:res.id, restoname:myintcust.corporation, heure: route.params.hour, nbcover: nbcover,  name: lastname});   
+                          { bookingType: "Onsite" , resaId:res.id, restoname:myintcust.corporation, hour: route.params.hour, nbcover: nbcover,  name: lastname});   
 
                           return Promise.resolve(res);
 

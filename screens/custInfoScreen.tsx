@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/native';
 import * as React from 'react';
-import { Route, StyleSheet,Image,  TextInput } from 'react-native';
+import { Route, StyleSheet,Image,  TextInput, Alert, Platform } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
@@ -13,6 +13,7 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import moment from 'moment';
+import * as EmailValidator from 'email-validator';
 
 
 interface NavigationParams {
@@ -27,14 +28,14 @@ interface Props {
 }
 
 export const custInfoScreen = ({ route, navigation}: Props) => {
-  const [email, setEmail] = useState();
+  const [email, setEmail] = useState('');
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [phone, setPhone] = useState('');
   const [line1, setLine1] = useState();
   const [city, setCity] = useState();
   const [zip, setZip] = useState();
-
+  const [notecom, setNotecom] = useState();
   const [resa, setResa] = useState({ 
     id:'', 
     engagModeResa:'',
@@ -69,7 +70,7 @@ export const custInfoScreen = ({ route, navigation}: Props) => {
   }
   async function onChangeTextEmail(email:any) {
 setEmail(email.trim().toLowerCase());
-  }
+}
   
   async function onChangeTextFirstname(firstname:any) {
     setFirstname(firstname);
@@ -77,6 +78,10 @@ setEmail(email.trim().toLowerCase());
       async function onChangeTextCity(city:any) {
         setCity(city);
           }
+          async function onChangeTextNotecom(notecom:any) {
+            setNotecom(notecom);
+              }
+          
           async function onChangeTextZip(zip:any) {
             setZip(zip);
               }
@@ -97,7 +102,7 @@ setEmail(email.trim().toLowerCase());
     };
   
     const res = await Parse.Cloud.run("getGuest", params);
-  
+  console.log(res)
      var Guest = Parse.Object.extend("Guest");
      let guestRaw = new Guest();
      if(res.length==0){  
@@ -120,12 +125,59 @@ setEmail(email.trim().toLowerCase());
       "mobilephone": phone,
       "email": email,
     }];
-
+    resaRaw.set("line_items", products);
+    var Intcust = Parse.Object.extend("Intcust");
+     let intcustRawY = new Intcust();
+     intcustRawY.id=intcust.id
+    resaRaw.set("intcust", intcustRawY);
      resaRaw.set("guestFlat", arrayGuest);
+     resaRaw.set("order", true);
+     resaRaw.set("notes", notecom);
+     resaRaw.set("process", "appdisco");
+
+     if(route.params.bookingType=="TakeAway"){
+      let params2 = {
+        itid: intcust.id,
+      };
+      const res3 = await Parse.Cloud.run("getTakeAwayAsSeating", params2);
+      resaRaw.set("seating", res3[0]); // en cours
+      let arraySeating = [{
+        name: res3[0].attributes.name,
+        type: res3[0].attributes.type,
+        description: res3[0].attributes.description,
+        capacity: res3[0].attributes.capacity
+      }];
+      resaRaw.set("seatingFlat", arraySeating);
+
+     }
+
+     if(route.params.bookingType=="Delivery"){
+      let params2 = {
+        itid: intcust.id,
+      };
+      const res3 = await Parse.Cloud.run("getDeliveryAsSeating", params2);
+      resaRaw.set("seating", res3[0]); // en cours
+      let arraySeating = [{
+        name: res3[0].attributes.name,
+        type: res3[0].attributes.type,
+        description: res3[0].attributes.description,
+        capacity: res3[0].attributes.capacity
+      }];
+
+      resaRaw.set("seatingFlat", arraySeating);
+     }
      resaRaw.set("status", "En cours"); // en cours
     resaRaw.set("engagModeResa",route.params.bookingType);
-   
+    resaRaw.set("source",{
+      "utm_campaign": "APP",
+      "utm_medium": Platform.OS,
+      "utm_source": Platform.Version,
+      "utm_content": "APP"
+    });
+
+    
    await resaRaw.save();
+   console.log(resaRaw.id)
     setResa({
       'id' : resaRaw.id || '',
       'engagModeResa':resaRaw.attributes.engagModeResa || '',
@@ -143,19 +195,20 @@ setEmail(email.trim().toLowerCase());
   }
 
   async function goPay() {
-    if(email && firstname && lastname && phone){
-       createResa(); 
+    let blockGo =false;
+   
+
+    if(email &&  EmailValidator.validate(email)==true && firstname && lastname && phone && blockGo==false){
+   await createResa(); 
      if(intcust.paymentChoice!=="stripeOptin"  ){
 
     await  getPayPlugPaymentUrl();
 // navigate and options payLink
 navigation.navigate('paymentScreen',
-{ restoId: route.params.restoId , paylink: paylink, bookingType:route.params.bookingType });   
+{ restoId: route.params.restoId , paylink: paylink, bookingType:route.params.bookingType , resaId: resa.id});   
      }
    else if(intcust.paymentChoice=="stripeOptin"){
-
-
-      const params1 = {
+  const params1 = {
         itid: intcust.id ,
         winl: "http://www.amazon.com",
         resaid: resa.id,
@@ -169,10 +222,14 @@ navigation.navigate('paymentScreen',
        stripeAccount :intcust.stripeAccId
       };
       const session = await Parse.Cloud.run("createCheckoutSessionStripeForApp", params1);
-
+console.log('resa.id' + resa.id)
 navigation.navigate('paymentStripeScreen',
-{ CHECKOUT_SESSION_ID: session.id , STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl" });        
-  }}else{
+{ CHECKOUT_SESSION_ID: session.id , STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl" , bookingType: route.params. bookingType, resaId : resa.id, day:route.params.day, hour:route.params.hour, amount:totalCashBasket});        
+  }}
+  else if (!email ||  EmailValidator.validate(email)==false){
+      Alert.alert("Merci de vérifier votre adresse email. Le format est incorrect.");
+      }
+ else{
     alert("Merci de saisir tous les champs. ")
   }
   }
@@ -289,7 +346,7 @@ navigation.navigate('paymentStripeScreen',
         value={phone}
       />   
 
-{route.params.BookingType=="Delivery" && 
+{route.params.bookingType=="Delivery" && 
 <View>
 <Text style={styles.label}>L'adresse à laquelle vous souhaitez être livré</Text>
 
@@ -344,6 +401,23 @@ value={line1}
       />   
 </View>
 }
+
+<Text style={styles.label}>Note / Commentaire sur votre commande</Text>
+
+           <TextInput
+        style={{color: textColor, fontFamily:'geometria-regular',
+        height: 50,
+        marginHorizontal:20,
+        marginTop:4,
+        paddingLeft: 20,
+        borderWidth: 1,
+        borderRadius:10,
+        fontSize:15,
+        borderColor: "grey"}}
+        onChangeText={onChangeTextNotecom}
+        placeholder="Fort-de-france"
+        value={notecom}
+      />   
       <TouchableOpacity onPress={() => goPay()} 
             style={styles.appButtonContainer}>
     <Text style={styles.appButtonText} > <Text style={styles.payText}>Valider et payer</Text> </Text>

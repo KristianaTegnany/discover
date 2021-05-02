@@ -23,7 +23,7 @@ export const paymentStripeScreen = ({ route, navigation }: Props) => {
       }}
       onSuccess={() => {
         console.log(`Stripe checkout session succeeded. session id: .`);
-        navigation.navigate("successScreen");
+        navigation.navigate("successScreen", {bookingType:route.params.bookingType, resaId:route.params.resaId, day: route.params.day, hour : route.params.hour, amount: route.params.amount});
       }}
       onCancel={() => {
         console.log(`Stripe checkout session cancelled.`);

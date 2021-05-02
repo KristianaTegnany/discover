@@ -5,12 +5,8 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationScreenProp } from 'react-navigation';
 var Parse = require("parse/react-native");
 import { Text, View } from '../components/Themed';
-import { useSelector } from "react-redux"
-import { ProductItem } from '../global';
 import { useEffect } from 'react';
 import { Divider } from 'react-native-elements';
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
 import moment from 'moment';
 interface NavigationParams {
   restoId: string;
@@ -25,13 +21,10 @@ interface Props {
 }
 
 export const successScreen = ({ route, navigation}: Props) => {
-
-
       useEffect(() => {
+        console.log(route.params)
       }, []);
-
     
-
   return (
     <View style={styles.container}>
       <Image
@@ -45,19 +38,23 @@ export const successScreen = ({ route, navigation}: Props) => {
           <ScrollView>
       <Text style ={styles.title}>Vous êtes une personne formidable</Text>
       
-      {route.params.BookingType=="Onsite" && 
+      {route.params.bookingType=="Onsite" && 
      <View>
             <Text style ={styles.textBold}>Récapitulatif de réservation au restaurant {route.params.restoname}</Text>
 
-     <Text style ={styles.text}>{moment(route.params.day).format('dddd DD MMM')} à {route.params.heure} - {route.params.nbcover} couverts</Text>
+     <Text style ={styles.text}>{moment(route.params.day).format('dddd DD MMM')} à {route.params.hour} - {route.params.nbcover} couverts</Text>
      <Text style ={styles.text}>Au nom de {route.params.name}</Text>
 
       <Text style ={styles.text}>Réservation n° {route.params.resaId}</Text>
       </View>
        }
-        {route.params.BookingType=="TakeAway" || route.params.BookingType=="Delivery" && 
-      <Text style ={styles.text}>Votre numéro de commande : {route.params.resaId}</Text>
-
+        {(route.params.bookingType=="TakeAway" || route.params.bookingType=="Delivery" ) && 
+<View>
+<Text style ={styles.textBold}>Récapitulatif de commande</Text>
+<Text style ={styles.text}>{route.params.amount}€ </Text>
+<Text style ={styles.text}>{moment(route.params.day).format('dddd DD MMM')} à {route.params.hour} </Text>
+<Text style ={styles.text}>Votre numéro de commande : {route.params.resaId}</Text>
+</View>
        }
       <Divider style={{ backgroundColor: '#ff50f50' , marginVertical:20}} />
              <Text style ={styles.text}>Notez bien votre numéro de réservation, il vous sert de confirmation. Prenez une copie d'écran. Vous ne recevrez pas d'email de confirmation. Votre boite email est déjà bien assez remplie comme cela 😉</Text>
