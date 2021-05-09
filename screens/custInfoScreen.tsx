@@ -58,6 +58,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
+  const { restoId, bookingType, day, hour } = route.params
+
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -105,7 +107,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
     var Reservation = Parse.Object.extend("Reservation");
     let resaRaw = new Reservation();
-    resaRaw.set("date", moment(route.params.day).toDate());
+    resaRaw.set("date", moment(day).toDate());
     resaRaw.set("guest", guestRaw);
     let arrayGuest = [
       {
@@ -118,7 +120,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
     resaRaw.set("guestFlat", arrayGuest);
     resaRaw.set("status", "En cours"); // en cours
-    resaRaw.set("engagModeResa", route.params.bookingType);
+    resaRaw.set("engagModeResa", bookingType);
 
     await resaRaw.save();
     setResa({
@@ -138,18 +140,18 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function testOrderDaily_Stop() {
     let isValid = true
-    if([TAKEAWAY, DELIVERY].includes(route.params.bookingType)){
+    if([TAKEAWAY, DELIVERY].includes(bookingType)){
       let params = {
-        date: moment().format(),
+        date: day,
         itid: intcust.id,
       }
       const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
       let resasClean = await resas.filter((x:any) => x.attributes.status)
-      if(resasClean.length > 0 
+      if(resasClean.length > 0
         && 
-        ((route.params.bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === route.params.bookingType).length) || intcust.orderDaily_StopTaway === 0)
+        ((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopTaway === 0)
         ||
-        ((route.params.bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === route.params.bookingType).length) || intcust.orderDaily_StopDelivery === 0)
+        ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
       )
         isValid = false
     }
@@ -158,25 +160,25 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function testOrderCren_Stop() {
     let isValid = true
-    if([TAKEAWAY, DELIVERY].includes(route.params.bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
+    if([TAKEAWAY, DELIVERY].includes(bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
       let params = {
-        date: moment().format(),
+        date: day,
         itid: intcust.id,
       }
       const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
       let resasClean = await resas.filter((x:any) => x.attributes.status)
-      if(resasClean.length > 0 && ((route.params.bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
+      if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
         let isBetweenInterval = false
-        const h = moment('2021-05-09T12:59:36.145Z').hour(),
-              m = moment('2021-05-09T12:59:36.145Z').minute(),
-          resaH = moment(x.attributes.updatedAt).hour(),
-          resaM = moment(x.attributes.updatedAt).minute(),
+        const h = moment(day).hour(),
+              m = moment(day).minute(),
+          resaH = moment(x.attributes.date).hour(),
+          resaM = moment(x.attributes.date).minute(),
             min = ((m < intcust.confirmModeOrderOptions_shiftinterval) || (intcust.confirmModeOrderOptions_shiftinterval === 60))? 0 : intcust.confirmModeOrderOptions_shiftinterval,
             max = (min + intcust.confirmModeOrderOptions_shiftinterval) < 60 ? min + intcust.confirmModeOrderOptions_shiftinterval : 60
 
         isBetweenInterval = h === resaH && (min <= resaM) && (max >= resaM)
         
-        return x.attributes.engagModeResa === route.params.bookingType && isBetweenInterval
+        return x.attributes.engagModeResa === bookingType && isBetweenInterval
       }).length))
         isValid = false
     }
@@ -193,7 +195,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
         navigation.navigate("hourSelectScreen", {
           restoId: intcust.id,
-          bookingType: route.params.bookingType,
+          bookingType: bookingType,
           day: moment().format()
         })
       }
@@ -204,7 +206,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
           navigation.navigate("crenSelectScreen", {
             restoId: intcust.id,
-            bookingType: route.params.bookingType
+            bookingType: bookingType
           })
         }
       }
@@ -215,9 +217,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           await getPayPlugPaymentUrl()
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
-            restoId: route.params.restoId,
+            restoId: restoId,
             paylink: paylink,
-            bookingType: route.params.bookingType,
+            bookingType: bookingType,
           })
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
@@ -260,7 +262,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       type: "order",
       amount: 100,
       apikeypp: intcust.apikeypp,
-      mode: route.params.bookingType,
+      mode: bookingType,
       noukarive: intcust.option_DeliveryByNoukarive,
       toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
@@ -273,7 +275,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   useEffect(() => {
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
-    intcustRaw.id = route.params.restoId;
+    intcustRaw.id = restoId;
 
     let intcustRawX = [
       {
@@ -412,8 +414,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         style={styles.listitem}
         onPress={() => {
           navigation.navigate("termsScreen", {
-            restoId: route.params.restoId,
-            bookingType: route.params.bookingType,
+            restoId: restoId,
+            bookingType: bookingType,
           });
         }}
       >
