@@ -1,6 +1,6 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
-import { Route, StyleSheet, Image, TextInput } from "react-native";
+import { Route, StyleSheet, Image, TextInput, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
@@ -13,6 +13,7 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import moment from "moment";
+import { min } from "lodash";
 
 interface NavigationParams {
   restoId: string;
@@ -24,6 +25,8 @@ interface Props {
   route: Route;
   restaurant: [];
 }
+
+const TAKEAWAY = "TakeAway"
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
   const [email, setEmail] = useState();
@@ -45,6 +48,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     option_DeliveryByNoukarive: false,
     option_DeliveryByToutAlivrer: false,
     stripeAccId: "",
+    orderDaily_StopTaway: 0,
+    orderCren_StopTaway: 0,
+    confirmModeOrderOptions_shiftinterval: 0
   });
   const products = useSelector((state: ProductItem[]) => state);
 
@@ -128,43 +134,106 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     setTotalCashBasket(sumRaw);
   }
 
-  async function goPay() {
-    if (email && firstname && lastname && phone) {
-      createResa();
-      if (intcust.paymentChoice !== "stripeOptin") {
-        await getPayPlugPaymentUrl();
-        // navigate and options payLink
-        navigation.navigate("paymentScreen", {
-          restoId: route.params.restoId,
-          paylink: paylink,
-          bookingType: route.params.bookingType,
-        });
-      } else if (intcust.paymentChoice == "stripeOptin") {
-        const params1 = {
-          itid: intcust.id,
-          winl: "http://www.amazon.com",
-          resaid: resa.id,
-          paidtype: "order",
-          customeremail: "satyam.dorville@gmail.com",
-          type: "order",
-          amount: totalCashBasket,
-          mode: resa.engagModeResa,
-          noukarive: intcust.option_DeliveryByNoukarive,
-          toutalivrer: intcust.option_DeliveryByToutAlivrer,
-          stripeAccount: intcust.stripeAccId,
-        };
-        const session = await Parse.Cloud.run(
-          "createCheckoutSessionStripeForApp",
-          params1
-        );
-
-        navigation.navigate("paymentStripeScreen", {
-          CHECKOUT_SESSION_ID: session.id,
-          STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl",
-        });
+  async function testOrderDaily_StopTaway() {
+    let isValid = true
+    if(route.params.bookingType === TAKEAWAY){
+      let params = {
+        date: moment().format(),
+        itid: intcust.id,
       }
-    } else {
-      alert("Merci de saisir tous les champs. ");
+      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
+      let resasClean = await resas.filter((x:any) => x.attributes.status)
+      if(resasClean.length > 0 && (intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === TAKEAWAY).length) || intcust.orderDaily_StopTaway === 0)
+        isValid = false
+    }
+    return isValid
+  }
+
+  async function testOrderCren_StopTaway() {
+    let isValid = true
+    if(route.params.bookingType === TAKEAWAY && intcust.confirmModeOrderOptions_shiftinterval > 0){
+      let params = {
+        date: moment().format(),
+        itid: intcust.id,
+      }
+      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
+      let resasClean = await resas.filter((x:any) => x.attributes.status)
+      if(resasClean.length > 0 && (intcust.orderCren_StopTaway === resasClean.filter((x:any) => {
+        let isBetweenInterval = false
+        const h = moment('2021-05-09T12:59:36.145Z').hour(),
+              m = moment('2021-05-09T12:59:36.145Z').minute(),
+          resaH = moment(x.attributes.updatedAt).hour(),
+          resaM = moment(x.attributes.updatedAt).minute(),
+            min = ((m < intcust.confirmModeOrderOptions_shiftinterval) || (intcust.confirmModeOrderOptions_shiftinterval === 60))? 0 : intcust.confirmModeOrderOptions_shiftinterval,
+            max = (min + intcust.confirmModeOrderOptions_shiftinterval) < 60 ? min + intcust.confirmModeOrderOptions_shiftinterval : 60
+
+        isBetweenInterval = h === resaH && (min <= resaM) && (max >= resaM)
+        
+        return x.attributes.engagModeResa === TAKEAWAY && isBetweenInterval
+      }).length))
+        isValid = false
+    }
+    return isValid
+  }
+
+  async function goPay() {
+    // Tester si le nombre de commande à emporter < orderDaily_StopTaway
+    const testOD = await testOrderDaily_StopTaway()
+    if(!testOD){
+      Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+      navigation.navigate("crenSelectScreen", {
+        restoId: intcust.id,
+        bookingType: TAKEAWAY
+      })
+    }
+    // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_StopTaway
+    const testOC = await testOrderCren_StopTaway()
+    if(!testOC){
+      Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+      navigation.navigate("hourSelectScreen", {
+        restoId: intcust.id,
+        bookingType: TAKEAWAY,
+        day: moment().format()
+      })
+    }
+    if(testOD && testOC){
+      if (email && firstname && lastname && phone) {
+        createResa();
+        if (intcust.paymentChoice !== "stripeOptin") {
+          await getPayPlugPaymentUrl();
+          // navigate and options payLink
+          navigation.navigate("paymentScreen", {
+            restoId: route.params.restoId,
+            paylink: paylink,
+            bookingType: route.params.bookingType,
+          });
+        } else if (intcust.paymentChoice == "stripeOptin") {
+          const params1 = {
+            itid: intcust.id,
+            winl: "http://www.amazon.com",
+            resaid: resa.id,
+            paidtype: "order",
+            customeremail: "satyam.dorville@gmail.com",
+            type: "order",
+            amount: totalCashBasket,
+            mode: resa.engagModeResa,
+            noukarive: intcust.option_DeliveryByNoukarive,
+            toutalivrer: intcust.option_DeliveryByToutAlivrer,
+            stripeAccount: intcust.stripeAccId,
+          };
+          const session = await Parse.Cloud.run(
+            "createCheckoutSessionStripeForApp",
+            params1
+          );
+
+          navigation.navigate("paymentStripeScreen", {
+            CHECKOUT_SESSION_ID: session.id,
+            STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl",
+          });
+        }
+      } else {
+        alert("Merci de saisir tous les champs. ");
+      }
     }
   }
   async function getPayPlugPaymentUrl() {
@@ -204,6 +273,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         option_DeliveryByToutAlivrer:
           intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
         stripeAccId: intcustRaw.attributes.stripeAccId || "",
+        orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
+        orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
+        confirmModeOrderOptions_shiftinterval: intcustRaw.confirmModeOrderOptions_shiftinterval || 0
       },
     ];
 
