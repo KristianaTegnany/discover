@@ -13,7 +13,6 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import moment from "moment";
-import { min } from "lodash";
 
 interface NavigationParams {
   restoId: string;
@@ -26,7 +25,8 @@ interface Props {
   restaurant: [];
 }
 
-const TAKEAWAY = "TakeAway"
+const TAKEAWAY = "TakeAway",
+      DELIVERY = "Delivery"
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
   const [email, setEmail] = useState();
@@ -50,7 +50,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     stripeAccId: "",
     orderDaily_StopTaway: 0,
     orderCren_StopTaway: 0,
-    confirmModeOrderOptions_shiftinterval: 0
+    confirmModeOrderOptions_shiftinterval: 0,
+    orderDaily_StopDelivery: 0,
+    orderCren_StopDelivery: 0
   });
   const products = useSelector((state: ProductItem[]) => state);
 
@@ -134,31 +136,36 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     setTotalCashBasket(sumRaw);
   }
 
-  async function testOrderDaily_StopTaway() {
+  async function testOrderDaily_Stop() {
     let isValid = true
-    if(route.params.bookingType === TAKEAWAY){
+    if([TAKEAWAY, DELIVERY].includes(route.params.bookingType)){
       let params = {
         date: moment().format(),
         itid: intcust.id,
       }
       const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
       let resasClean = await resas.filter((x:any) => x.attributes.status)
-      if(resasClean.length > 0 && (intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === TAKEAWAY).length) || intcust.orderDaily_StopTaway === 0)
+      if(resasClean.length > 0 
+        && 
+        ((route.params.bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === route.params.bookingType).length) || intcust.orderDaily_StopTaway === 0)
+        ||
+        ((route.params.bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === route.params.bookingType).length) || intcust.orderDaily_StopDelivery === 0)
+      )
         isValid = false
     }
     return isValid
   }
 
-  async function testOrderCren_StopTaway() {
+  async function testOrderCren_Stop() {
     let isValid = true
-    if(route.params.bookingType === TAKEAWAY && intcust.confirmModeOrderOptions_shiftinterval > 0){
+    if([TAKEAWAY, DELIVERY].includes(route.params.bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
       let params = {
         date: moment().format(),
         itid: intcust.id,
       }
       const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
       let resasClean = await resas.filter((x:any) => x.attributes.status)
-      if(resasClean.length > 0 && (intcust.orderCren_StopTaway === resasClean.filter((x:any) => {
+      if(resasClean.length > 0 && ((route.params.bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
         let isBetweenInterval = false
         const h = moment('2021-05-09T12:59:36.145Z').hour(),
               m = moment('2021-05-09T12:59:36.145Z').minute(),
@@ -169,7 +176,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
         isBetweenInterval = h === resaH && (min <= resaM) && (max >= resaM)
         
-        return x.attributes.engagModeResa === TAKEAWAY && isBetweenInterval
+        return x.attributes.engagModeResa === route.params.bookingType && isBetweenInterval
       }).length))
         isValid = false
     }
@@ -177,36 +184,41 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }
 
   async function goPay() {
-    // Tester si le nombre de commande à emporter < orderDaily_StopTaway
-    const testOD = await testOrderDaily_StopTaway()
-    if(!testOD){
-      Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
-      navigation.navigate("crenSelectScreen", {
-        restoId: intcust.id,
-        bookingType: TAKEAWAY
-      })
-    }
-    // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_StopTaway
-    const testOC = await testOrderCren_StopTaway()
-    if(!testOC){
-      Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
-      navigation.navigate("hourSelectScreen", {
-        restoId: intcust.id,
-        bookingType: TAKEAWAY,
-        day: moment().format()
-      })
-    }
-    if(testOD && testOC){
-      if (email && firstname && lastname && phone) {
-        createResa();
+    if (email && firstname && lastname && phone) {
+      // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_Stop
+      const testOC = await testOrderCren_Stop()
+      let testOD = true
+
+      if(!testOC){
+        Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+        navigation.navigate("hourSelectScreen", {
+          restoId: intcust.id,
+          bookingType: route.params.bookingType,
+          day: moment().format()
+        })
+      }
+      else {
+        // Tester si le nombre de commande à emporter < orderDaily_Stop
+        testOD = await testOrderDaily_Stop()
+        if(!testOD){
+          Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+          navigation.navigate("crenSelectScreen", {
+            restoId: intcust.id,
+            bookingType: route.params.bookingType
+          })
+        }
+      }
+
+      if(testOC && testOD) {
+        createResa()
         if (intcust.paymentChoice !== "stripeOptin") {
-          await getPayPlugPaymentUrl();
+          await getPayPlugPaymentUrl()
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
             restoId: route.params.restoId,
             paylink: paylink,
             bookingType: route.params.bookingType,
-          });
+          })
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
             itid: intcust.id,
@@ -220,20 +232,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             noukarive: intcust.option_DeliveryByNoukarive,
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
             stripeAccount: intcust.stripeAccId,
-          };
+          }
           const session = await Parse.Cloud.run(
             "createCheckoutSessionStripeForApp",
             params1
-          );
+          )
 
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl",
-          });
+          })
         }
-      } else {
-        alert("Merci de saisir tous les champs. ");
       }
+    } else {
+      alert("Merci de saisir tous les champs. ");
     }
   }
   async function getPayPlugPaymentUrl() {
@@ -268,15 +280,15 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         id: intcustRaw.id,
         apikeypp: intcustRaw.attributes.apikeypp || "",
         paymentChoice: intcustRaw.attributes.paymentChoice || "",
-        option_DeliveryByNoukarive:
-          intcustRaw.attributes.option_DeliveryByNoukarive || false,
-        option_DeliveryByToutAlivrer:
-          intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
+        option_DeliveryByNoukarive: intcustRaw.attributes.option_DeliveryByNoukarive || false,
+        option_DeliveryByToutAlivrer: intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
         stripeAccId: intcustRaw.attributes.stripeAccId || "",
         orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
         orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
-        confirmModeOrderOptions_shiftinterval: intcustRaw.confirmModeOrderOptions_shiftinterval || 0
-      },
+        confirmModeOrderOptions_shiftinterval: intcustRaw.confirmModeOrderOptions_shiftinterval || 0,
+        orderDaily_StopDelivery: intcustRaw.orderDaily_StopDelivery || 0,
+        orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0
+      }
     ];
 
     setIntcust(intcustRawX[0]);
