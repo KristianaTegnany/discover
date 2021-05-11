@@ -53,6 +53,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     confirmModeOrderOptions_shiftinterval: 0,
     orderDaily_StopDelivery: 0,
     orderCren_StopDelivery: 0,
+    confirmModeOrderOptions_delayorder: 0,
+    delayorderDelivery: 0
   });
   const products = useSelector((state: ProductItem[]) => state);
 
@@ -138,29 +140,24 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     setTotalCashBasket(sumRaw);
   }
 
+  async function getReservation() {
+    let params = {
+      date: day,
+      itid: intcust.id,
+    }
+    const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
+    return await resas.filter((x:any) => x.attributes.status)
+  }
+  
   async function testOrderDaily_Stop() {
-    let isValid = true;
-    if ([TAKEAWAY, DELIVERY].includes(bookingType)) {
-      let params = {
-        date: day,
-        itid: intcust.id,
-      };
-      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params);
-      let resasClean = await resas.filter((x: any) => x.attributes.status);
-      if (
-        (resasClean.length > 0 &&
-          ((bookingType === TAKEAWAY &&
-            intcust.orderDaily_StopTaway ===
-              resasClean.filter(
-                (x: any) => x.attributes.engagModeResa === bookingType
-              ).length) ||
-            intcust.orderDaily_StopTaway === 0)) ||
-        (bookingType === DELIVERY &&
-          intcust.orderDaily_StopDelivery ===
-            resasClean.filter(
-              (x: any) => x.attributes.engagModeResa === bookingType
-            ).length) ||
-        intcust.orderDaily_StopDelivery === 0
+    let isValid = true
+    if([TAKEAWAY, DELIVERY].includes(bookingType)){
+      const resasClean = await getReservation()
+      if(resasClean.length > 0
+        && 
+        ((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopTaway === 0)
+        ||
+        ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
       )
         isValid = false;
     }
@@ -168,25 +165,12 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }
 
   async function testOrderCren_Stop() {
-    let isValid = true;
-    if (
-      [TAKEAWAY, DELIVERY].includes(bookingType) &&
-      intcust.confirmModeOrderOptions_shiftinterval > 0
-    ) {
-      let params = {
-        date: day,
-        itid: intcust.id,
-      };
-      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params);
-      let resasClean = await resas.filter((x: any) => x.attributes.status);
-      if (
-        resasClean.length > 0 &&
-        (bookingType === DELIVERY
-          ? intcust.orderCren_StopTaway
-          : intcust.orderCren_StopTaway) ===
-          resasClean.filter((x: any) => {
-            let isBetweenInterval = false;
-            const h = moment(day).hour(),
+    let isValid = true
+    if([TAKEAWAY, DELIVERY].includes(bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
+      const resasClean = await getReservation()
+      if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
+        let isBetweenInterval = false
+        const h = moment(day).hour(),
               m = moment(day).minute(),
               resaH = moment(x.attributes.date).hour(),
               resaM = moment(x.attributes.date).minute(),
@@ -206,23 +190,31 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               x.attributes.engagModeResa === bookingType && isBetweenInterval
             );
           }).length
-      )
+      ))
         isValid = false;
     }
     return isValid;
   }
 
+  async function testDelayCren_Stop() {
+    let isValid = true
+    const delay = bookingType === DELIVERY? intcust.confirmModeOrderOptions_delayorder : intcust.delayorderDelivery
+    if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
+      if(moment().diff(moment(day), 'minutes') < delay)
+        isValid = false
+    }
+    return isValid
+  }
+
   async function goPay() {
     if (email && firstname && lastname && phone) {
       // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_Stop
-      const testOC = await testOrderCren_Stop();
-      let testOD = true;
+      const testOC = await testOrderCren_Stop()
+      let testOD = true,
+          testDelayCren = true
 
-      if (!testOC) {
-        Alert.alert(
-          "Information",
-          "La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour"
-        );
+      if(!testOC){
+        Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
         navigation.navigate("hourSelectScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
@@ -240,6 +232,16 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             restoId: intcust.id,
             bookingType: bookingType,
           });
+        }
+        else {
+          testDelayCren = await testDelayCren_Stop()
+          if(!testDelayCren) {
+            Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt")
+            navigation.navigate("crenSelectScreen", {
+              restoId: intcust.id,
+              bookingType: bookingType
+            })
+          }
         }
       }
 
@@ -325,7 +327,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           intcustRaw.confirmModeOrderOptions_shiftinterval || 0,
         orderDaily_StopDelivery: intcustRaw.orderDaily_StopDelivery || 0,
         orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0,
-      },
+        confirmModeOrderOptions_delayorder: intcustRaw.confirmModeOrderOptions_delayorder || 0,
+        delayorderDelivery: intcustRaw.delayorderDelivery || 0
+      }
     ];
 
     setIntcust(intcustRawX[0]);
