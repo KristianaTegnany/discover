@@ -17,7 +17,7 @@ import { Avatar, ListItem } from "react-native-elements";
 import { useSelector } from "react-redux";
 import { ProductItem } from "../global";
 
-const DELIVERY = "Delivery"
+const DELIVERY = "Delivery";
 
 interface NavigationParams {
   restoId: string;
@@ -98,15 +98,21 @@ export const orderScreen = ({ route, navigation }: Props) => {
       itid: route.params.restoId,
     };
     var rawMenus = await Parse.Cloud.run("getMenusActive", params);
-    
-    rawMenus = rawMenus.filter((menu:any) => route.params?.bookingType === DELIVERY? menu.attributes?.deliveryOptin : menu.attributes?.takeAwayOptin).map((menu: any) => ({
-      id: menu.id,
-      price: menu.attributes.price,
-      title: menu.attributes.title,
-      category: menu.attributes.category,
-      order: menu.attributes.order,
-      imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
-    }));
+
+    rawMenus = rawMenus
+      .filter((menu: any) =>
+        route.params?.bookingType === DELIVERY
+          ? menu.attributes?.deliveryOptin
+          : menu.attributes?.takeAwayOptin
+      )
+      .map((menu: any) => ({
+        id: menu.id,
+        price: menu.attributes.price,
+        title: menu.attributes.title,
+        category: menu.attributes.category,
+        order: menu.attributes.order,
+        imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
+      }));
 
     const sortedMenu = rawMenus.sort(function (a: any, b: any) {
       if (a.order < b.order) {
@@ -178,144 +184,144 @@ export const orderScreen = ({ route, navigation }: Props) => {
   return (
     <View style={styles.container}>
       <ListItem
-          bottomDivider
-          containerStyle={{
+        bottomDivider
+        containerStyle={{
           backgroundColor: backgroundColor,
           borderColor: "transparent",
-          }}
-          onPress={gotoBasket}
+        }}
+        onPress={gotoBasket}
       >
-          <ListItem.Content>
+        <ListItem.Content>
           <ListItem.Title
-              style={{
+            style={{
               marginTop: 9,
               color: textColor,
               fontSize: 18,
               fontFamily: "geometria-bold",
-              }}
+            }}
           >
-              Voir le panier{" "}
+            Voir le panier{" "}
           </ListItem.Title>
           {totalQuantityBasket > 1 && (
-              <ListItem.Subtitle
+            <ListItem.Subtitle
               style={{
-                  marginTop: 2,
-                  color: textColor,
-                  fontSize: 16,
-                  fontFamily: "geometria-regular",
+                marginTop: 2,
+                color: textColor,
+                fontSize: 16,
+                fontFamily: "geometria-regular",
               }}
-              >
+            >
               {totalQuantityBasket} articles - {totalCashBasket} €
-              </ListItem.Subtitle>
+            </ListItem.Subtitle>
           )}
 
           {totalQuantityBasket < 2 && (
-              <ListItem.Subtitle
+            <ListItem.Subtitle
               style={{
-                  marginTop: 2,
-                  color: textColor,
-                  fontSize: 16,
-                  fontFamily: "geometria-regular",
+                marginTop: 2,
+                color: textColor,
+                fontSize: 16,
+                fontFamily: "geometria-regular",
               }}
-              >
+            >
               {totalQuantityBasket} article - {totalCashBasket} €
-              </ListItem.Subtitle>
+            </ListItem.Subtitle>
           )}
-          </ListItem.Content>
-          <ListItem.Chevron />
+        </ListItem.Content>
+        <ListItem.Chevron />
       </ListItem>
       <ScrollView style={styles.wrapperScroll}>
-          <View>
+        <View>
           {!cats ||
-              (!menus &&
+            (!menus &&
               [""].map(() => {
-                  <View key="123" style={styles.wrapindicator}>
+                <View key="123" style={styles.wrapindicator}>
                   <ActivityIndicator size="large" color="#F50F50" />
-                  </View>;
+                </View>;
               }))}
           {cats &&
-              menus &&
-              cats.map((cat) => {
+            menus &&
+            cats.map((cat) => {
               if (getCountOfMenusOfcat(cat.title) !== 0) {
-                  return (
+                return (
                   <View key={cat.title + "view"}>
-                      <ListItem
+                    <ListItem
                       key={cat.title}
                       bottomDivider
                       containerStyle={{
-                          backgroundColor: "#ff5050",
-                          borderColor: "#ff5050",
+                        backgroundColor: "#ff5050",
+                        borderColor: "#ff5050",
                       }}
-                      >
+                    >
                       <ListItem.Content>
-                          <ListItem.Title style={styles.textcattitle}>
+                        <ListItem.Title style={styles.textcattitle}>
                           {cat.title}
                           {cat.numExact}{" "}
-                          </ListItem.Title>
+                        </ListItem.Title>
                       </ListItem.Content>
-                      </ListItem>
+                    </ListItem>
 
-                      {menus.map((menu) => {
+                    {menus.map((menu) => {
                       if (menu.category == cat.title) {
-                          return (
+                        return (
                           <View key={cat.id + menu.id}>
-                              <ListItem
+                            <ListItem
                               key={cat.id + menu.id}
                               bottomDivider
                               containerStyle={{
-                                  backgroundColor: backgroundColor,
+                                backgroundColor: backgroundColor,
                               }}
                               onPress={() => {
-                                  navigation.navigate("DishScreen", {
+                                navigation.navigate("DishScreen", {
                                   restoId: route.params.restoId,
                                   bookingType: route.params.bookingType,
                                   day: route.params.day,
                                   hour: route.params.hour,
                                   menuid: menu.id,
-                                  });
+                                });
                               }}
-                              >
+                            >
                               {menu && menu.imageUrl !== "" && (
-                                  <Avatar
+                                <Avatar
                                   rounded
                                   source={{ uri: menu.imageUrl || " " }}
-                                  />
+                                />
                               )}
 
                               <ListItem.Content>
-                                  <ListItem.Title
+                                <ListItem.Title
                                   style={{
-                                      marginTop: 5,
-                                      color: textColor,
-                                      fontSize: 20,
-                                      fontFamily: "geometria-bold",
+                                    marginTop: 5,
+                                    color: textColor,
+                                    fontSize: 20,
+                                    fontFamily: "geometria-bold",
                                   }}
-                                  >
+                                >
                                   {menu.title}{" "}
-                                  </ListItem.Title>
+                                </ListItem.Title>
 
-                                  <ListItem.Subtitle
+                                <ListItem.Subtitle
                                   style={{
-                                      marginTop: 2,
-                                      color: textColor,
-                                      fontSize: 18,
-                                      fontFamily: "geometria-regular",
+                                    marginTop: 2,
+                                    color: textColor,
+                                    fontSize: 18,
+                                    fontFamily: "geometria-regular",
                                   }}
-                                  >
+                                >
                                   {menu.price} €
-                                  </ListItem.Subtitle>
+                                </ListItem.Subtitle>
                               </ListItem.Content>
                               <ListItem.Chevron />
-                              </ListItem>
+                            </ListItem>
                           </View>
-                          );
+                        );
                       }
-                      })}
+                    })}
                   </View>
-                  );
+                );
               }
-              })}
-          </View>
+            })}
+        </View>
       </ScrollView>
     </View>
   );
@@ -373,10 +379,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 400,
     paddingTop: 110,
-  }
+  },
 });
 
-orderScreen['navigationOptions'] = (props: Props) => ({
-    title: props.route.params?.bookingType === DELIVERY? 'Livraison' : 'A emporter'
-})
+orderScreen["navigationOptions"] = (props: Props) => ({
+  title:
+    props.route.params?.bookingType === DELIVERY ? "Livraison" : "A emporter",
+});
 export default orderScreen;
