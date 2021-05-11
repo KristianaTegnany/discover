@@ -67,7 +67,6 @@ export const GuideScreen = ({ route, navigation }: Props) => {
     let guideRaw = new Guide();
     guideRaw.id = route.params.guideId;
 
-
     setGuide({
       id: guideRaw.id || "",
       imageUrl: guideRaw.attributes.FrontPic._url || "",

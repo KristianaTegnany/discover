@@ -41,13 +41,13 @@ export const DishScreen = ({ route, navigation }: Props) => {
   const [initied, setInitied] = useState(false);
   const [persoMenu, setPersoMenu] = useState<any[]>();
   const [formulaChoiced, setFormulaChoiced] = useState<any[]>();
-  
+
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
     "background"
   );
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
-  
+
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
