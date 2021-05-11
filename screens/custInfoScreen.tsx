@@ -26,7 +26,7 @@ interface Props {
 }
 
 const TAKEAWAY = "TakeAway",
-      DELIVERY = "Delivery"
+  DELIVERY = "Delivery";
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
   const [email, setEmail] = useState();
@@ -52,13 +52,13 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     orderCren_StopTaway: 0,
     confirmModeOrderOptions_shiftinterval: 0,
     orderDaily_StopDelivery: 0,
-    orderCren_StopDelivery: 0
+    orderCren_StopDelivery: 0,
   });
   const products = useSelector((state: ProductItem[]) => state);
 
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
-  const { restoId, bookingType, day, hour } = route.params
+  const { restoId, bookingType, day, hour } = route.params;
 
   function useThemeColor(
     props: { light?: string; dark?: string },
@@ -139,88 +139,120 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }
 
   async function testOrderDaily_Stop() {
-    let isValid = true
-    if([TAKEAWAY, DELIVERY].includes(bookingType)){
+    let isValid = true;
+    if ([TAKEAWAY, DELIVERY].includes(bookingType)) {
       let params = {
         date: day,
         itid: intcust.id,
-      }
-      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
-      let resasClean = await resas.filter((x:any) => x.attributes.status)
-      if(resasClean.length > 0
-        && 
-        ((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopTaway === 0)
-        ||
-        ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
+      };
+      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params);
+      let resasClean = await resas.filter((x: any) => x.attributes.status);
+      if (
+        (resasClean.length > 0 &&
+          ((bookingType === TAKEAWAY &&
+            intcust.orderDaily_StopTaway ===
+              resasClean.filter(
+                (x: any) => x.attributes.engagModeResa === bookingType
+              ).length) ||
+            intcust.orderDaily_StopTaway === 0)) ||
+        (bookingType === DELIVERY &&
+          intcust.orderDaily_StopDelivery ===
+            resasClean.filter(
+              (x: any) => x.attributes.engagModeResa === bookingType
+            ).length) ||
+        intcust.orderDaily_StopDelivery === 0
       )
-        isValid = false
+        isValid = false;
     }
-    return isValid
+    return isValid;
   }
 
   async function testOrderCren_Stop() {
-    let isValid = true
-    if([TAKEAWAY, DELIVERY].includes(bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
+    let isValid = true;
+    if (
+      [TAKEAWAY, DELIVERY].includes(bookingType) &&
+      intcust.confirmModeOrderOptions_shiftinterval > 0
+    ) {
       let params = {
         date: day,
         itid: intcust.id,
-      }
-      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
-      let resasClean = await resas.filter((x:any) => x.attributes.status)
-      if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
-        let isBetweenInterval = false
-        const h = moment(day).hour(),
+      };
+      const resas = await Parse.Cloud.run("getReservationsSafeByDate", params);
+      let resasClean = await resas.filter((x: any) => x.attributes.status);
+      if (
+        resasClean.length > 0 &&
+        (bookingType === DELIVERY
+          ? intcust.orderCren_StopTaway
+          : intcust.orderCren_StopTaway) ===
+          resasClean.filter((x: any) => {
+            let isBetweenInterval = false;
+            const h = moment(day).hour(),
               m = moment(day).minute(),
-          resaH = moment(x.attributes.date).hour(),
-          resaM = moment(x.attributes.date).minute(),
-            min = ((m < intcust.confirmModeOrderOptions_shiftinterval) || (intcust.confirmModeOrderOptions_shiftinterval === 60))? 0 : intcust.confirmModeOrderOptions_shiftinterval,
-            max = (min + intcust.confirmModeOrderOptions_shiftinterval) < 60 ? min + intcust.confirmModeOrderOptions_shiftinterval : 60
+              resaH = moment(x.attributes.date).hour(),
+              resaM = moment(x.attributes.date).minute(),
+              min =
+                m < intcust.confirmModeOrderOptions_shiftinterval ||
+                intcust.confirmModeOrderOptions_shiftinterval === 60
+                  ? 0
+                  : intcust.confirmModeOrderOptions_shiftinterval,
+              max =
+                min + intcust.confirmModeOrderOptions_shiftinterval < 60
+                  ? min + intcust.confirmModeOrderOptions_shiftinterval
+                  : 60;
 
-        isBetweenInterval = h === resaH && (min <= resaM) && (max >= resaM)
-        
-        return x.attributes.engagModeResa === bookingType && isBetweenInterval
-      }).length))
-        isValid = false
+            isBetweenInterval = h === resaH && min <= resaM && max >= resaM;
+
+            return (
+              x.attributes.engagModeResa === bookingType && isBetweenInterval
+            );
+          }).length
+      )
+        isValid = false;
     }
-    return isValid
+    return isValid;
   }
 
   async function goPay() {
     if (email && firstname && lastname && phone) {
       // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_Stop
-      const testOC = await testOrderCren_Stop()
-      let testOD = true
+      const testOC = await testOrderCren_Stop();
+      let testOD = true;
 
-      if(!testOC){
-        Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+      if (!testOC) {
+        Alert.alert(
+          "Information",
+          "La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour"
+        );
         navigation.navigate("hourSelectScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
-          day: moment().format()
-        })
-      }
-      else {
+          day: moment().format(),
+        });
+      } else {
         // Tester si le nombre de commande à emporter < orderDaily_Stop
-        testOD = await testOrderDaily_Stop()
-        if(!testOD){
-          Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+        testOD = await testOrderDaily_Stop();
+        if (!testOD) {
+          Alert.alert(
+            "Information",
+            "La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour"
+          );
           navigation.navigate("crenSelectScreen", {
             restoId: intcust.id,
-            bookingType: bookingType
-          })
+            bookingType: bookingType,
+          });
         }
       }
 
-      if(testOC && testOD) {
-        createResa()
+      if (testOC && testOD) {
+        createResa();
         if (intcust.paymentChoice !== "stripeOptin") {
-          await getPayPlugPaymentUrl()
+          await getPayPlugPaymentUrl();
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
             restoId: restoId,
             paylink: paylink,
             bookingType: bookingType,
-          })
+          });
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
             itid: intcust.id,
@@ -234,16 +266,16 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             noukarive: intcust.option_DeliveryByNoukarive,
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
             stripeAccount: intcust.stripeAccId,
-          }
+          };
           const session = await Parse.Cloud.run(
             "createCheckoutSessionStripeForApp",
             params1
-          )
+          );
 
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl",
-          })
+          });
         }
       }
     } else {
@@ -282,15 +314,18 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         id: intcustRaw.id,
         apikeypp: intcustRaw.attributes.apikeypp || "",
         paymentChoice: intcustRaw.attributes.paymentChoice || "",
-        option_DeliveryByNoukarive: intcustRaw.attributes.option_DeliveryByNoukarive || false,
-        option_DeliveryByToutAlivrer: intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
+        option_DeliveryByNoukarive:
+          intcustRaw.attributes.option_DeliveryByNoukarive || false,
+        option_DeliveryByToutAlivrer:
+          intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
         stripeAccId: intcustRaw.attributes.stripeAccId || "",
         orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
         orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
-        confirmModeOrderOptions_shiftinterval: intcustRaw.confirmModeOrderOptions_shiftinterval || 0,
+        confirmModeOrderOptions_shiftinterval:
+          intcustRaw.confirmModeOrderOptions_shiftinterval || 0,
         orderDaily_StopDelivery: intcustRaw.orderDaily_StopDelivery || 0,
-        orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0
-      }
+        orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0,
+      },
     ];
 
     setIntcust(intcustRawX[0]);
