@@ -1,6 +1,6 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
-import { Route, StyleSheet } from "react-native";
+import { Alert, Route, StyleSheet } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
@@ -25,6 +25,8 @@ interface Props {
   route: Route;
   restaurant: [];
 }
+
+const DELIVERY = 'Delivery'
 
 export const basketScreen = ({ route, navigation }: Props) => {
   const [totalCashBasket, setTotalCashBasket] = useState(0);
@@ -270,13 +272,21 @@ export const basketScreen = ({ route, navigation }: Props) => {
         </View>
       </ScrollView>
       <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("custInfoScreen", {
-            restoId: route.params.restoId,
-            bookingType: route.params.bookingType,
-            day: route.params.day,
-            hour: route.params.hour,
-          });
+        onPress={async() => {
+          var Intcust = Parse.Object.extend("Intcust");
+          let myintcustRaw = new Intcust();
+          myintcustRaw.id = route.params.restoId;
+          if(route.params.bookingType !== DELIVERY || (!myintcustRaw.attributes.minOrderDelivery || totalCashBasket >= myintcustRaw.attributes.minOrderDelivery)) {
+            navigation.navigate("custInfoScreen", {
+              restoId: route.params.restoId,
+              bookingType: route.params.bookingType,
+              day: route.params.day,
+              hour: route.params.hour
+            });
+          }
+          else {
+            Alert.alert("Information", `Vous devez commander plus de ${myintcustRaw.attributes.minOrderDelivery} € pour la livraison!`)
+          }
         }}
         style={styles.appButtonContainer}
       >
