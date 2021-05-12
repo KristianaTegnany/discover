@@ -231,14 +231,18 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testOrderDaily_Stop() {
     let isValid = true
     if([TAKEAWAY, DELIVERY].includes(bookingType)){
-      const resasClean = await getReservation()
-      if(resasClean.length > 0
-        && 
-        ((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopTaway === 0)
-        ||
-        ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
-      )
-        isValid = false;
+      if((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === 0) || (bookingType === DELIVERY && intcust.orderDaily_StopTaway === 0))
+        isValid = false
+      else {
+        const resasClean = await getReservation()
+        if(resasClean.length > 0
+          && 
+          (bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length)
+          ||
+          ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
+        )
+          isValid = false
+      }
     }
     return isValid;
   }
@@ -479,19 +483,19 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
         orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
         confirmModeOrderOptions_shiftinterval:
-          intcustRaw.confirmModeOrderOptions_shiftinterval || 0,
-        orderDaily_StopDelivery: intcustRaw.orderDaily_StopDelivery || 0,
-        orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0,
-        confirmModeOrderOptions_delayorder: intcustRaw.confirmModeOrderOptions_delayorder || 0,
-        delayorderDelivery: intcustRaw.delayorderDelivery || 0,
-        takeaway_StopYesterday: intcustRaw.takeaway_StopYesterday || false,
-        delivery_StopYesterday: intcustRaw.delivery_StopYesterday || false,
-        takeawaynightstart: intcustRaw.takeawaynightstart || "",
-        takeawaynoonblock: intcustRaw.takeawaynoonblock || "",
-        takeawaynightblock: intcustRaw.takeawaynightblock || "",
-        deliverynightstart: intcustRaw.deliverynightstart || "",
-        deliverynoonblock: intcustRaw.deliverynoonblock || "",
-        deliverynightblock: intcustRaw.deliverynightblock || ""
+          intcustRaw.attributes.confirmModeOrderOptions_shiftinterval || 0,
+        orderDaily_StopDelivery: intcustRaw.attributes.orderDaily_StopDelivery || 0,
+        orderCren_StopDelivery: intcustRaw.attributes.orderCren_StopDelivery || 0,
+        confirmModeOrderOptions_delayorder: intcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
+        delayorderDelivery: intcustRaw.attributes.delayorderDelivery || 0,
+        takeaway_StopYesterday: intcustRaw.attributes.takeaway_StopYesterday || false,
+        delivery_StopYesterday: intcustRaw.attributes.delivery_StopYesterday || false,
+        takeawaynightstart: intcustRaw.attributes.takeawaynightstart || "",
+        takeawaynoonblock: intcustRaw.attributes.takeawaynoonblock || "",
+        takeawaynightblock: intcustRaw.attributes.takeawaynightblock || "",
+        deliverynightstart: intcustRaw.attributes.deliverynightstart || "",
+        deliverynoonblock: intcustRaw.attributes.deliverynoonblock || "",
+        deliverynightblock: intcustRaw.attributes.deliverynightblock || ""
       },
     ];
 
