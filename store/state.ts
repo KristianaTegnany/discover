@@ -1,9 +1,5 @@
-import {  ProductItem } from "../global"
+import { ProductItem } from "../global";
 
-const INITIAL_STATE: ProductItem[] = [
- 
-]
+const INITIAL_STATE: ProductItem[] = [];
 
-
-
-export {INITIAL_STATE   }
+export { INITIAL_STATE };

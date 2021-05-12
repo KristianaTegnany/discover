@@ -52,7 +52,6 @@ export default class deliveryScreen extends React.Component<Props, state> {
       .catch((error: any) => console.log(error));
   }
   render() {
-    console.log(this.state.menus);
     return (
       <View style={styles.container}>
         <ScrollView>

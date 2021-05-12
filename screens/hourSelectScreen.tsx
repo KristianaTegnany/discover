@@ -61,10 +61,8 @@ export const hourSelectScreen = ({ route, navigation }: Props) => {
 
     setHourstobook(res3.crenAvailable);
 
-    if (route.params.bookingType == "TakeAway") {
-      setGoto("takeawayScreen");
-    } else if (route.params.bookingType == "Delivery") {
-      setGoto("deliveryScreen");
+    if (["Delivery", "TakeAway"].includes(route.params.bookingType)) {
+      setGoto("orderScreen");
     } else if (route.params.bookingType == "OnSite") {
       setGoto("resaScreen");
     }

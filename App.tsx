@@ -13,7 +13,6 @@ import {AppRegistry} from 'react-native';
 import {expo as appName} from './app.json';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import { ThemeProvider } from "react-native-elements";
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");

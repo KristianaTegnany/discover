@@ -1,7 +1,14 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
-import { Route, StyleSheet, Image, TextInput, Alert } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  Route,
+  StyleSheet,
+  Image,
+  TextInput,
+  Alert,
+  Platform,
+} from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
 import { Text, View } from "../components/Themed";
@@ -13,6 +20,7 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import moment from "moment";
+import * as EmailValidator from "email-validator";
 
 interface NavigationParams {
   restoId: string;
@@ -25,15 +33,18 @@ interface Props {
   restaurant: [];
 }
 
-const TAKEAWAY = "TakeAway",
-  DELIVERY = "Delivery";
+const TAKEAWAY = 'TakeAway',
+      DELIVERY = 'Delivery'
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
-  const [email, setEmail] = useState();
+  const [email, setEmail] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [phone, setPhone] = useState("");
-
+  const [line1, setLine1] = useState();
+  const [city, setCity] = useState();
+  const [zip, setZip] = useState();
+  const [notecom, setNotecom] = useState();
   const [resa, setResa] = useState({
     id: "",
     engagModeResa: "",
@@ -54,13 +65,21 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     orderDaily_StopDelivery: 0,
     orderCren_StopDelivery: 0,
     confirmModeOrderOptions_delayorder: 0,
-    delayorderDelivery: 0
+    delayorderDelivery: 0,
+    takeaway_StopYesterday: false,
+    delivery_StopYesterday: false,
+    takeawaynightstart: "",
+    takeawaynoonblock: "",
+    takeawaynightblock: "",
+    deliverynightstart: "",
+    deliverynoonblock: "",
+    deliverynightblock: ""
   });
   const products = useSelector((state: ProductItem[]) => state);
 
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
-  const { restoId, bookingType, day, hour } = route.params;
+  const { bookingType, restoId, day, hour } = route.params
 
   function useThemeColor(
     props: { light?: string; dark?: string },
@@ -82,6 +101,19 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function onChangeTextFirstname(firstname: any) {
     setFirstname(firstname);
   }
+  async function onChangeTextCity(city: any) {
+    setCity(city);
+  }
+  async function onChangeTextNotecom(notecom: any) {
+    setNotecom(notecom);
+  }
+
+  async function onChangeTextZip(zip: any) {
+    setZip(zip);
+  }
+  async function onChangeTextline1(line1: any) {
+    setLine1(line1);
+  }
   async function onChangeTextLastname(lastname: any) {
     setLastname(lastname);
   }
@@ -95,7 +127,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     };
 
     const res = await Parse.Cloud.run("getGuest", params);
-
     var Guest = Parse.Object.extend("Guest");
     let guestRaw = new Guest();
     if (res.length == 0) {
@@ -119,10 +150,58 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         email: email,
       },
     ];
-
+    resaRaw.set("line_items", products);
+    var Intcust = Parse.Object.extend("Intcust");
+    let intcustRawY = new Intcust();
+    intcustRawY.id = intcust.id;
+    resaRaw.set("intcust", intcustRawY);
     resaRaw.set("guestFlat", arrayGuest);
+    resaRaw.set("order", true);
+    resaRaw.set("notes", notecom);
+    resaRaw.set("process", "appdisco");
+
+    if (bookingType == "TakeAway") {
+      let params2 = {
+        itid: intcust.id,
+      };
+      const res3 = await Parse.Cloud.run("getTakeAwayAsSeating", params2);
+      resaRaw.set("seating", res3[0]); // en cours
+      let arraySeating = [
+        {
+          name: res3[0].attributes.name,
+          type: res3[0].attributes.type,
+          description: res3[0].attributes.description,
+          capacity: res3[0].attributes.capacity,
+        },
+      ];
+      resaRaw.set("seatingFlat", arraySeating);
+    }
+
+    if (bookingType == "Delivery") {
+      let params2 = {
+        itid: intcust.id,
+      };
+      const res3 = await Parse.Cloud.run("getDeliveryAsSeating", params2);
+      resaRaw.set("seating", res3[0]); // en cours
+      let arraySeating = [
+        {
+          name: res3[0].attributes.name,
+          type: res3[0].attributes.type,
+          description: res3[0].attributes.description,
+          capacity: res3[0].attributes.capacity,
+        },
+      ];
+
+      resaRaw.set("seatingFlat", arraySeating);
+    }
     resaRaw.set("status", "En cours"); // en cours
     resaRaw.set("engagModeResa", bookingType);
+    resaRaw.set("source", {
+      utm_campaign: "APP",
+      utm_medium: Platform.OS,
+      utm_source: Platform.Version,
+      utm_content: "APP",
+    });
 
     await resaRaw.save();
     setResa({
@@ -206,47 +285,114 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     return isValid
   }
 
+  async function testNoonNight_Stop() {
+    let isValid = true
+    const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
+    if([TAKEAWAY, DELIVERY].includes(bookingType)) {
+      if(stopYesterday) {
+        isValid = day.diff(day.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
+      }
+      else {
+        const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
+              nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
+              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock
+
+        isValid = day.diff(noonblock) < 0 || (day.diff(nightstart) > 0 && day.diff(nightblock) < 0)
+      }
+    }
+    return isValid
+  }
+
+  async function testQuantity() {
+    let isValid = true
+    for(var product of products) {
+      var Menu = Parse.Object.extend("Menu");
+      let menu = new Menu();
+      menu.id = product.id;
+      await menu.fetch();
+      const params = {
+        itid: route.params.restoId,
+        menuid: product.id,
+        date: route.params.day,
+      }
+      const consumed = await Parse.Cloud.run("checkStock", params)
+      
+      if (menu.attributes.provisionStockBase) {
+        let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment(day).isSame(x.date))[0].provision
+        isValid = provision > consumed + 1
+        if(!isValid){
+          Alert.alert("Information",`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
+          break
+        }
+      }
+    }
+    return isValid
+  }
+
   async function goPay() {
-    if (email && firstname && lastname && phone) {
+    let blockGo = false;
+
+    if (
+      email &&
+      EmailValidator.validate(email) == true &&
+      firstname &&
+      lastname &&
+      phone &&
+      blockGo == false
+    ) {
       // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_Stop
-      const testOC = await testOrderCren_Stop()
-      let testOD = true,
-          testDelayCren = true
+      const testOC      = await testOrderCren_Stop()
+      let testOD        = true,
+          testDelayCren = true,
+          testNoonNight = true,
+          testQty       = true
 
       if(!testOC){
-        Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour")
+        Alert.alert("Information","La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
         navigation.navigate("hourSelectScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
-          day: moment().format(),
-        });
-      } else {
+          day: day
+        })
+      }
+      else {
         // Tester si le nombre de commande à emporter < orderDaily_Stop
-        testOD = await testOrderDaily_Stop();
-        if (!testOD) {
-          Alert.alert(
-            "Information",
-            "La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour"
-          );
+        testOD = await testOrderDaily_Stop()
+        if(!testOD){
+          Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
           navigation.navigate("crenSelectScreen", {
             restoId: intcust.id,
-            bookingType: bookingType,
-          });
+            bookingType: bookingType
+          })
         }
         else {
           testDelayCren = await testDelayCren_Stop()
           if(!testDelayCren) {
-            Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt")
+            Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
             navigation.navigate("crenSelectScreen", {
               restoId: intcust.id,
               bookingType: bookingType
             })
           }
+          else {
+            testNoonNight = await testNoonNight_Stop()
+            if(!testNoonNight) {
+              Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
+              navigation.navigate("hourSelectScreen", {
+                restoId: intcust.id,
+                bookingType: bookingType,
+                day: day
+              })
+            }
+            else {
+              testQty = await testQuantity()
+            }
+          }
         }
       }
 
-      if (testOC && testOD) {
-        createResa();
+      if(testOC && testOD && testDelayCren && testNoonNight && testQty) {
+        await createResa();
         if (intcust.paymentChoice !== "stripeOptin") {
           await getPayPlugPaymentUrl();
           // navigate and options payLink
@@ -254,6 +400,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             restoId: restoId,
             paylink: paylink,
             bookingType: bookingType,
+            resaId: resa.id,
           });
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
@@ -273,13 +420,21 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             "createCheckoutSessionStripeForApp",
             params1
           );
-
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl",
+            bookingType: bookingType,
+            resaId: resa.id,
+            day: day,
+            hour: hour,
+            amount: totalCashBasket,
           });
         }
       }
+    } else if (!email || EmailValidator.validate(email) == false) {
+      Alert.alert(
+        "Merci de vérifier votre adresse email. Le format est incorrect."
+      );
     } else {
       alert("Merci de saisir tous les champs. ");
     }
@@ -328,8 +483,16 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         orderDaily_StopDelivery: intcustRaw.orderDaily_StopDelivery || 0,
         orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0,
         confirmModeOrderOptions_delayorder: intcustRaw.confirmModeOrderOptions_delayorder || 0,
-        delayorderDelivery: intcustRaw.delayorderDelivery || 0
-      }
+        delayorderDelivery: intcustRaw.delayorderDelivery || 0,
+        takeaway_StopYesterday: intcustRaw.takeaway_StopYesterday || false,
+        delivery_StopYesterday: intcustRaw.delivery_StopYesterday || false,
+        takeawaynightstart: intcustRaw.takeawaynightstart || "",
+        takeawaynoonblock: intcustRaw.takeawaynoonblock || "",
+        takeawaynightblock: intcustRaw.takeawaynightblock || "",
+        deliverynightstart: intcustRaw.deliverynightstart || "",
+        deliverynoonblock: intcustRaw.deliverynoonblock || "",
+        deliverynightblock: intcustRaw.deliverynightblock || ""
+      },
     ];
 
     setIntcust(intcustRawX[0]);
@@ -337,130 +500,219 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.container2}>
-        <Text style={styles.label}>Votre adresse email</Text>
-        <TextInput
-          style={{
-            color: textColor,
-            fontFamily: "geometria-regular",
-            height: 50,
-            marginHorizontal: 20,
-            marginTop: 4,
-            paddingLeft: 20,
-            borderWidth: 1,
-            borderRadius: 10,
-            fontSize: 15,
-            borderColor: "grey",
-          }}
-          onChangeText={onChangeTextEmail}
-          placeholder="addresse@email.com"
-          value={email}
-        />
-        <Text style={styles.label}>Votre prénom</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.container2}>
+          <Text style={styles.label}>Votre adresse email</Text>
+          <TextInput
+            style={{
+              color: textColor,
+              fontFamily: "geometria-regular",
+              height: 50,
+              marginHorizontal: 20,
+              marginTop: 4,
+              paddingLeft: 20,
+              borderWidth: 1,
+              borderRadius: 10,
+              fontSize: 15,
+              borderColor: "grey",
+            }}
+            onChangeText={onChangeTextEmail}
+            placeholder="addresse@email.com"
+            value={email}
+          />
+          <Text style={styles.label}>Votre prénom</Text>
 
-        <TextInput
-          style={{
-            color: textColor,
-            fontFamily: "geometria-regular",
-            height: 50,
-            marginHorizontal: 20,
-            marginTop: 4,
-            paddingLeft: 20,
-            borderWidth: 1,
-            borderRadius: 10,
-            fontSize: 15,
-            borderColor: "grey",
-          }}
-          onChangeText={onChangeTextFirstname}
-          placeholder="Gustavo"
-          value={firstname}
-        />
+          <TextInput
+            style={{
+              color: textColor,
+              fontFamily: "geometria-regular",
+              height: 50,
+              marginHorizontal: 20,
+              marginTop: 4,
+              paddingLeft: 20,
+              borderWidth: 1,
+              borderRadius: 10,
+              fontSize: 15,
+              borderColor: "grey",
+            }}
+            onChangeText={onChangeTextFirstname}
+            placeholder="Gustavo"
+            value={firstname}
+          />
 
-        <Text style={styles.label}>Votre nom de famille</Text>
+          <Text style={styles.label}>Votre nom de famille</Text>
 
-        <TextInput
-          style={{
-            color: textColor,
-            fontFamily: "geometria-regular",
-            height: 50,
-            marginHorizontal: 20,
-            marginTop: 4,
-            paddingLeft: 20,
-            borderWidth: 1,
-            borderRadius: 10,
-            fontSize: 15,
-            borderColor: "grey",
-          }}
-          onChangeText={onChangeTextLastname}
-          placeholder="Martin"
-          value={lastname}
-        />
+          <TextInput
+            style={{
+              color: textColor,
+              fontFamily: "geometria-regular",
+              height: 50,
+              marginHorizontal: 20,
+              marginTop: 4,
+              paddingLeft: 20,
+              borderWidth: 1,
+              borderRadius: 10,
+              fontSize: 15,
+              borderColor: "grey",
+            }}
+            onChangeText={onChangeTextLastname}
+            placeholder="Martin"
+            value={lastname}
+          />
 
-        <Text style={styles.label}>Votre numéro de portable</Text>
+          <Text style={styles.label}>Votre numéro de portable</Text>
 
-        <TextInput
-          style={{
-            color: textColor,
-            fontFamily: "geometria-regular",
-            height: 50,
-            marginHorizontal: 20,
-            marginTop: 4,
-            paddingLeft: 20,
-            borderWidth: 1,
-            borderRadius: 10,
-            fontSize: 15,
-            borderColor: "grey",
-          }}
-          onChangeText={onChangeTextPhone}
-          placeholder="+59X 69X 00 00 00"
-          value={phone}
-        />
+          <TextInput
+            style={{
+              color: textColor,
+              fontFamily: "geometria-regular",
+              height: 50,
+              marginHorizontal: 20,
+              marginTop: 4,
+              paddingLeft: 20,
+              borderWidth: 1,
+              borderRadius: 10,
+              fontSize: 15,
+              borderColor: "grey",
+            }}
+            onChangeText={onChangeTextPhone}
+            placeholder="+59X 69X 00 00 00"
+            value={phone}
+          />
+
+          {bookingType == "Delivery" && (
+            <View>
+              <Text style={styles.label}>
+                L'adresse à laquelle vous souhaitez être livré
+              </Text>
+
+              <TextInput
+                style={{
+                  color: textColor,
+                  fontFamily: "geometria-regular",
+                  height: 50,
+                  marginHorizontal: 20,
+                  marginTop: 4,
+                  paddingLeft: 20,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  fontSize: 15,
+                  borderColor: "grey",
+                }}
+                onChangeText={onChangeTextline1}
+                placeholder="5 rue des accacias"
+                value={line1}
+              />
+
+              <Text style={styles.label}>Code Postal</Text>
+
+              <TextInput
+                style={{
+                  color: textColor,
+                  fontFamily: "geometria-regular",
+                  height: 50,
+                  marginHorizontal: 20,
+                  marginTop: 4,
+                  paddingLeft: 20,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  fontSize: 15,
+                  borderColor: "grey",
+                }}
+                onChangeText={onChangeTextZip}
+                placeholder="97200"
+                value={zip}
+              />
+
+              <Text style={styles.label}>Ville</Text>
+
+              <TextInput
+                style={{
+                  color: textColor,
+                  fontFamily: "geometria-regular",
+                  height: 50,
+                  marginHorizontal: 20,
+                  marginTop: 4,
+                  paddingLeft: 20,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  fontSize: 15,
+                  borderColor: "grey",
+                }}
+                onChangeText={onChangeTextCity}
+                placeholder="Fort-de-france"
+                value={city}
+              />
+            </View>
+          )}
+
+          <Text style={styles.label}>
+            Note / Commentaire sur votre commande
+          </Text>
+
+          <TextInput
+            style={{
+              color: textColor,
+              fontFamily: "geometria-regular",
+              height: 50,
+              marginHorizontal: 20,
+              marginTop: 4,
+              paddingLeft: 20,
+              borderWidth: 1,
+              borderRadius: 10,
+              fontSize: 15,
+              borderColor: "grey",
+            }}
+            onChangeText={onChangeTextNotecom}
+            placeholder="Fort-de-france"
+            value={notecom}
+          />
+          <TouchableOpacity
+            onPress={() => goPay()}
+            style={styles.appButtonContainer}
+          >
+            <Text style={styles.appButtonText}>
+              {" "}
+              <Text style={styles.payText}>Valider et payer</Text>{" "}
+            </Text>
+          </TouchableOpacity>
+          {intcust && intcust.paymentChoice == "stripeOptin" && (
+            <Text style={styles.appButtonText}>
+              {" "}
+              Avec <FontAwesome5
+                name="cc-stripe"
+                size={24}
+                color={textColor}
+              />{" "}
+            </Text>
+          )}
+          {intcust && intcust.paymentChoice !== "stripeOptin" && (
+            <Text style={styles.appButtonText}>
+              {" "}
+              Avec{" "}
+              <Image
+                source={require("../assets/images/pplogo.png")}
+                fadeDuration={0}
+                style={{ width: 90, height: 50 }}
+              />
+            </Text>
+          )}
+        </View>
 
         <TouchableOpacity
-          onPress={() => goPay()}
-          style={styles.appButtonContainer}
+          style={styles.listitem}
+          onPress={() => {
+            navigation.navigate("termsScreen", {
+              restoId: restoId,
+              bookingType: bookingType,
+            });
+          }}
         >
-          <Text style={styles.appButtonText}>
-            {" "}
-            <Text style={styles.payText}>Valider et payer</Text>{" "}
-          </Text>
+          <Text style={styles.text}>En continuant j'accepte les CGU 👀➡️ </Text>
         </TouchableOpacity>
-        {intcust && intcust.paymentChoice == "stripeOptin" && (
-          <Text style={styles.appButtonText}>
-            {" "}
-            Avec <FontAwesome5
-              name="cc-stripe"
-              size={24}
-              color={textColor}
-            />{" "}
-          </Text>
-        )}
-        {intcust && intcust.paymentChoice !== "stripeOptin" && (
-          <Text style={styles.appButtonText}>
-            {" "}
-            Avec{" "}
-            <Image
-              source={require("../assets/images/pplogo.png")}
-              fadeDuration={0}
-              style={{ width: 90, height: 50 }}
-            />
-          </Text>
-        )}
       </View>
-
-      <TouchableOpacity
-        style={styles.listitem}
-        onPress={() => {
-          navigation.navigate("termsScreen", {
-            restoId: restoId,
-            bookingType: bookingType,
-          });
-        }}
-      >
-        <Text style={styles.text}>En continuant j'accepte les CGU 👀➡️ </Text>
-      </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 

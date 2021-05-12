@@ -12,7 +12,6 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
-import darkColors from "react-native-elements/dist/config/colorsDark";
 import { useSelector } from "react-redux";
 import { ProductItem } from "../global";
 
@@ -42,15 +41,12 @@ export const DishScreen = ({ route, navigation }: Props) => {
   const [initied, setInitied] = useState(false);
   const [persoMenu, setPersoMenu] = useState<any[]>();
   const [formulaChoiced, setFormulaChoiced] = useState<any[]>();
-  const [checkboxBackColor, setcheckboxBackColor] = useState("transparent");
-  const [checkboxBorderColor, setcheckboxBorderColor] = useState("grey");
 
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
     "background"
   );
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
-  const products = useSelector((state: ProductItem[]) => state);
 
   function useThemeColor(
     props: { light?: string; dark?: string },
@@ -135,7 +131,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
         (formulaChoiced[i].sumtot || 0) + (formulaChoiced[i].menus[j].tar || 0);
       setInitied(true);
       setFormulaChoiced([...formulaChoiced]);
-      console.log(formulaChoiced);
     }
   }
 
@@ -164,7 +159,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
       }
       setInitied(true);
       setFormulaChoiced([...formulaChoiced]);
-      console.log(formulaChoiced);
     }
   }
   async function addToBasket() {
@@ -210,14 +204,12 @@ export const DishScreen = ({ route, navigation }: Props) => {
 
       let fcRaw = formulaChoiced?.filter((x: any) => x.menus.length > 0);
 
-      console.log(persoMenu);
       persoMenu?.forEach((pers: any, index: any) => {
         pers.values = pers.values.filter((value: any) => value.checked == true);
       });
 
       let persoRaw = persoMenu?.filter((x: any) => x.values.length > 0);
 
-      console.log(persoRaw);
       let menuRaw = {
         id: menu?.id,
         restoId: route.params.restoId,

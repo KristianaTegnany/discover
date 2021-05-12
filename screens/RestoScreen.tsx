@@ -13,6 +13,7 @@ import { ProductItem } from "../global";
 import { add, remove, emptyall, store } from "../store";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
+import { sortBy } from "lodash";
 
 interface NavigationParams {
   restoId: string;
@@ -26,7 +27,28 @@ interface Props {
 }
 
 export const RestoScreen = ({ route, navigation }: Props) => {
-  const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState();
+  const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState([
+    {
+      daysOfWeek: [],
+      endTime: "",
+      startTime: "",
+    },
+  ]);
+  const [businessHoursDelivery, setBusinessHoursDelivery] = useState([
+    {
+      daysOfWeek: [],
+      endTime: "",
+      startTime: "",
+    },
+  ]);
+  const [businessHours, setBusinessHours] = useState([
+    {
+      daysOfWeek: [],
+      endTime: "",
+      startTime: "",
+    },
+  ]);
+
   const [myintcust, setMyintcust] = useState({
     id: "",
     overviewpicUrl: " ",
@@ -42,6 +64,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     onsitenoonblock: "",
     onsitenightblock: "",
     preswebsite: "",
+    businessHoursTakeAway: [],
+    businessHoursDelivery: [],
+    businessHours: [],
     takeawaynoonblock: "",
     takeawaynightblock: "",
     deliverynightblock: "",
@@ -93,6 +118,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       adressvenue: myintcustRaw.attributes.adressvenue || "",
       zipvenue: myintcustRaw.attributes.zipvenue || "",
       cityvenue: myintcustRaw.attributes.cityvenue || "",
+      businessHoursTakeAway: myintcustRaw.attributes.businessHoursTaway,
+      businessHoursDelivery: myintcustRaw.attributes.businessHoursDelivery,
+      businessHours: myintcustRaw.attributes.businesshours || [],
       preswebsite: myintcustRaw.attributes.preswebsite || "",
       onsitenoonblock: myintcustRaw.attributes.onsitenoonblock || "",
       onsitenightblock: myintcustRaw.attributes.onsitenightblock || "",
@@ -105,8 +133,177 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       noNightDelivery: myintcustRaw.attributes.noNightDelivery || false,
     };
     setMyintcust(myintcustRaw);
+    console.log("ff");
+    //console.log(myintcustRaw.businessHours);
+    let results: any = [];
+    let businessHours = sortBy(myintcustRaw.businessHours, ["daysOfWeek"]);
+    await businessHours.forEach((element) => {
+      if (element.daysOfWeek[0] == 1) {
+        results.push({
+          daysOfWeek: "Lundi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 2) {
+        results.push({
+          daysOfWeek: "Mardi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 3) {
+        results.push({
+          daysOfWeek: "Mercredi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 4) {
+        results.push({
+          daysOfWeek: "Jeudi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 5) {
+        results.push({
+          daysOfWeek: "Vendredi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 6) {
+        results.push({
+          daysOfWeek: "Samedi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 7) {
+        results.push({
+          daysOfWeek: "Dimanche",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+    });
 
-    //  myintcustRaw.businessHoursTakeAway
+    setBusinessHours(results);
+
+    let resultsTakeAway: any = [];
+    let businessHoursTakeAway = sortBy(myintcustRaw.businessHoursTakeAway, [
+      "daysOfWeek",
+    ]);
+    await businessHoursTakeAway.forEach((element) => {
+      if (element.daysOfWeek[0] == 1) {
+        resultsTakeAway.push({
+          daysOfWeek: "Lundi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 2) {
+        resultsTakeAway.push({
+          daysOfWeek: "Mardi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 3) {
+        resultsTakeAway.push({
+          daysOfWeek: "Mercredi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 4) {
+        resultsTakeAway.push({
+          daysOfWeek: "Jeudi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 5) {
+        resultsTakeAway.push({
+          daysOfWeek: "Vendredi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 6) {
+        resultsTakeAway.push({
+          daysOfWeek: "Samedi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 7) {
+        resultsTakeAway.push({
+          daysOfWeek: "Dimanche",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+    });
+    setBusinessHoursTakeAway(resultsTakeAway);
+
+    let resultsDelivery: any = [];
+    let businessHoursDelivery = sortBy(myintcustRaw.businessHoursDelivery, [
+      "daysOfWeek",
+    ]);
+    await businessHoursDelivery.forEach((element) => {
+      if (element.daysOfWeek[0] == 1) {
+        resultsDelivery.push({
+          daysOfWeek: "Lundi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 2) {
+        resultsDelivery.push({
+          daysOfWeek: "Mardi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 3) {
+        resultsDelivery.push({
+          daysOfWeek: "Mercredi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 4) {
+        resultsDelivery.push({
+          daysOfWeek: "Jeudi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 5) {
+        resultsDelivery.push({
+          daysOfWeek: "Vendredi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 6) {
+        resultsDelivery.push({
+          daysOfWeek: "Samedi",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+      if (element.daysOfWeek[0] == 7) {
+        resultsDelivery.push({
+          daysOfWeek: "Dimanche",
+          startTime: element.startTime,
+          endTime: element.endTime,
+        });
+      }
+    });
+    setBusinessHoursDelivery(resultsDelivery);
   }
   useEffect(() => {
     fetchIntcust();
@@ -148,6 +345,17 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           {myintcust.EngagModeOnSite == true && (
             <View>
               <Text style={styles.textSub}>Réservation sur place </Text>
+
+              {businessHours &&
+                businessHours.length !== 0 &&
+                businessHours.map((bh) => (
+                  <Text
+                    style={styles.textMoli}
+                    key={bh.daysOfWeek + bh.startTime}
+                  >
+                    {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
+                  </Text>
+                ))}
               <Text style={styles.textMoli}>
                 Fin de commande le midi : {myintcust.onsitenoonblock}{" "}
               </Text>
@@ -165,6 +373,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           {myintcust.EngagModeTakeAway == true && (
             <View>
               <Text style={styles.textSub}>Commande à emporter </Text>
+              {businessHoursTakeAway &&
+                businessHoursTakeAway.length !== 0 &&
+                businessHoursTakeAway.map((bh2: any) => (
+                  <Text
+                    style={styles.textMoli}
+                    key={bh2.daysOfWeek + bh2.startTime}
+                  >
+                    {bh2.daysOfWeek} {bh2.startTime}-{bh2.endTime}
+                  </Text>
+                ))}
               <Text style={styles.textMoli}>
                 Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
               </Text>
@@ -182,6 +400,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           {myintcust.EngagModeDelivery == true && (
             <View>
               <Text style={styles.textSub}>Commande en livraison </Text>
+              {businessHoursDelivery &&
+                businessHoursDelivery.length !== 0 &&
+                businessHoursDelivery.map((bh: any) => (
+                  <Text
+                    style={styles.textMoli}
+                    key={bh.daysOfWeek + bh.startTime}
+                  >
+                    {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
+                  </Text>
+                ))}
               <Text style={styles.textMoli}>
                 Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
               </Text>
@@ -198,28 +426,10 @@ export const RestoScreen = ({ route, navigation }: Props) => {
         {myintcust && myintcust.EngagModeOnSite && (
           <TouchableOpacity
             onPress={() => {
-              if (products.length > 0) {
-                Alert.alert(
-                  "",
-                  "Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.",
-                  [
-                    {
-                      text: "Revenir",
-                      onPress: () => console.log("Cancel Pressed"),
-                      style: "cancel",
-                    },
-                    {
-                      text: "Continuer",
-                      onPress: () => console.log("OK Pressed"),
-                    },
-                  ]
-                );
-              } else {
-                navigation.navigate("crenSelectScreen", {
-                  restoId: myintcust.id,
-                  bookingType: "OnSite",
-                });
-              }
+              navigation.navigate("crenSelectScreen", {
+                restoId: myintcust.id,
+                bookingType: "OnSite",
+              });
             }}
             style={styles.appButtonContainer}
           >
