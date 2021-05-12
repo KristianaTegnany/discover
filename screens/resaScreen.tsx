@@ -214,7 +214,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("numguest", nbcover);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date", moment(route.params.day).toDate());
+            res.set("date", moment(route.params.day).hours(route.params.hour.substring(0, 2)).minutes(route.params.hour.substring(3)).toDate()); // j'ai ajouté l'heure à la date
             res.set("notes", notecom);
             res.set("status", "Confirmé"); // en cours
             await res.save();

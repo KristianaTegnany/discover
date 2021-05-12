@@ -321,7 +321,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment(day).isSame(x.date))[0].provision
         isValid = provision > consumed + 1
         if(!isValid){
-          Alert.alert("Information",`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
+          Alert.alert(`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
           break
         }
       }
@@ -348,7 +348,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           testQty       = true
 
       if(!testOC){
-        Alert.alert("Information","La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
+        Alert.alert("La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
         navigation.navigate("hourSelectScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
@@ -359,7 +359,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         // Tester si le nombre de commande à emporter < orderDaily_Stop
         testOD = await testOrderDaily_Stop()
         if(!testOD){
-          Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
+          Alert.alert("La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
           navigation.navigate("crenSelectScreen", {
             restoId: intcust.id,
             bookingType: bookingType
@@ -368,7 +368,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         else {
           testDelayCren = await testDelayCren_Stop()
           if(!testDelayCren) {
-            Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
+            Alert.alert("Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
             navigation.navigate("crenSelectScreen", {
               restoId: intcust.id,
               bookingType: bookingType
@@ -377,7 +377,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           else {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
-              Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
+              Alert.alert("Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
               navigation.navigate("hourSelectScreen", {
                 restoId: intcust.id,
                 bookingType: bookingType,

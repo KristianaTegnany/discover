@@ -285,7 +285,7 @@ export const basketScreen = ({ route, navigation }: Props) => {
             });
           }
           else {
-            Alert.alert("Information", `Vous devez commander plus de ${myintcustRaw.attributes.minOrderDelivery} € pour la livraison!`)
+            Alert.alert( `Ce restaurant a un minimum de commande en livraison : ${myintcustRaw.attributes.minOrderDelivery}€. Vous devez compléter votre commande.`)
           }
         }}
         style={styles.appButtonContainer}
