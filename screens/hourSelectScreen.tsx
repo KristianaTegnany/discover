@@ -5,7 +5,7 @@ import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
 import { Text, View } from "../components/Themed";
 import { ListItem } from "react-native-elements";
-import moment from "moment";
+import moment from 'moment-timezone';
 import "moment/locale/fr";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -54,7 +54,7 @@ export const hourSelectScreen = ({ route, navigation }: Props) => {
 
     let params2 = {
       itid: route.params.restoId,
-      date: moment(route.params.day).format(),
+      date: moment.tz(route.params.day, 'America/Martinique').format(),
       bookingType: route.params.bookingType,
     };
     const res3 = await Parse.Cloud.run("getIntcustWithAvailableCren", params2);
