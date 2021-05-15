@@ -30,6 +30,7 @@
     "expo-splash-screen": "~0.8.0",
     "expo-status-bar": "~1.0.3",
     "expo-web-browser": "~8.6.0",
+    "moment-timezone": "^0.5.33",
     "parse": "^3.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",

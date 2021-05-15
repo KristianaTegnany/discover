@@ -10,7 +10,7 @@ import {
   useTheme,
   withTheme,
 } from "react-native-elements";
-import moment from "moment";
+import moment from 'moment-timezone';
 import "moment/locale/fr";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -70,7 +70,7 @@ export const crenSelectScreen = ({ route, navigation, theme }: Props) => {
     } else if (route.params.bookingType == "OnSite") {
       businessHours = intcustRaw.get("businesshours");
     }
-    let day = moment();
+    let day = moment.tz('America/Martinique');
     let days = [];
     var i;
     for (i = 0; i < 30; i++) {
@@ -80,7 +80,7 @@ export const crenSelectScreen = ({ route, navigation, theme }: Props) => {
       if (index1 >= 0) {
         // tester si inclus dans les business hours et pas dans les blocks events
         days.push({
-          day: moment(day).format("dddd DD MMM"),
+          day: moment.tz(day, 'America/Martinique').format("dddd DD MMM"),
           fday: day.format(),
         });
       }
@@ -103,7 +103,7 @@ export const crenSelectScreen = ({ route, navigation, theme }: Props) => {
                 navigation.navigate("hourSelectScreen", {
                   restoId: route.params.restoId,
                   bookingType: route.params.bookingType,
-                  day: moment(day.fday).format(),
+                  day: moment.tz(day.fday, 'America/Martinique').format(),
                 });
               }}
             >

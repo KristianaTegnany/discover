@@ -19,9 +19,10 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
-import moment from "moment";
+import moment from 'moment-timezone'
 import * as EmailValidator from "email-validator";
-
+moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
+  
 interface NavigationParams {
   restoId: string;
 }
@@ -80,7 +81,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
   const { bookingType, restoId, day, hour } = route.params
-
+  const date = moment.tz(day.substring(0,10) + ' ' + hour, 'America/Martinique')
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -140,7 +141,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
     var Reservation = Parse.Object.extend("Reservation");
     let resaRaw = new Reservation();
-    resaRaw.set("date", moment(day).toDate());
+    resaRaw.set("date", moment.tz(day, 'America/Martinique').toDate());
     resaRaw.set("guest", guestRaw);
     let arrayGuest = [
       {
@@ -221,8 +222,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function getReservation() {
     let params = {
-      date: day,
-      itid: intcust.id,
+      date: moment.tz(day, 'America/Martinique').toDate(),
+      itid: intcust.id
     }
     const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
     return await resas.filter((x:any) => x.attributes.status)
@@ -231,14 +232,18 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testOrderDaily_Stop() {
     let isValid = true
     if([TAKEAWAY, DELIVERY].includes(bookingType)){
-      const resasClean = await getReservation()
-      if(resasClean.length > 0
-        && 
-        ((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopTaway === 0)
-        ||
-        ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
-      )
-        isValid = false;
+      if((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === 0) || (bookingType === DELIVERY && intcust.orderDaily_StopTaway === 0))
+        isValid = false
+      else {
+        const resasClean = await getReservation()
+        if(resasClean.length > 0
+          && 
+          (bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length)
+          ||
+          ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
+        )
+          isValid = false
+      }
     }
     return isValid;
   }
@@ -249,10 +254,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       const resasClean = await getReservation()
       if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
         let isBetweenInterval = false
-        const h = moment(day).hour(),
-              m = moment(day).minute(),
-              resaH = moment(x.attributes.date).hour(),
-              resaM = moment(x.attributes.date).minute(),
+        const h = parseInt(hour.substring(0, 2)),
+              m = parseInt(hour.substring(3)),
+              resaH = moment.tz(x.attributes.date, 'America/Martinique').hour(),
+              resaM = moment.tz(x.attributes.date, 'America/Martinique').minute(),
               min =
                 m < intcust.confirmModeOrderOptions_shiftinterval ||
                 intcust.confirmModeOrderOptions_shiftinterval === 60
@@ -279,7 +284,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     let isValid = true
     const delay = bookingType === DELIVERY? intcust.confirmModeOrderOptions_delayorder : intcust.delayorderDelivery
     if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
-      if(moment().diff(moment(day), 'minutes') < delay)
+      if(moment.tz('America/Martinique').diff(date, 'minutes') > delay)
         isValid = false
     }
     return isValid
@@ -290,14 +295,17 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
     if([TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
-        isValid = day.diff(day.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
+        isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
       }
       else {
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
-              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock
+              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock,
 
-        isValid = day.diff(noonblock) < 0 || (day.diff(nightstart) > 0 && day.diff(nightblock) < 0)
+              dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
+              dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
+              dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
+        isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
       }
     }
     return isValid
@@ -311,14 +319,14 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       menu.id = product.id;
       await menu.fetch();
       const params = {
-        itid: route.params.restoId,
+        itid: restoId,
         menuid: product.id,
-        date: route.params.day,
+        date: day
       }
       const consumed = await Parse.Cloud.run("checkStock", params)
       
-      if (menu.attributes.provisionStockBase) {
-        let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment(day).isSame(x.date))[0].provision
+      if (menu.attributes.provisionStockBase.length > 0) {
+        let provision = await menu.attributes.provisionStockBase.filter((x:any) => day.isSame(x.date))[0].provision
         isValid = provision > consumed + 1
         if(!isValid){
           Alert.alert(`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
@@ -377,7 +385,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           else {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
-              Alert.alert("Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
+              Alert.alert("L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
               navigation.navigate("hourSelectScreen", {
                 restoId: intcust.id,
                 bookingType: bookingType,
@@ -479,19 +487,19 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
         orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
         confirmModeOrderOptions_shiftinterval:
-          intcustRaw.confirmModeOrderOptions_shiftinterval || 0,
-        orderDaily_StopDelivery: intcustRaw.orderDaily_StopDelivery || 0,
-        orderCren_StopDelivery: intcustRaw.orderCren_StopDelivery || 0,
-        confirmModeOrderOptions_delayorder: intcustRaw.confirmModeOrderOptions_delayorder || 0,
-        delayorderDelivery: intcustRaw.delayorderDelivery || 0,
-        takeaway_StopYesterday: intcustRaw.takeaway_StopYesterday || false,
-        delivery_StopYesterday: intcustRaw.delivery_StopYesterday || false,
-        takeawaynightstart: intcustRaw.takeawaynightstart || "",
-        takeawaynoonblock: intcustRaw.takeawaynoonblock || "",
-        takeawaynightblock: intcustRaw.takeawaynightblock || "",
-        deliverynightstart: intcustRaw.deliverynightstart || "",
-        deliverynoonblock: intcustRaw.deliverynoonblock || "",
-        deliverynightblock: intcustRaw.deliverynightblock || ""
+          intcustRaw.attributes.confirmModeOrderOptions_shiftinterval || 0,
+        orderDaily_StopDelivery: intcustRaw.attributes.orderDaily_StopDelivery || 0,
+        orderCren_StopDelivery: intcustRaw.attributes.orderCren_StopDelivery || 0,
+        confirmModeOrderOptions_delayorder: intcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
+        delayorderDelivery: intcustRaw.attributes.delayorderDelivery || 0,
+        takeaway_StopYesterday: intcustRaw.attributes.takeaway_StopYesterday || false,
+        delivery_StopYesterday: intcustRaw.attributes.delivery_StopYesterday || false,
+        takeawaynightstart: intcustRaw.attributes.takeawaynightstart || "",
+        takeawaynoonblock: intcustRaw.attributes.takeawaynoonblock || "",
+        takeawaynightblock: intcustRaw.attributes.takeawaynightblock || "",
+        deliverynightstart: intcustRaw.attributes.deliverynightstart || "",
+        deliverynoonblock: intcustRaw.attributes.deliverynoonblock || "",
+        deliverynightblock: intcustRaw.attributes.deliverynightblock || ""
       },
     ];
 

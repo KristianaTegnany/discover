@@ -16,7 +16,7 @@ import { Text, View } from "../components/Themed";
 import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import moment from "moment";
+import moment from 'moment-timezone';
 import NumericInput from "react-native-numeric-input";
 import * as EmailValidator from "email-validator";
 
@@ -114,7 +114,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
     console.log(route.params.day);
     console.log(route.params.hour);
 
-    let starttime = moment(route.params.day)
+    let starttime = moment.tz(route.params.day, 'America/Martinique')
       .clone()
       .hours(route.params.hour.substring(0, 2))
       .minute(route.params.hour.substring(3));
@@ -214,7 +214,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("numguest", nbcover);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date", moment(route.params.day).hours(route.params.hour.substring(0, 2)).minutes(route.params.hour.substring(3)).toDate()); // j'ai ajouté l'heure à la date
+            res.set("date", moment.tz(route.params.day, 'America/Martinique').toDate());
             res.set("notes", notecom);
             res.set("status", "Confirmé"); // en cours
             await res.save();
@@ -255,7 +255,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("notes", notecom);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date", moment(route.params.day).toDate());
+            res.set("date", moment.tz(route.params.day, 'America/Martinique').toDate());
             res.set("process", "selfcare");
             res.set("status", "Confirmé"); //
             await res.save();
