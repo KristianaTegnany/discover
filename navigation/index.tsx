@@ -57,12 +57,22 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="GuideScreen"
-        options={{ headerTitle: "", headerTransparent: true }}
+        options={{ headerTitle: "", headerTransparent: true,
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200", 
+        //  color:"green"
+        } }}
         component={GuideScreen}
       />
       <Stack.Screen
         name="RestoScreen"
-        options={{ headerTitle: "", headerTransparent: true }}
+        options={{ headerTitle: "", headerTransparent: true,
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200", 
+        //  color:"green"
+        } }}
         component={RestoScreen}
       />
       <Stack.Screen
@@ -72,7 +82,16 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="resaScreen"
-        options={{ headerTitle: "Réservation sur place" }}
+        options={{ headerTitle: "Réservation sur place",
+        headerBackTitle: 'Retour',
+        headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        },
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        } }}
         component={resaScreen}
       />
       <Stack.Screen
@@ -82,12 +101,32 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="crenSelectScreen"
-        options={{ headerTitle: "Choisir un jour" }}
+        options={{ headerTitle: "Choisir un jour", 
+        headerBackTitle: 'Retour',
+        headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        },
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        }
+      }}
         component={crenSelectScreen}
       />
       <Stack.Screen
         name="hourSelectScreen"
-        options={{ headerTitle: "Choisir une heure" }}
+        options={{ headerTitle: "Choisir une heure",
+        headerBackTitle: 'Retour',
+        headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        },
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        }
+      }}
         component={hourSelectScreen}
       />
       <Stack.Screen

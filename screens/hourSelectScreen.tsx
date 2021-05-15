@@ -51,7 +51,10 @@ export const hourSelectScreen = ({ route, navigation }: Props) => {
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
     intcustRaw.id = route.params.restoId;
-
+    console.log(route.params.restoId)
+    console.log(moment.tz(route.params.day, 'America/Martinique').format())
+    console.log(route.params.bookingType)
+    
     let params2 = {
       itid: route.params.restoId,
       date: moment.tz(route.params.day, 'America/Martinique').format(),

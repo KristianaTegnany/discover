@@ -282,9 +282,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function testDelayCren_Stop() {
     let isValid = true
-    const delay = bookingType === DELIVERY? intcust.confirmModeOrderOptions_delayorder : intcust.delayorderDelivery
+    const delay = bookingType === DELIVERY? intcust.delayorderDelivery : intcust.confirmModeOrderOptions_delayorder
+  
     if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
-      if(moment.tz('America/Martinique').diff(date, 'minutes') > delay)
+      if(moment.tz(date,'America/Martinique').diff(moment.tz('America/Martinique'), 'minutes') < delay)
         isValid = false
     }
     return isValid
@@ -295,9 +296,13 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
     if([TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
+        console.log("stop yesterday case")
         isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
       }
       else {
+        console.log("not stop yesterday case")
+        console.log(bookingType)
+
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
               noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock,
@@ -305,7 +310,11 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
               dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
               dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
+              console.log(dateNoonblock.format())
+              console.log(dateNightstart.format())
+              console.log(dateNightblock.format())
         isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
+        console.log(isValid)
       }
     }
     return isValid
@@ -326,8 +335,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       const consumed = await Parse.Cloud.run("checkStock", params)
       
       if (menu.attributes.provisionStockBase.length > 0) {
-        let provision = await menu.attributes.provisionStockBase.filter((x:any) => day.isSame(x.date))[0].provision
-        isValid = provision > consumed + 1
+        let provision = menu.attributes.provisionStockBase.filter((x:any) => moment.tz(x.date, 'America/Martinique').isSame(moment.tz(x.date, 'America/Martinique'), "day"));
+        isValid = provision[0].provision > consumed + 1
         if(!isValid){
           Alert.alert(`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
           break
