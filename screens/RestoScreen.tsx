@@ -1,7 +1,7 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Alert, Button, Image, Route, StyleSheet } from "react-native";
+import { Alert, Image, Route, StyleSheet, ActivityIndicator } from "react-native";
 import { Divider } from "react-native-elements";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import HTML from "react-native-render-html";
@@ -10,14 +10,23 @@ import { useSelector } from "react-redux";
 var Parse = require("parse/react-native");
 import { Text, View } from "../components/Themed";
 import { ProductItem } from "../global";
-import { add, remove, emptyall, store } from "../store";
+import { emptyall, store } from "../store";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { sortBy } from "lodash";
+import { Ionicons } from "@expo/vector-icons";
+import Modal from 'react-native-modal';
+import moment from "moment-timezone";
+import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 
 interface NavigationParams {
   restoId: string;
+  day: string;
+  hour: string;
+  text: string;
+  bookingType: string;
 }
+
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
 interface Props {
@@ -48,7 +57,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       startTime: "",
     },
   ]);
-
+  
   const [myintcust, setMyintcust] = useState({
     id: "",
     overviewpicUrl: " ",
@@ -102,6 +111,81 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   };
   const html = myintcust.preswebsite;
 
+  //Cren
+  const [bookingType, setBookingType] = useState(route.params.bookingType)
+  const [daystobook, setDaystobook] = useState<ItemType[]>([]);
+  const [hourstobook, setHourstobook] = useState<ItemType[]>([]);
+  const { day, hour } = route.params;
+  const [crenModalVisible, setCrenModalVisible] = useState(route.params.day === "null" || route.params.day !== undefined)
+  const [selectedDay, setSelectedDay] = useState<any>(day && day !== 'null'? day : "");
+  const [selectedHour, setSelectedHour] = useState<any>(hour ? hour : "");
+  const [openDate, setOpenDate] = useState(false);
+  const [openHour, setOpenHour] = useState(false);
+  const [goto, setGoto] = useState("Aaa");
+  const [loading, setLoading] = useState(true);
+
+  async function fetchHours() {
+    setLoading(true);
+    var Intcust = Parse.Object.extend("Intcust");
+    let intcustRaw = new Intcust();
+    intcustRaw.id = route.params.restoId;
+    let params2 = {
+      itid: route.params.restoId,
+      date: moment.tz(selectedDay, "YYYY-MM-DD", "America/Martinique").toDate(), //moment.tz(date.substr(0, 10), 'America/Martinique').format(),
+      bookingType: bookingType,
+    };
+    const res3 = await Parse.Cloud.run("getIntcustWithAvailableCren", params2);
+    setHourstobook(
+      res3.crenAvailable.map((cren: any) => {
+        return {
+          label: cren,
+          value: cren,
+        };
+      })
+    );
+
+    if (["Delivery", "TakeAway"].includes(bookingType)) {
+      setGoto("orderScreen");
+    } else if (bookingType == "OnSite") {
+      setGoto("resaScreen");
+    }
+    setLoading(false);
+  }
+
+  function fetchDays() {
+    var Intcust = Parse.Object.extend("Intcust");
+    let intcustRaw = new Intcust();
+    intcustRaw.id = route.params.restoId;
+    var businessHours = [];
+    if (bookingType == "TakeAway") {
+      businessHours = intcustRaw.get("businessHoursTaway");
+    } else if (bookingType == "Delivery") {
+      businessHours = intcustRaw.get("businessHoursDelivery");
+    } else if (bookingType == "OnSite") {
+      businessHours = intcustRaw.get("businesshours");
+    }
+    let day = moment();
+    let days = [];
+    var i;
+    for (i = 0; i < 30; i++) {
+      let index1 = businessHours.findIndex(
+        (bh: any) => bh.daysOfWeek == day.isoWeekday()
+      );
+      if (index1 >= 0) {
+        // tester si inclus dans les business hours et pas dans les blocks events
+        days.push({
+          label: day.format("dddd DD MMM"),
+          value: moment.tz(day, "America/Martinique").format("YYYY-MM-DD"),
+        });
+      }
+      day.add(1, "day");
+    }
+    if(days.length > 0)
+      setSelectedDay(days[0].value);
+    setDaystobook(days);
+    setLoading(false);
+  }
+
   async function fetchIntcust() {
     var Intcust = Parse.Object.extend("Intcust");
     let myintcustRaw = new Intcust();
@@ -133,8 +217,6 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       noNightDelivery: myintcustRaw.attributes.noNightDelivery || false,
     };
     setMyintcust(myintcustRaw);
-    console.log("ff");
-    //console.log(myintcustRaw.businessHours);
     let results: any = [];
     let businessHours = sortBy(myintcustRaw.businessHours, ["daysOfWeek"]);
     await businessHours.forEach((element) => {
@@ -305,12 +387,139 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     });
     setBusinessHoursDelivery(resultsDelivery);
   }
+
+  const CrenSelectScreen = () => {
+    return (
+      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 320 : openHour? 380 : 280 }]}>
+        <Text style={[styles.dateText, { color: textColor }]}>
+          Sélectionnez la date
+        </Text>
+        <DropDownPicker
+          open={openDate}
+          value={selectedDay}
+          items={daystobook}
+          setOpen={setOpenDate}
+          setValue={setSelectedDay}
+          setItems={setDaystobook}
+          placeholder="Date ..."
+          maxHeight={100}
+          style={[styles.dropdown, styles.shadow]}
+          labelStyle={styles.labeldropdown}
+          placeholderStyle={styles.labeldropdown}
+          dropDownContainerStyle={styles.dropdown}
+        />
+        <Text style={[styles.hourText, { color: textColor, marginTop: openDate? 120 : 20 }]}>
+          Sélectionnez l'heure
+        </Text>
+        <DropDownPicker
+          open={openHour}
+          value={selectedHour}
+          items={hourstobook}
+          setOpen={setOpenHour}
+          setValue={setSelectedHour}
+          setItems={setHourstobook}
+          placeholder="Heure ..."
+          maxHeight={100}
+          style={[styles.dropdown, styles.shadow]}
+          labelStyle={styles.labeldropdown}
+          placeholderStyle={styles.labeldropdown}
+          dropDownContainerStyle={styles.dropdown}
+        />
+        {
+          !openDate &&
+          <View
+            style={[
+              styles.btnNextContainer,
+              styles.shadow,
+              { opacity: selectedDay === "" || selectedHour === "" ? 0.5 : 1 },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                console.log(selectedDay)
+                setCrenModalVisible(false)
+                navigation.navigate(goto, {
+                  restoId: route.params.restoId,
+                  bookingType: bookingType,
+                  day: moment.tz(selectedDay, "YYYY-MM-DD", "America/Martinique").format(),
+                  hour: selectedHour,
+                })
+              }}
+              style={styles.btnNext}
+              disabled={selectedDay === "" || selectedHour === ""}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={25}
+                color="white"
+                style={styles.arrow}
+              />
+            </TouchableOpacity>
+          </View>
+        }
+        {selectedDay !== "" &&
+          !loading &&
+          hourstobook &&
+          hourstobook.length == 0 && (
+            <View>
+              <Text style={styles.textstrong}>
+                Plus d'horaires disponibles ! 🤷🏽‍♂️
+              </Text>
+              <Text style={styles.crenText}>Les raisons possibles : </Text>
+              <Text style={styles.crenText}>
+                ➡️ L'heure limite de commande est passée.
+              </Text>
+              <Text style={styles.crenText}>
+                ➡️ Le restaurant nous a informé d'un nombre limite de commande
+                atteint pour ce créneau.
+              </Text>
+              <Text style={styles.crenText}>➡️ Il est fermé exceptionnellement.</Text>
+
+              <Text style={styles.crenText}>
+                Vous pouvez choisir un autre jour ou un autre restaurant en
+                revenant en arrière.
+              </Text>
+            </View>
+          )}
+        {loading && (
+          <View style={styles.wrapindicator}>
+            <ActivityIndicator size="large" color="#F50F50" />
+          </View>
+        )}
+      </View>
+    )
+  }
+
   useEffect(() => {
     fetchIntcust();
   }, []);
 
+  useEffect(() => {
+    if(day === "null" || day !== undefined)
+      setCrenModalVisible(true)
+  }, [route.params])
+
+  useEffect(() => {
+    fetchDays()
+  }, [bookingType])
+
+  useEffect(() => {
+    if (selectedDay) fetchHours();
+  }, [selectedDay]);
+
   return (
     <View style={styles.container}>
+      <Modal
+        isVisible={crenModalVisible}
+        swipeDirection="down"
+        onModalHide={() => { setOpenDate(false); setOpenHour(false); }}
+        onSwipeComplete={(e) => setCrenModalVisible(false)}
+        onBackButtonPress={() => setCrenModalVisible(false)}
+        onBackdropPress={() => setCrenModalVisible(false)}
+        style={{padding: 0, margin: 0, height: 280}}
+      >
+        <CrenSelectScreen/>
+      </Modal>
       <View style={{ flex: 1 }}>
         <ScrollView style={{}}>
           {myintcust && myintcust.overviewpicUrl && (
@@ -426,10 +635,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
         {myintcust && myintcust.EngagModeOnSite && (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("crenSelectScreen", {
-                restoId: myintcust.id,
-                bookingType: "OnSite",
-              });
+              setBookingType("OnSite")
+              setCrenModalVisible(true)
             }}
             style={styles.appButtonContainer}
           >
@@ -453,19 +660,15 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                       text: "Continuer",
                       onPress: () => {
                         store.dispatch(emptyall(products));
-                        navigation.navigate("crenSelectScreen", {
-                          restoId: myintcust.id,
-                          bookingType: "TakeAway",
-                        });
-                      },
+                        setBookingType("TakeAway")
+                        setCrenModalVisible(true)
+                      }
                     },
                   ]
                 );
               } else {
-                navigation.navigate("crenSelectScreen", {
-                  restoId: myintcust.id,
-                  bookingType: "TakeAway",
-                });
+                setBookingType("TakeAway")
+                setCrenModalVisible(true)
               }
             }}
             style={styles.appButtonContainer}
@@ -476,10 +679,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
         {myintcust && myintcust.EngagModeTakeAway && (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("crenSelectScreen", {
-                restoId: myintcust.id,
-                bookingType: "Delivery",
-              });
+              setBookingType("Delivery")
+              setCrenModalVisible(true)
             }}
             style={styles.appButtonContainer}
           >
@@ -581,6 +782,81 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: "80%",
+  },
+  crenContainer: {
+    position:'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    borderRadius: 10
+  },
+  dropdown: {
+    borderColor: "transparent",
+    backgroundColor: "#ff5050",
+  },
+  labeldropdown: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  dateText: {
+    marginBottom: 10,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  hourText: {
+    marginTop: 20,
+    marginBottom: 10,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  btnNextContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    borderRadius: 25,
+    backgroundColor: "#ff5050"
+  },
+  btnNext: {
+    height: 50,
+    width: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  arrow: {
+    transform: [
+      {
+        rotate: "180deg",
+      },
+    ],
+  },
+  wrapindicator: {
+    position: "absolute",
+    alignItems: "center",
+    top: "50%",
+    left: "50%",
+    justifyContent: "center",
+    zIndex: 10000,
+    backgroundColor: 'transparent'
+  },
+  textstrong: {
+    fontWeight: "bold",
+    fontFamily: "geometria-bold",
+    paddingVertical: 20,
+    fontSize: 18,
+    paddingLeft: 4,
+  },
+  crenText: {
+    fontSize: 16,
+    padding: 4,
+    fontFamily: "geometria-regular",
+  },
+  shadow: {
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
   },
 });
 export default RestoScreen;

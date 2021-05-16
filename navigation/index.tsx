@@ -7,7 +7,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
 import basketScreen from "../screens/basketScreen";
-import crenSelectScreen from "../screens/crenSelectScreen";
 import custInfoScreen from "../screens/custInfoScreen";
 import orderScreen from "../screens/orderScreen";
 import DishScreen from "../screens/DishScreen";
@@ -78,11 +77,6 @@ function RootNavigator() {
         name="DishScreen"
         options={{ headerTitle: "😋" }}
         component={DishScreen}
-      />
-      <Stack.Screen
-        name="crenSelectScreen"
-        options={{ headerTitle: "Choisir un créneau" }}
-        component={crenSelectScreen}
       />
       <Stack.Screen
         name="basketScreen"

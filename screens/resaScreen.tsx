@@ -143,8 +143,9 @@ export const resaScreen = ({ route, navigation }: Props) => {
       Alert.alert(
         "Vous avez été coiffé au poteau ! Il n'y a plus de places pour ce créneau, vous pouvez en choisir un autre en revenant en arrière. "
       );
-      navigation.navigate("crenSelectScreen", {
+      navigation.navigate("RestoScreen", {
         bookingType: "Onsite",
+        restoId: myintcust.id,
         restoname: myintcust.corporation,
         day: route.params.day,
         nbcover: nbcover,
@@ -169,8 +170,10 @@ export const resaScreen = ({ route, navigation }: Props) => {
       Alert.alert(
         "Vous avez été coiffé au poteau ! Il n'y a plus de places pour ce jour, vous pouvez en choisir un autre en revenant en arrière. "
       );
-      navigation.navigate("crenSelectScreen", {
+      navigation.navigate("RestoScreen", {
         bookingType: "Onsite",
+        restoId: myintcust.id,
+        day: 'null',
         restoname: myintcust.corporation,
         nbcover: nbcover,
         name: lastname,

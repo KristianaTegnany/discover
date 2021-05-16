@@ -19,9 +19,10 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
-import moment from "moment";
+import moment from 'moment-timezone'
 import * as EmailValidator from "email-validator";
-
+moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
+  
 interface NavigationParams {
   restoId: string;
 }
@@ -80,7 +81,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
   const { bookingType, restoId, day, hour } = route.params
-
+  const date = moment.tz(day.substring(0,10) + ' ' + hour, 'America/Martinique')
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -140,7 +141,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
     var Reservation = Parse.Object.extend("Reservation");
     let resaRaw = new Reservation();
-    resaRaw.set("date", moment(day).toDate());
+    resaRaw.set("date", moment.tz(day, 'America/Martinique').toDate());
     resaRaw.set("guest", guestRaw);
     let arrayGuest = [
       {
@@ -221,8 +222,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function getReservation() {
     let params = {
-      date: day,
-      itid: intcust.id,
+      date: moment.tz(day, 'America/Martinique').toDate(),
+      itid: intcust.id
     }
     const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
     return await resas.filter((x:any) => x.attributes.status)
@@ -239,7 +240,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           && 
           (bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length)
           ||
-          ((bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length) || intcust.orderDaily_StopDelivery === 0)
+          (bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length)
         )
           isValid = false
       }
@@ -253,10 +254,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       const resasClean = await getReservation()
       if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopDelivery : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
         let isBetweenInterval = false
-        const h = moment(day).hour(),
-              m = moment(day).minute(),
-              resaH = moment(x.attributes.date).hour(),
-              resaM = moment(x.attributes.date).minute(),
+        const h = parseInt(hour.substring(0, 2)),
+              m = parseInt(hour.substring(3)),
+              resaH = moment.tz(x.attributes.date, 'America/Martinique').hour(),
+              resaM = moment.tz(x.attributes.date, 'America/Martinique').minute(),
               min =
                 m < intcust.confirmModeOrderOptions_shiftinterval ||
                 intcust.confirmModeOrderOptions_shiftinterval === 60
@@ -282,8 +283,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testDelayCren_Stop() {
     let isValid = true
     const delay = bookingType === DELIVERY? intcust.confirmModeOrderOptions_delayorder : intcust.delayorderDelivery
+    console.log('testDelayCren_Stop', moment.tz('America/Martinique'), date, delay)
     if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
-      if(moment().diff(moment(day), 'minutes') < delay)
+      if(moment.tz('America/Martinique').diff(date, 'minutes') > delay)
         isValid = false
     }
     return isValid
@@ -292,16 +294,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testNoonNight_Stop() {
     let isValid = true
     const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
-    if([TAKEAWAY, DELIVERY].includes(bookingType)) {
+    if(date.format('DD/MM/YYYY') === moment.tz('America/Martinique').format('DD/MM/YYYY') && [TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
-        isValid = day.diff(day.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
+        isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
       }
       else {
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
-              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock
+              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock,
 
-        isValid = day.diff(noonblock) < 0 || (day.diff(nightstart) > 0 && day.diff(nightblock) < 0)
+              dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
+              dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
+              dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
+        console.log('testNoonNight_Stop', date, dateNoonblock, dateNightstart, dateNightblock)
+        isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
       }
     }
     return isValid
@@ -315,18 +321,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       menu.id = product.id;
       await menu.fetch();
       const params = {
-        itid: route.params.restoId,
+        itid: restoId,
         menuid: product.id,
-        date: route.params.day,
+        date: day
       }
       const consumed = await Parse.Cloud.run("checkStock", params)
       
-      if (menu.attributes.provisionStockBase) {
-        let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment(day).isSame(x.date))[0].provision
-        isValid = provision > consumed + 1
-        if(!isValid){
-          Alert.alert("Information",`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
-          break
+      if (menu.attributes.provisionStockBase.length > 0) {
+        let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment.tz(day, 'America/Martinique').isSame(moment.tz(x.date,'America/Martinique')))
+        if(provision.length > 0) {
+          isValid = provision[0].provision > consumed + 1
+          if(!isValid){
+            Alert.alert("Information",`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
+            break
+          }
         }
       }
     }
@@ -353,7 +361,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
       if(!testOC){
         Alert.alert("Information","La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
-        navigation.navigate("crenSelectScreen", {
+        navigation.navigate("RestoScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
           day: day
@@ -364,25 +372,27 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         testOD = await testOrderDaily_Stop()
         if(!testOD){
           Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
-          navigation.navigate("crenSelectScreen", {
+          navigation.navigate("RestoScreen", {
             restoId: intcust.id,
-            bookingType: bookingType
+            bookingType: bookingType,
+            day: 'null'
           })
         }
         else {
           testDelayCren = await testDelayCren_Stop()
           if(!testDelayCren) {
             Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
-            navigation.navigate("crenSelectScreen", {
+            navigation.navigate("RestoScreen", {
               restoId: intcust.id,
-              bookingType: bookingType
+              bookingType: bookingType,
+              day: 'null'
             })
           }
           else {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
               Alert.alert("Information","L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
-              navigation.navigate("crenSelectScreen", {
+              navigation.navigate("RestoScreen", {
                 restoId: intcust.id,
                 bookingType: bookingType,
                 day: day

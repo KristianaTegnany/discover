@@ -26,7 +26,7 @@ interface Props {
   restaurant: [];
 }
 
-const DELIVERY = 'Delivery'
+const DELIVERY = "Delivery";
 
 export const basketScreen = ({ route, navigation }: Props) => {
   const [totalCashBasket, setTotalCashBasket] = useState(0);
@@ -272,20 +272,26 @@ export const basketScreen = ({ route, navigation }: Props) => {
         </View>
       </ScrollView>
       <TouchableOpacity
-        onPress={async() => {
+        onPress={async () => {
           var Intcust = Parse.Object.extend("Intcust");
           let myintcustRaw = new Intcust();
           myintcustRaw.id = route.params.restoId;
-          if(route.params.bookingType !== DELIVERY || (!myintcustRaw.attributes.minOrderDelivery || totalCashBasket >= myintcustRaw.attributes.minOrderDelivery)) {
+          if (
+            route.params.bookingType !== DELIVERY ||
+            !myintcustRaw.attributes.minOrderDelivery ||
+            totalCashBasket >= myintcustRaw.attributes.minOrderDelivery
+          ) {
             navigation.navigate("custInfoScreen", {
               restoId: route.params.restoId,
               bookingType: route.params.bookingType,
               day: route.params.day,
-              hour: route.params.hour
+              hour: route.params.hour,
             });
-          }
-          else {
-            Alert.alert("Information", `Vous devez commander plus de ${myintcustRaw.attributes.minOrderDelivery} € pour la livraison!`)
+          } else {
+            Alert.alert(
+              "Information",
+              `Vous devez commander plus de ${myintcustRaw.attributes.minOrderDelivery} € pour la livraison!`
+            );
           }
         }}
         style={styles.appButtonContainer}
