@@ -16,7 +16,7 @@ import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
 import { Text, View } from "../components/Themed";
 import { ListItem } from "react-native-elements";
-import moment from 'moment-timezone';
+import moment from "moment";
 import "moment/locale/fr";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../constants/Colors";

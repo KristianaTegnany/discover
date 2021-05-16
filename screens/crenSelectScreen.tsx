@@ -96,7 +96,7 @@ export const crenSelectScreen = ({ route, navigation, theme }: Props) => {
     } else if (route.params.bookingType == "OnSite") {
       businessHours = intcustRaw.get("businesshours");
     }
-    let day = moment.tz('America/Martinique');
+    let day = moment();
     let days = [];
     var i;
     for (i = 0; i < 30; i++) {

@@ -19,10 +19,9 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
-import moment from 'moment-timezone'
+import moment from "moment";
 import * as EmailValidator from "email-validator";
-moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
-  
+
 interface NavigationParams {
   restoId: string;
 }
@@ -81,7 +80,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
   const { bookingType, restoId, day, hour } = route.params
-  const date = moment.tz(day.substring(0,10) + ' ' + hour, 'America/Martinique')
+
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -141,7 +140,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
     var Reservation = Parse.Object.extend("Reservation");
     let resaRaw = new Reservation();
-    resaRaw.set("date", moment.tz(day, 'America/Martinique').toDate());
+    resaRaw.set("date", moment(day).toDate());
     resaRaw.set("guest", guestRaw);
     let arrayGuest = [
       {
@@ -222,8 +221,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function getReservation() {
     let params = {
-      date: moment.tz(day, 'America/Martinique').toDate(),
-      itid: intcust.id
+      date: day,
+      itid: intcust.id,
     }
     const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
     return await resas.filter((x:any) => x.attributes.status)
@@ -254,10 +253,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       const resasClean = await getReservation()
       if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopDelivery : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
         let isBetweenInterval = false
-        const h = parseInt(hour.substring(0, 2)),
-              m = parseInt(hour.substring(3)),
-              resaH = moment.tz(x.attributes.date, 'America/Martinique').hour(),
-              resaM = moment.tz(x.attributes.date, 'America/Martinique').minute(),
+        const h = moment(day).hour(),
+              m = moment(day).minute(),
+              resaH = moment(x.attributes.date).hour(),
+              resaM = moment(x.attributes.date).minute(),
               min =
                 m < intcust.confirmModeOrderOptions_shiftinterval ||
                 intcust.confirmModeOrderOptions_shiftinterval === 60
@@ -284,7 +283,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     let isValid = true
     const delay = bookingType === DELIVERY? intcust.confirmModeOrderOptions_delayorder : intcust.delayorderDelivery
     if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
-      if(moment.tz('America/Martinique').diff(date, 'minutes') > delay)
+      if(moment().diff(moment(day), 'minutes') < delay)
         isValid = false
     }
     return isValid
@@ -295,17 +294,14 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
     if([TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
-        isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
+        isValid = day.diff(day.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
       }
       else {
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
-              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock,
+              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock
 
-              dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
-              dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
-              dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
-        isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
+        isValid = day.diff(noonblock) < 0 || (day.diff(nightstart) > 0 && day.diff(nightblock) < 0)
       }
     }
     return isValid
@@ -319,14 +315,14 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       menu.id = product.id;
       await menu.fetch();
       const params = {
-        itid: restoId,
+        itid: route.params.restoId,
         menuid: product.id,
-        date: day
+        date: route.params.day,
       }
       const consumed = await Parse.Cloud.run("checkStock", params)
       
-      if (menu.attributes.provisionStockBase.length > 0) {
-        let provision = await menu.attributes.provisionStockBase.filter((x:any) => day.isSame(x.date))[0].provision
+      if (menu.attributes.provisionStockBase) {
+        let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment(day).isSame(x.date))[0].provision
         isValid = provision > consumed + 1
         if(!isValid){
           Alert.alert("Information",`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)

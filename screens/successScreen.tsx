@@ -7,7 +7,7 @@ var Parse = require("parse/react-native");
 import { Text, View } from "../components/Themed";
 import { useEffect } from "react";
 import { Divider } from "react-native-elements";
-import moment from 'moment-timezone';
+import moment from "moment";
 interface NavigationParams {
   restoId: string;
   paylink: string;
@@ -45,7 +45,7 @@ export const successScreen = ({ route, navigation }: Props) => {
             </Text>
 
             <Text style={styles.text}>
-              {moment.tz(route.params.day, 'America/Martinique').format("dddd DD MMM")} à{" "}
+              {moment(route.params.day).format("dddd DD MMM")} à{" "}
               {route.params.hour} - {route.params.nbcover} couverts
             </Text>
             <Text style={styles.text}>Au nom de {route.params.name}</Text>
@@ -61,7 +61,7 @@ export const successScreen = ({ route, navigation }: Props) => {
             <Text style={styles.textBold}>Récapitulatif de commande</Text>
             <Text style={styles.text}>{route.params.amount}€ </Text>
             <Text style={styles.text}>
-              {moment.tz(route.params.day, 'America/Martinique').format("dddd DD MMM")} à{" "}
+              {moment(route.params.day).format("dddd DD MMM")} à{" "}
               {route.params.hour}{" "}
             </Text>
             <Text style={styles.text}>
