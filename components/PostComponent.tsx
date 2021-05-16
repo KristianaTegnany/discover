@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   postWrapper: {
     marginTop: 90,
-    height: 230,
+    height: 200,
     // alignItems: "flex-start",
     justifyContent: "space-around",
     width: "100%",
@@ -54,30 +54,26 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 230,
 
-    flexDirection: "row",
     alignSelf: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginRight: 0,
     marginLeft: 0,
   },
   image: {
-    width: 110,
-    height: 110,
+    width: '100%',
+    height: 150,
     borderRadius: 17,
-    padding: 0,
-    margin: 7,
+    padding: 0
   },
   headerGroup: {
-    margin: 7,
-
     width: "100%",
-    height: 110,
-    justifyContent: "center", //Centered vertically
+    height: 100,
+    marginTop: 5,
     marginLeft: 10,
   },
   postTitleWrap: {
     flexDirection: "row",
-    width: 200,
+    width: '100%',
   },
   postTitle: {
     fontSize: 22,

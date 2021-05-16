@@ -22,16 +22,24 @@ import Modal from 'react-native-modal'
 import { CheckBox } from 'react-native-elements'
 
 // @ts-ignore
-const sandwitch = require('../assets/images/sandwitch.jpg'),
-      poisson   = require('../assets/images/poisson.jpg'),
-      panini    = require('../assets/images/sandwitch.jpg'),
-      burger    = require('../assets/images/burger.jpg'),
-      pizza    = require('../assets/images/pizza.jpg')
+const asia          = require('../assets/images/asia.jpeg'),
+      beach         = require('../assets/images/beach.jpeg'),
+      vegan         = require('../assets/images/vegan.jpeg'),
+      burger        = require('../assets/images/burger.jpeg'),
+      salade        = require('../assets/images/salade.jpeg'),
+      cuisinecreole = require('../assets/images/cuisinecreole.jpeg'),
+      fish          = require('../assets/images/fish.jpeg'),
+      pouce         = require('../assets/images/pouce.jpeg'),
+      fastgood      = require('../assets/images/fastgood.jpeg'),
+      woman         = require('../assets/images/woman.jpeg'),
+      authentic     = require('../assets/images/authentic.jpeg'),
+      crea          = require('../assets/images/crea.jpeg')
 
 type props = { value: string; navigation: any };
 type Menu = {
   title: string;
   img: Image;
+  key: string;
   selected: boolean;
 }
 type state = {
@@ -71,7 +79,20 @@ export default class TablesScreen extends React.Component<props, state> {
       schoelcher: true,
       guadelope: false,
       mahault: false,
-      menus: [{title:'Poisson', img: poisson, selected: false},{title:'Burger', img: burger, selected: false},{title:'Pizza', img: pizza, selected: false},{title:'Sandwitch', img: sandwitch, selected: false},{title:'Panini', img: panini, selected: false}]
+      menus: [
+        {title:'Asiatique', key: 'asia', img: asia, selected: false}, 
+        {title:'Bord de mer', key:'beach', img: beach, selected: false},
+        {title:'Vegan', key: 'vegan', img: vegan, selected: false}, 
+        {title:'Burger', key: 'burger', img: burger, selected: false},
+        {title:'Creole', key: 'cuisinecreole', img: cuisinecreole, selected: false},
+        {title:'Salade', key: 'salade', img: salade, selected: false},
+        {title:'Poisson', key: 'fish', img: fish, selected: false},
+        {title:'Sur le pouce', key: 'pouce', img: pouce, selected: false},
+        {title:'Fastgood', key: 'fastgood', img: fastgood, selected: false},
+        {title:'Cheffe', key: 'woman', img: woman, selected: false},
+        {title:'Authentique', key: 'authentic', img: authentic, selected: false},
+        {title:'Excellence', key: 'crea', img: crea, selected: false}
+      ]
     };
   }
 
@@ -91,32 +112,42 @@ export default class TablesScreen extends React.Component<props, state> {
       .catch((error: any) => console.log(error));
   }
 
-  async onChangeSearch(event: any) {
-    //   const {eventCount, target, text} = event.nativeEvent;
+  filtre = () => {
+    const { searchValue, selectedMode, menus, restaurantListOrigin } = this.state
+    this.setState({
+      restaurantList: restaurantListOrigin.length === 0? [] : restaurantListOrigin.filter((resto: any) => {
+        const byValue = searchValue !== '', byMode = selectedMode !== '', byCateg = menus? menus.filter(menu => menu.selected).length === 1 : false
+        const condByValue = resto.attributes.corporation.toLowerCase().includes(searchValue.toLowerCase()),
+              condByMode  = resto.attributes[`EngagMode${selectedMode}`],
+              condByCateg = byCateg? resto.attributes.qualifDiscover[menus.filter(menu => menu.selected)[0].key] : false
 
-    if (
-      event == "" ||
-      this.state.restaurantList.filter((resto: any) =>
-        resto.attributes.corporation.toLowerCase().includes(event.toLowerCase())
-      ).length == 0
-    ) {
+        if(byValue && byMode && byCateg)
+          return condByValue && condByMode && condByCateg
+        else if(byValue && byMode)
+          return condByValue && condByMode
+        else if(byValue && byCateg)
+          return condByValue && condByCateg
+        else if(byMode && byCateg)
+          return condByMode && condByCateg
+        else if(byMode)
+          return condByMode
+        else if(byCateg)
+          return condByCateg
+        else if(byValue)
+          return condByValue
+      })
+    })
+  }
+
+  async onChangeSearch(event: any) {
+    if (event == "") {
       this.setState({
         restaurantList: this.state.restaurantListOrigin,
-      });
+      })
     } else {
       this.setState({
         searchValue: event,
-      });
-      this.setState({
-        restaurantList: this.state.restaurantList.filter((resto: any) =>
-          resto.attributes.corporation
-            .toLowerCase()
-            .includes(event.toLowerCase())
-        ),
-      });
-      this.state.restaurantList.filter(
-        (resto: any) => resto.corporation == event
-      );
+      }, this.filtre)
     }
   }
 
@@ -135,20 +166,24 @@ export default class TablesScreen extends React.Component<props, state> {
   }
 
   FilterButton = (props:any) => {
-    const { selectedMode, restaurantList } = this.state
+    const { selectedMode } = this.state
     return (
-      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode, restaurantList: selectedMode === props.mode? restaurantList : restaurantList.filter((resto:any) => resto.attributes[`EngagMode${props.mode}`])})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'black', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold', color: selectedMode === props.mode? 'white' : 'black'}}/>
+      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode}, this.filtre)} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'black', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold', color: selectedMode === props.mode? 'white' : 'black'}}/>
     )
   }
 
   _renderItem = (props:any) => {
     return (
       <TouchableOpacity onPress={() => {
-        const menus = this.state.menus
-        let menu = menus.filter(menu => menu.title === props.item.title && menu.img === props.item.img)[0]
-        menu.selected = !menu.selected
-        menus[menus.indexOf(menu)]= menu
-        this.setState({menus: Object.assign([], menus)})
+        let menus = this.state.menus
+        menus = menus.map((menu,i) => {
+          if(menu.key === props.item.key) {
+            return { ...menu, selected: !menu.selected }
+          }
+          else
+            return { ...menu, selected: false }
+        })
+        this.setState({menus: Object.assign([], menus)}, this.filtre)
       }}>
         <View style={{justifyContent:'center'}}>
           <Image source={props.item.img} resizeMode={'cover'} style={{borderRadius: 20, alignSelf:'center', width: 80, height: 80}}/>
@@ -182,9 +217,6 @@ export default class TablesScreen extends React.Component<props, state> {
           style={{margin: 0}}
         >
           <View style={{position:'absolute', bottom: 0, padding: 20, right: 0, left: 0, height: '50%'}}>
-            <View style={{width: '100%', height: 30, marginHorizontal: 20, alignSelf:'center', justifyContent:'center', padding: 10, borderRadius: 5, marginBottom: 20, backgroundColor: '#f4f4f4'}}>
-              <View style={{width: 20, height: 20, backgroundColor:'grey'}}/>
-            </View>
             <this.RadioItem title='Toute la Martinique' parent checked={this.state.martinique} onPress={() => this.setState({martinique: !this.state.martinique, fdfrance: !this.state.martinique, schoelcher: !this.state.martinique, guadelope: !this.state.martinique? false : this.state.guadelope, mahault: !this.state.martinique? false : this.state.mahault})}/>
             <this.RadioItem title='Fort-de-France' checked={this.state.fdfrance} onPress={() => this.setState({fdfrance: !this.state.fdfrance, martinique: !this.state.fdfrance && this.state.schoelcher,  guadelope: !this.state.fdfrance? false : this.state.guadelope, mahault: !this.state.fdfrance? false : this.state.mahault})}/>
             <this.RadioItem title='Schoelcher' checked={this.state.schoelcher} onPress={() => this.setState({schoelcher: !this.state.schoelcher, martinique: this.state.fdfrance && !this.state.schoelcher, guadelope: !this.state.schoelcher? false : this.state.guadelope, mahault: !this.state.schoelcher? false : this.state.mahault})}/>
@@ -194,7 +226,7 @@ export default class TablesScreen extends React.Component<props, state> {
         </Modal>
         <View style={{marginTop: 60, alignSelf:'center', width: '85%', flexDirection:'row', alignItems:'center'}}>
           <Text style={{marginRight: 10}}>{this.state.martinique? 'Toute la Martinique' : this.state.fdfrance? 'Fort-de-France' : this.state.schoelcher? 'Schoelcher' : this.state.guadelope? 'Toute la Goadelope' : 'Baie-Mahault'}</Text>
-          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12}} buttonStyle={{ paddingHorizontal: 15, height: 30, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
+          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12, fontWeight:'bold'}} buttonStyle={{ paddingHorizontal: 15, height: 30, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
         </View>
         <View style={styles.searchHeader}>
           <Ionicons name="search" style={styles.searchIcon} />
@@ -224,15 +256,17 @@ export default class TablesScreen extends React.Component<props, state> {
           />
         </View>
         <View style={styles.container2}>
-          {!this.state.restaurantList ||
+          {/*!this.state.restaurantList ||
             (this.state.restaurantList.length == 0 && (
               <View style={styles.wrapindicator}>
                 <ActivityIndicator size="large" color="#F50F50" />
               </View>
-            ))}
+            ))*/}
           <FlatList
             style={styles.FlatList}
             data={this.state.restaurantList}
+            contentContainerStyle={{paddingTop: 0, paddingBottom: 60}}
+            ListEmptyComponent={<View style={{alignSelf:'center', marginTop: 60, alignItems:'center', justifyContent:'center'}}><Text style={{textAlign:'center', width: '70%', fontSize: 18, marginBottom: 10 }}>Pas de résultat trouvé</Text><Text style={{textAlign:'center', width: '70%', fontSize: 18 }}>mais trouvez votre bonheur ici</Text></View>}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -286,15 +320,14 @@ const styles = StyleSheet.create({
   },
   FlatList: {
     width: "100%",
-    marginLeft: 20,
-    marginRight: 20,
-
+    paddingRight: 20,
+    paddingLeft: 20
     // justifyContent: "flex-start",
     // justifyContent: 'center',
     //  backgroundColor: "rgba(255,255,255,1)"
   },
   postComponent: {
-    height: 120,
+    height: 210,
     width: "100%",
     //  alignSelf: "stretch",
     //  backgroundColor: "rgba(255,255,255,1)"
