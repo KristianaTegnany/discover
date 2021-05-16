@@ -13,11 +13,13 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { TouchableHighlight, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
+import Modal from 'react-native-modal'
+import { CheckBox } from 'react-native-elements'
 
 // @ts-ignore
 const sandwitch = require('../assets/images/sandwitch.jpg'),
@@ -42,6 +44,12 @@ type state = {
   filter: boolean;
   selectedMode: string;
   menus: Menu[];
+  isPlaceModal: boolean;
+  martinique: boolean;
+  guadelope: boolean;
+  fdfrance: boolean;
+  schoelcher: boolean;
+  mahault: boolean;
 };
 
 export default class TablesScreen extends React.Component<props, state> {
@@ -57,6 +65,12 @@ export default class TablesScreen extends React.Component<props, state> {
       searchValue: "",
       filter: false,
       selectedMode: "",
+      isPlaceModal: false,
+      martinique: true,
+      fdfrance: true,
+      schoelcher: true,
+      guadelope: false,
+      mahault: false,
       menus: [{title:'Poisson', img: poisson, selected: false},{title:'Burger', img: burger, selected: false},{title:'Pizza', img: pizza, selected: false},{title:'Sandwitch', img: sandwitch, selected: false},{title:'Panini', img: panini, selected: false}]
     };
   }
@@ -144,11 +158,44 @@ export default class TablesScreen extends React.Component<props, state> {
     )
   }
 
+  RadioItem = (props:any) => {
+    return(
+      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+        <Text style={{fontSize: 18, fontWeight: props.parent? 'bold' : 'normal', marginBottom: props.parent? 10 : 5 }}>{props.title}</Text>
+        <CheckBox onPress={props.onPress} checked={props.checked} checkedIcon='dot-circle-o' uncheckedIcon='circle-o'/>
+      </View>
+    )
+  }
+
   render() {
     //  const { search } = this.state.searchValue;
+    const { isPlaceModal } = this.state
 
     return (
       <View style={styles.container}>
+        <Modal
+          isVisible={isPlaceModal}
+          swipeDirection="down"
+          onSwipeComplete={(e) => this.setState({isPlaceModal: false})}
+          onBackButtonPress={() => this.setState({isPlaceModal: false})}
+          onBackdropPress={() => this.setState({isPlaceModal: false})}
+          style={{margin: 0}}
+        >
+          <View style={{position:'absolute', bottom: 0, padding: 20, right: 0, left: 0, height: '50%'}}>
+            <View style={{width: '100%', height: 30, marginHorizontal: 20, alignSelf:'center', justifyContent:'center', padding: 10, borderRadius: 5, marginBottom: 20, backgroundColor: '#f4f4f4'}}>
+              <View style={{width: 20, height: 20, backgroundColor:'grey'}}/>
+            </View>
+            <this.RadioItem title='Toute la Martinique' parent checked={this.state.martinique} onPress={() => this.setState({martinique: !this.state.martinique, fdfrance: !this.state.martinique, schoelcher: !this.state.martinique, guadelope: !this.state.martinique? false : this.state.guadelope, mahault: !this.state.martinique? false : this.state.mahault})}/>
+            <this.RadioItem title='Fort-de-France' checked={this.state.fdfrance} onPress={() => this.setState({fdfrance: !this.state.fdfrance, martinique: !this.state.fdfrance && this.state.schoelcher,  guadelope: !this.state.fdfrance? false : this.state.guadelope, mahault: !this.state.fdfrance? false : this.state.mahault})}/>
+            <this.RadioItem title='Schoelcher' checked={this.state.schoelcher} onPress={() => this.setState({schoelcher: !this.state.schoelcher, martinique: this.state.fdfrance && !this.state.schoelcher, guadelope: !this.state.schoelcher? false : this.state.guadelope, mahault: !this.state.schoelcher? false : this.state.mahault})}/>
+            <this.RadioItem title='Toute la Guadelope' parent checked={this.state.guadelope} onPress={() => this.setState({guadelope: !this.state.guadelope, mahault: !this.state.guadelope, martinique: !this.state.guadelope? false : this.state.martinique, fdfrance: !this.state.guadelope? false : this.state.fdfrance, schoelcher: !this.state.guadelope? false : this.state.schoelcher})}/>
+            <this.RadioItem title='Baie-Mahault' checked={this.state.mahault} onPress={() => this.setState({mahault: !this.state.mahault, guadelope: !this.state.mahault, martinique: !this.state.mahault? false : this.state.martinique, fdfrance: !this.state.mahault? false : this.state.fdfrance, schoelcher: !this.state.mahault? false : this.state.schoelcher })}/>
+          </View>  
+        </Modal>
+        <View style={{marginTop: 60, alignSelf:'center', width: '85%', flexDirection:'row', alignItems:'center'}}>
+          <Text style={{marginRight: 10}}>{this.state.martinique? 'Toute la Martinique' : this.state.fdfrance? 'Fort-de-France' : this.state.schoelcher? 'Schoelcher' : this.state.guadelope? 'Toute la Goadelope' : 'Baie-Mahault'}</Text>
+          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12}} buttonStyle={{ paddingHorizontal: 15, height: 30, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
+        </View>
         <View style={styles.searchHeader}>
           <Ionicons name="search" style={styles.searchIcon} />
           <TextInput
@@ -258,8 +305,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     borderRadius: 10,
-    width: "83%",
-    marginTop: 60,
+    width: "85%",
+    marginTop: 10,
     marginRight: "auto",
     backgroundColor: "#f4f4f4",
     color: "black",
