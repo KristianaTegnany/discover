@@ -126,7 +126,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       email: email,
       itid: intcust.id,
     };
-
+console.log("On va create")
     const res = await Parse.Cloud.run("getGuest", params);
     var Guest = Parse.Object.extend("Guest");
     let guestRaw = new Guest();
@@ -294,6 +294,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testNoonNight_Stop() {
     let isValid = true
     const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
+   if(date.isSame(moment.tz("America/Martinique"), "day") ){
     if([TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
         console.log("stop yesterday case")
@@ -301,7 +302,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       }
       else {
         console.log("not stop yesterday case")
-        console.log(bookingType)
 
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
@@ -310,12 +310,13 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
               dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
               dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
-              console.log(dateNoonblock.format())
-              console.log(dateNightstart.format())
-              console.log(dateNightblock.format())
+          
         isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
         console.log(isValid)
       }
+    }}
+    else{
+      isValid=true
     }
     return isValid
   }
@@ -411,7 +412,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       if(testOC && testOD && testDelayCren && testNoonNight && testQty) {
         await createResa();
         if (intcust.paymentChoice !== "stripeOptin") {
+          console.log("On est dans payplug")
           await getPayPlugPaymentUrl();
+          console.log("On est sorti")
+
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
             restoId: restoId,
@@ -460,20 +464,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     const params1 = {
       itid: intcust.id,
       winl: "window.location.host",
-      resaid: "34dUynZnXC",
+      resaid: resa.id,
       customeremail: email,
       customerfirstname: firstname,
       customerlastname: lastname,
       customerphone: phone,
       type: "order",
-      amount: 100,
+      amount: totalCashBasket,
       apikeypp: intcust.apikeypp,
       mode: bookingType,
       noukarive: intcust.option_DeliveryByNoukarive,
       toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
-
     const response = await Parse.Cloud.run("getPayPlugPaymentUrl", params1);
+    console.log(response)
 
     setPaylink(response);
   }

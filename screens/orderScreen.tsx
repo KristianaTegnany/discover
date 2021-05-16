@@ -233,12 +233,11 @@ export const orderScreen = ({ route, navigation }: Props) => {
       <ScrollView style={styles.wrapperScroll}>
         <View>
           {!cats ||
-            (!menus &&
-              [""].map(() => {
+            !menus &&
                 <View key="123" style={styles.wrapindicator}>
                   <ActivityIndicator size="large" color="#F50F50" />
-                </View>;
-              }))}
+                </View>
+            }
           {cats &&
             menus &&
             cats.map((cat) => {
@@ -382,8 +381,12 @@ const styles = StyleSheet.create({
   },
 });
 
-orderScreen["navigationOptions"] = (props: Props) => ({
-  title:
+orderScreen["navigationOptions"] =  (props: Props) => ({
+  headerTitle:
     props.route.params?.bookingType === DELIVERY ? "Livraison" : "A emporter",
+   
 });
+
+console.log(orderScreen["navigationOptions"])
+
 export default orderScreen;

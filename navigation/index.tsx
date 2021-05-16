@@ -96,7 +96,15 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="DishScreen"
-        options={{ headerTitle: "😋" }}
+        options={{ headerTitle: "😋" , 
+        headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        },
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        }}}
         component={DishScreen}
       />
       <Stack.Screen
@@ -144,7 +152,10 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="paymentScreen"
-        options={{ headerTitle: "Votre panier" }}
+        options={{ headerTitle: "Paiement", headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        } }}
         component={paymentScreen}
       />
       <Stack.Screen
@@ -167,7 +178,9 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="successScreen"
-        options={{ headerTitle: "", headerTransparent: true }}
+        options={{ headerTitle: "", headerTransparent: true, 
+        headerLeft: ()=> null, // Note: using just `null` instead of a function should also work but could trigger a TS error
+      }}
         component={successScreen}
       />
       <Stack.Screen
