@@ -232,7 +232,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testOrderDaily_Stop() {
     let isValid = true
     if([TAKEAWAY, DELIVERY].includes(bookingType)){
-      if((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === 0) || (bookingType === DELIVERY && intcust.orderDaily_StopTaway === 0))
+      if((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === 0) || (bookingType === DELIVERY && intcust.orderDaily_StopDelivery === 0))
         isValid = false
       else {
         const resasClean = await getReservation()
@@ -252,7 +252,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     let isValid = true
     if([TAKEAWAY, DELIVERY].includes(bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
       const resasClean = await getReservation()
-      if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopTaway : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
+      if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopDelivery : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
         let isBetweenInterval = false
         const h = parseInt(hour.substring(0, 2)),
               m = parseInt(hour.substring(3)),
@@ -357,7 +357,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
       if(!testOC){
         Alert.alert("Information","La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
-        navigation.navigate("hourSelectScreen", {
+        navigation.navigate("crenSelectScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
           day: day
@@ -386,7 +386,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
               Alert.alert("Information","L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
-              navigation.navigate("hourSelectScreen", {
+              navigation.navigate("crenSelectScreen", {
                 restoId: intcust.id,
                 bookingType: bookingType,
                 day: day

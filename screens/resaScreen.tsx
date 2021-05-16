@@ -143,7 +143,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       Alert.alert(
         "Vous avez été coiffé au poteau ! Il n'y a plus de places pour ce créneau, vous pouvez en choisir un autre en revenant en arrière. "
       );
-      navigation.navigate("hourSelectScreen", {
+      navigation.navigate("crenSelectScreen", {
         bookingType: "Onsite",
         restoname: myintcust.corporation,
         day: route.params.day,

@@ -6,13 +6,19 @@ import PostComponent from "../components/PostComponent";
 import {
   FlatList,
   StyleSheet,
-  StatusBar,
+  Text,
+  TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  Platform,
+  Switch
 } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { View } from "../components/Themed";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons"
+import Modal from 'react-native-modalbox'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import moment from "moment";
 
 type props = { value: string; navigation: any };
 type state = {
@@ -22,6 +28,16 @@ type state = {
   longitude: number;
   restaurantList: any;
   searchValue: string;
+  day: any;
+  dayEnd: any;
+  hour: any;
+  hourEnd: any;
+  showDate: Boolean;
+  showDateEnd: Boolean;
+  showHour: Boolean;
+  showHourEnd: Boolean;
+  isHourBetween: Boolean;
+  isDayBetween: Boolean;
 };
 export default class TablesScreen extends React.Component<props, state> {
   restaurantListCast: any[] = [];
@@ -34,6 +50,16 @@ export default class TablesScreen extends React.Component<props, state> {
       restaurantList: this.restaurantListCast,
       restaurantListOrigin: this.restaurantListCast,
       searchValue: "",
+      day: '',
+      dayEnd: '',
+      hour: '',
+      hourEnd: '',
+      isHourBetween: false,
+      isDayBetween: false,
+      showDate: Platform.OS === 'ios',
+      showHour: Platform.OS === 'ios',
+      showDateEnd: Platform.OS === 'ios',
+      showHourEnd: Platform.OS === 'ios'
     };
   }
 
@@ -98,19 +124,144 @@ export default class TablesScreen extends React.Component<props, state> {
 
   render() {
     //  const { search } = this.state.searchValue;
+    const { hour, hourEnd, day, dayEnd, showDate, showDateEnd, showHour, showHourEnd, isHourBetween, isDayBetween } = this.state
 
     return (
       <View style={styles.container}>
-        <View style={styles.searchHeader}>
-          <Ionicons name="search" style={styles.searchIcon} />
-          <TextInput
-            placeholder="Rechercher un restaurant"
-            style={styles.searchInput}
-            defaultValue={this.state.searchValue}
-            onChangeText={(value) => this.onChangeSearch(value)}
+        <Modal style={[styles.modal, styles.shadow, {height: isHourBetween && isDayBetween? 230 : (isHourBetween || isDayBetween)? 180 : 120 }]} backdrop={false}  position={"top"} entry="top" ref={'modal'}>
+          <View  style={styles.modalHeader}>
+            <Ionicons name="close" style={styles.modalCloseIcon} color='red' size={20} onPress={() => this.refs.modal.close()}/>
+            <Text style={styles.modalHeaderText}>Filtre</Text>
+          </View>
+          <View style={styles.modalBody}>
+            <View style={styles.datetimeContainer}>
+              <View>
+                <TouchableOpacity onPress={() => !isDayBetween && this.setState({showDate: true})}>
+                  <Text style={styles.datetimeLabel}>Date</Text>
+                </TouchableOpacity>
+              </View>
+              {day !== '' && !isDayBetween &&
+                <>
+                  <Text style={styles.datetimeText}>{moment.tz(day, 'America/Martinique').format('DD/MM/YYYY')}</Text>
+                  <Ionicons name='close' size={20} onPress={() => this.setState({day: ''})}/>
+                </>
+              }
+              <Switch value={isDayBetween} onValueChange={(isDayBetween) => this.setState({isDayBetween})} style={{position:'absolute', right: 0}}/>
+            </View>
+            {
+              isDayBetween &&
+              <View style={{paddingHorizontal: 10}}>
+                  <View style={styles.datetimeContainer}>
+                    <View>
+                      <TouchableOpacity onPress={() => this.setState({showDate: true})}>
+                        <Text style={styles.datetimeLabel}>Date début</Text>
+                      </TouchableOpacity>
+                    </View>
+                    {day !== '' &&
+                      <>
+                        <Text style={styles.datetimeText}>{moment.tz(day, 'America/Martinique').format('DD/MM/YYYY')}</Text>
+                        <Ionicons name='close' size={20} onPress={() => this.setState({day: ''})}/>
+                      </>
+                    }
+                  </View>
+                  <View style={styles.datetimeContainer}>
+                    <View>
+                      <TouchableOpacity onPress={() => this.setState({showDateEnd: true})}>
+                        <Text style={styles.datetimeLabel}>Date fin</Text>
+                      </TouchableOpacity>
+                    </View>
+                    {dayEnd !== '' &&
+                      <>
+                        <Text style={styles.datetimeText}>{moment.tz(dayEnd, 'America/Martinique').format('DD/MM/YYYY')}</Text>
+                        <Ionicons name='close' size={20} onPress={() => this.setState({dayEnd: ''})}/>
+                      </>
+                    }
+                  </View>
+              </View>
+            }
+            {
+              (showDate || showDateEnd) &&
+              <DateTimePicker
+                value={day === ''? moment.tz('America/Martinique').toDate() : moment.tz(day, 'America/Martinique').toDate()}
+                mode="date"
+                minimumDate={showDateEnd? moment.tz(day, 'America/Martinique').toDate() : moment.tz('America/Martinique').toDate()}
+                onChange={(event, selectedDate) => showDate? this.setState({day: moment.tz(selectedDate, 'America/Martinique').toDate(), showDate: Platform.OS !== 'ios'? false : true}) : this.setState({dayEnd: moment.tz(selectedDate, 'America/Martinique').toDate(), showDateEnd: Platform.OS !== 'ios'? false : true})}
+              />
+            }
+            <View style={styles.datetimeContainer}>
+              <View>
+                <TouchableOpacity onPress={() => !isHourBetween && this.setState({showHour: true})}>
+                  <Text style={styles.datetimeLabel}>Heure</Text>
+                </TouchableOpacity>
+              </View>
+              {hour !== '' && !isHourBetween &&
+                <>
+                  <Text style={styles.datetimeText}>{moment.tz(hour, 'America/Martinique').format('HH:MM')}</Text>
+                  <Ionicons name='close' size={20} onPress={() => this.setState({hour: ''})}/>
+                </>
+              }
+              <Switch value={isHourBetween} onValueChange={(isHourBetween) => this.setState({isHourBetween})} style={{position:'absolute', right: 0}}/>
+            </View>
+            {
+              isHourBetween &&
+              <View style={{paddingHorizontal: 10}}>
+                  <View style={styles.datetimeContainer}>
+                    <View>
+                      <TouchableOpacity onPress={() => this.setState({showHour: true})}>
+                        <Text style={styles.datetimeLabel}>Heure début</Text>
+                      </TouchableOpacity>
+                    </View>
+                    {hour !== '' &&
+                      <>
+                        <Text style={styles.datetimeText}>{moment.tz(hour, 'America/Martinique').format('HH:MM')}</Text>
+                        <Ionicons name='close' size={20} onPress={() => this.setState({hour: ''})}/>
+                      </>
+                    }
+                  </View>
+                  <View style={styles.datetimeContainer}>
+                    <View>
+                      <TouchableOpacity onPress={() => this.setState({showHourEnd: true})}>
+                        <Text style={styles.datetimeLabel}>Heure fin</Text>
+                      </TouchableOpacity>
+                    </View>
+                    {hourEnd !== '' &&
+                      <>
+                        <Text style={styles.datetimeText}>{moment.tz(hourEnd, 'America/Martinique').format('HH:MM')}</Text>
+                        <Ionicons name='close' size={20} onPress={() => this.setState({hourEnd: ''})}/>
+                      </>
+                    }
+                  </View>
+              </View>
+            }
+            {
+              (showHour || showHourEnd) &&
+              <DateTimePicker
+                value={hour === ''? moment.tz('America/Martinique').toDate() : hour}
+                mode="time"
+                minimumDate={showHourEnd? moment.tz(hour, 'America/Martinique').toDate() : moment.tz('America/Martinique').toDate()}
+                is24Hour={true}
+                onChange={(event, selectedDate) => showHour? this.setState({hour: selectedDate, showHour: Platform.OS !== 'ios'? false : true}) : this.setState({hourEnd: selectedDate, showHourEnd: Platform.OS !== 'ios'? false : true})}
+              />
+            }
+          </View>
+        </Modal>
+        <View style={styles.searchContainer}>
+          <View style={styles.searchHeader}>
+            <Ionicons name="search" style={styles.searchIcon}/>
+            <TextInput
+              placeholder="Rechercher un restaurant"
+              style={styles.searchInput}
+              defaultValue={this.state.searchValue}
+              onChangeText={(value) => this.onChangeSearch(value)}
 
-            //   onChangeText={this.filterResultsSearch}
-          ></TextInput>
+              //   onChangeText={this.filterResultsSearch}
+            ></TextInput>
+          </View>
+          <View style={styles.searchFilterIcon}>
+            <TouchableOpacity onPress={() => this.refs.modal.open()}>
+              <Ionicons name="options" size={25} color='#ff5050' />
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.container2}>
           {!this.state.restaurantList ||
@@ -180,11 +331,50 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     //  backgroundColor: "rgba(255,255,255,1)"
   },
+  modal: {
+    top: 100,
+    right: -80,
+    width: 230,
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10
+  },
+  modalHeader: {
+    flexDirection:'row-reverse',
+    justifyContent:'space-between',
+    alignItems:'center',
+    width:'100%',
+    borderRadius: 10,
+    padding: 10,
+    borderBottomColor: 'rgba(0,0,0,0.3)',
+    borderBottomWidth: 1
+  },
+  modalHeaderText: {
+    fontSize: 14,
+    fontWeight:'bold',
+    color:'green'
+  },
+  modalCloseIcon: {
+    width: 25
+  },
+  modalBody: {
+    flex: 1,
+    width:'100%',
+    padding: 10,
+    borderRadius: 10,
+    justifyContent:'flex-start'
+  },
   postComponent: {
     height: 120,
     width: "100%",
     //  alignSelf: "stretch",
     //  backgroundColor: "rgba(255,255,255,1)"
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    justifyContent:'space-around'
   },
   searchHeader: {
     height: 40,
@@ -194,11 +384,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "83%",
     marginTop: 60,
-    marginRight: "auto",
     backgroundColor: "#f4f4f4",
     color: "black",
-    marginLeft: "auto",
-    paddingRight: 20,
     marginBottom: 10,
     alignSelf: "baseline",
   },
@@ -208,6 +395,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 1,
   },
+  searchFilterIcon: {
+    width: 30,
+    alignSelf: "baseline",
+  },
   searchInput: {
     width: 239,
     height: 40,
@@ -216,6 +407,15 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 14,
     fontFamily: "geometria-regular",
+  },
+  datetimeContainer: {
+    flexDirection:'row', alignItems:'center', justifyContent:'space-between'
+  },
+  datetimeText: {
+    backgroundColor:'grey', textAlign:'center', width: 90, paddingHorizontal: 5, color:'white', alignSelf:'center', marginHorizontal: 5, borderRadius: 5
+  },
+  datetimeLabel: {
+    fontSize: 14, width: 80, marginVertical: 5, fontWeight:'bold'
   },
   postSection: {
     flex: 1,
@@ -233,6 +433,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: "#E6E6E6",
     borderRadius: 25,
+  },
+  shadow: {
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2
   },
   bigTitle: {
     fontFamily: "geometria-regular",

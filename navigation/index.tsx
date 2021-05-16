@@ -12,7 +12,6 @@ import custInfoScreen from "../screens/custInfoScreen";
 import orderScreen from "../screens/orderScreen";
 import DishScreen from "../screens/DishScreen";
 import GuideScreen from "../screens/GuideScreen";
-import hourSelectScreen from "../screens/hourSelectScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import paymentScreen from "../screens/paymentScreen";
 import resaScreen from "../screens/resaScreen";
@@ -82,13 +81,8 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="crenSelectScreen"
-        options={{ headerTitle: "Choisir un jour" }}
+        options={{ headerTitle: "Choisir un créneau" }}
         component={crenSelectScreen}
-      />
-      <Stack.Screen
-        name="hourSelectScreen"
-        options={{ headerTitle: "Choisir une heure" }}
-        component={hourSelectScreen}
       />
       <Stack.Screen
         name="basketScreen"
