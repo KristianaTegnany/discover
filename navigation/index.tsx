@@ -131,7 +131,15 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="basketScreen"
-        options={{ headerTitle: "Votre panier" }}
+        options={{ headerTitle: "Votre panier", 
+        headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        },
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        } }}
         component={basketScreen}
       />
       <Stack.Screen
@@ -146,7 +154,15 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="custInfoScreen"
-        options={{ headerTitle: "Vos infos" }}
+        options={{ headerTitle: "Vos infos",
+        headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        },
+        headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        } }}
         component={custInfoScreen}
       />
       <Stack.Screen

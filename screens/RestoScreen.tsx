@@ -44,6 +44,8 @@ interface ICats {
 export const RestoScreen = ({ route, navigation }: Props) => {
   const [menus, setMenus] = useState<IMenus[]>();
   const [cats, setCats] = useState<ICats[]>();
+  const [html, setHtml] = useState('');
+
   const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState([
     {
       daysOfWeek: [],
@@ -80,7 +82,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     cityvenue: "",
     onsitenoonblock: "",
     onsitenightblock: "",
-    preswebsite: "",
+    preswebsite: " ",
     businessHoursTakeAway: [],
     businessHoursDelivery: [],
     businessHours: [],
@@ -92,7 +94,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     noNightTakeAway: false,
     noNightDelivery: false,
     minOrderDelivery:0,
-    citiesChoice:[]
+    citiesChoice:[],
+    delayorderDelivery:0,
+    confirmModeOrderOptions_delayorder:0
   });
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
@@ -113,13 +117,11 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       return Colors[theme][colorName];
     }
   }
-  // horaires
-  // Limites de commande
+
   const products = useSelector((state: ProductItem[]) => state);
   const tagsStyles = {
     p: { fontFamily: "geometria-regular", fontSize: 18, color: textColor },
   };
-  const html = myintcust.preswebsite;
 
 
   async function fetchCatsAndMenus() {
@@ -181,7 +183,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       businessHoursTakeAway: myintcustRaw.attributes.businessHoursTaway,
       businessHoursDelivery: myintcustRaw.attributes.businessHoursDelivery,
       businessHours: myintcustRaw.attributes.businesshours || [],
-      preswebsite: myintcustRaw.attributes.preswebsite || "",
+      preswebsite: myintcustRaw.attributes.preswebsite || " ",
       onsitenoonblock: myintcustRaw.attributes.onsitenoonblock || "",
       onsitenightblock: myintcustRaw.attributes.onsitenightblock || "",
       takeawaynoonblock: myintcustRaw.attributes.takeawaynoonblock || "",
@@ -193,10 +195,11 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       noNightDelivery: myintcustRaw.attributes.noNightDelivery || false,
       minOrderDelivery: myintcustRaw.attributes.minOrderDelivery || 0,
       citiesChoice: myintcustRaw.attributes.citiesChoice2 || [],
+      delayorderDelivery: myintcustRaw.attributes.delayorderDelivery || 0,
+      confirmModeOrderOptions_delayorder:  myintcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
     };
     setMyintcust(myintcustRaw);
-    console.log("ff");
-    //console.log(myintcustRaw.businessHours);
+    console.log(myintcustRaw);
     let results: any = [];
     let businessHours = sortBy(myintcustRaw.businessHours, ["daysOfWeek"]);
     await businessHours.forEach((element) => {
@@ -378,6 +381,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   useEffect(() => {
     fetchIntcust();
     fetchCatsAndMenus();
+     setHtml(myintcust && myintcust.preswebsite|| ' ');
   }, []);
 
   return (
@@ -401,11 +405,15 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
           <Text style={styles.textItalic}>{myintcust.introwebsite} </Text>
-
+          
+          { myintcust.preswebsite && 
           <View style={styles.wrapperHTML}>
-            <HTML tagsStyles={tagsStyles} source={{ html: html || " " }} />
-          </View>
+            <HTML tagsStyles={tagsStyles} source={{ html: myintcust.preswebsite || "<p>a</p> " }} />
+          </View> 
+          }
 
+{myintcust.EngagModeTakeAway== true || myintcust.EngagModeDelivery==true && 
+<View>
           <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
           <Text style={styles.textMoli}>
             ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
@@ -413,8 +421,13 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           </Text>
           <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
+          </View>
+}
+
           {myintcust.EngagModeOnSite == true && (
-            <View>
+
+<View>
+
               <Text style={styles.textSub}>Réservation sur place </Text>
 
               {businessHours &&
@@ -443,58 +456,75 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
           {myintcust.EngagModeTakeAway == true && (
             <View>
+                        <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
+
               <Text style={styles.textSub}>Commande à emporter </Text>
               {businessHoursTakeAway &&
                 businessHoursTakeAway.length !== 0 &&
                 businessHoursTakeAway.map((bh2: any) => (
                   <Text
-                    style={styles.textMoli}
+                    style={styles.textPiti}
                     key={bh2.daysOfWeek + bh2.startTime}
                   >
                     {bh2.daysOfWeek} {bh2.startTime}-{bh2.endTime}
                   </Text>
                 ))}
               <Text style={styles.textMoli}>
-                Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
+              🕛 Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
               </Text>
               {myintcust.noNightTakeAway !== true && (
                 <Text style={styles.textMoli}>
-                  Fin de commande le soir : {myintcust.takeawaynightblock}{" "}
+                 🕡 Fin de commande le soir : {myintcust.takeawaynightblock}{" "}
                 </Text>
               )}
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+                 {myintcust.confirmModeOrderOptions_delayorder >0 && (
+              <Text style={styles.textMoli}>
+                Délai entre la commande et la récupération : {myintcust.confirmModeOrderOptions_delayorder}{" "} minutes
+              </Text>
+                            )}
+           
             </View>
           )}
 
           {myintcust.EngagModeDelivery == true && (
             <View>
+                 <Divider
+                style={{ backgroundColor: "grey", marginVertical: 20 }}
+              />
               <Text style={styles.textSub}>Commande en livraison </Text>
               {businessHoursDelivery &&
                 businessHoursDelivery.length !== 0 &&
                 businessHoursDelivery.map((bh: any) => (
                   <Text
-                    style={styles.textMoli}
+                    style={styles.textPiti}
                     key={bh.daysOfWeek + bh.startTime}
                   >
                     {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
                   </Text>
                 ))}
               <Text style={styles.textMoli}>
-                Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
+               🕛 Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
               </Text>
               {myintcust.noNightDelivery !== true && (
                 <Text style={styles.textMoli}>
-                  Fin de commande le soir : {myintcust.deliverynightblock}{" "}
+                 🕡 Fin de commande le soir : {myintcust.deliverynightblock}{" "}
                 </Text>
               )}
-                { myintcust.minOrderDelivery && myintcust.minOrderDelivery >0  && (
+               {myintcust.delayorderDelivery >0 && (
+              <Text style={styles.textMoli}>
+                Délai entre la commande et la livraison : {myintcust.delayorderDelivery}{" "} minutes
+              </Text>
+                            )}
+{  myintcust.minOrderDelivery >0  && (
+                  <View>
                 <Text style={styles.textMoli}>
-                 Minimum de commande en livraison : {myintcust.minOrderDelivery}{" "}€
+                 Minimum de commande en livraison : {myintcust.minOrderDelivery||0}€
                 </Text>
-              )}
-              
+                </View>
+                )
+              }
+                        <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
+
                  <Text 
                 style={styles.textSub}>
                 Zone de livraison
@@ -502,7 +532,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                   { myintcust.citiesChoice && myintcust.citiesChoice.length>0   && myintcust.citiesChoice.map((city:any) =>(
                 <Text key={city.city}
                 style={styles.textMoli}>
-                {city.city}{" "} : {city.tar}€
+                {city.city || ' '} : {city.tar|| 0}€
                 </Text>
                   ))}
                   
@@ -514,8 +544,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 style={{ backgroundColor: "grey", marginVertical: 20 }}
               />
 <Text  style={styles.title}>La Carte</Text>
+{myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true && 
 <Text  style={styles.textSub2}>Pour commander, choisissez votre mode.</Text>
-
+}
           {!cats ||
             (!menus &&
               [""].map(() => {
@@ -576,6 +607,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                                   {menu.title}{" "}
                                 </ListItem.Title>
 
+{menu.price > 0 && 
                                 <ListItem.Subtitle
                                   style={{
                                     marginTop: 2,
@@ -586,6 +618,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                                 >
                                   {menu.price} €
                                 </ListItem.Subtitle>
+                      }
                               </ListItem.Content>
                             </ListItem>
                           </View>
@@ -763,6 +796,15 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-bold",
     paddingLeft: 20,
     paddingBottom: 10,
+  },
+  textPiti: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: "geometria-regular",
+    paddingLeft: 30,
+    paddingBottom: 10,
+    paddingTop: 10,
+
   },
   separator: {
     marginVertical: 30,
