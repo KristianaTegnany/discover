@@ -121,9 +121,9 @@ export default class TablesScreen extends React.Component<props, state> {
   }
 
   FilterButton = (props:any) => {
-    const { selectedMode } = this.state
+    const { selectedMode, restaurantList } = this.state
     return (
-      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'black', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold', color: selectedMode === props.mode? 'white' : 'black'}}/>
+      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode, restaurantList: selectedMode === props.mode? restaurantList : restaurantList.filter((resto:any) => resto.attributes[`EngagMode${props.mode}`])})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'black', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold', color: selectedMode === props.mode? 'white' : 'black'}}/>
     )
   }
 
