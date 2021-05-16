@@ -10,6 +10,7 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
 import { View } from "../components/Themed";
+//import {  ListItem } from '../components/Themed';
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
@@ -17,12 +18,9 @@ import { Avatar, ListItem } from "react-native-elements";
 import { useSelector } from "react-redux";
 import { ProductItem } from "../global";
 
-const DELIVERY = "Delivery";
-
 interface NavigationParams {
   restoId: string;
 }
-
 type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
 
 interface Props {
@@ -46,7 +44,7 @@ interface IMenus {
   category: string;
 }
 
-export const orderScreen = ({ route, navigation }: Props) => {
+export const takeawayScreen = ({ route, navigation }: Props) => {
   const [cats, setCats] = useState<ICats[]>();
   const [menus, setMenus] = useState<IMenus[]>();
   const [totalCashBasket, setTotalCashBasket] = useState(0);
@@ -99,20 +97,14 @@ export const orderScreen = ({ route, navigation }: Props) => {
     };
     var rawMenus = await Parse.Cloud.run("getMenusActive", params);
 
-    rawMenus = rawMenus
-      .filter((menu: any) =>
-        route.params?.bookingType === DELIVERY
-          ? menu.attributes?.deliveryOptin
-          : menu.attributes?.takeAwayOptin
-      )
-      .map((menu: any) => ({
-        id: menu.id,
-        price: menu.attributes.price,
-        title: menu.attributes.title,
-        category: menu.attributes.category,
-        order: menu.attributes.order,
-        imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
-      }));
+    rawMenus = rawMenus.map((menu: any) => ({
+      id: menu.id,
+      price: menu.attributes.price,
+      title: menu.attributes.title,
+      category: menu.attributes.category,
+      order: menu.attributes.order,
+      imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
+    }));
 
     const sortedMenu = rawMenus.sort(function (a: any, b: any) {
       if (a.order < b.order) {
@@ -233,11 +225,12 @@ export const orderScreen = ({ route, navigation }: Props) => {
       <ScrollView style={styles.wrapperScroll}>
         <View>
           {!cats ||
-            !menus &&
+            (!menus &&
+              [""].map(() => {
                 <View key="123" style={styles.wrapindicator}>
                   <ActivityIndicator size="large" color="#F50F50" />
-                </View>
-            }
+                </View>;
+              }))}
           {cats &&
             menus &&
             cats.map((cat) => {
@@ -328,6 +321,8 @@ export const orderScreen = ({ route, navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
+    //  flex: 1,
+    //  alignItems: 'center',
     justifyContent: "center",
   },
 
@@ -381,12 +376,4 @@ const styles = StyleSheet.create({
   },
 });
 
-orderScreen["navigationOptions"] =  (props: Props) => ({
-  headerTitle:
-    props.route.params?.bookingType === DELIVERY ? "Livraison" : "A emporter",
-   
-});
-
-console.log(orderScreen["navigationOptions"])
-
-export default orderScreen;
+export default takeawayScreen;

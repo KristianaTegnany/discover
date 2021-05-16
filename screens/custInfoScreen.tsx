@@ -126,7 +126,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       email: email,
       itid: intcust.id,
     };
-
+console.log("On va create")
     const res = await Parse.Cloud.run("getGuest", params);
     var Guest = Parse.Object.extend("Guest");
     let guestRaw = new Guest();
@@ -282,10 +282,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function testDelayCren_Stop() {
     let isValid = true
-    const delay = bookingType === DELIVERY? intcust.confirmModeOrderOptions_delayorder : intcust.delayorderDelivery
-    console.log('testDelayCren_Stop', moment.tz('America/Martinique'), date, delay)
+    const delay = bookingType === DELIVERY? intcust.delayorderDelivery : intcust.confirmModeOrderOptions_delayorder
+  
     if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
-      if(moment.tz('America/Martinique').diff(date, 'minutes') > delay)
+      if(moment.tz(date,'America/Martinique').diff(moment.tz('America/Martinique'), 'minutes') < delay)
         isValid = false
     }
     return isValid
@@ -294,11 +294,15 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function testNoonNight_Stop() {
     let isValid = true
     const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
-    if(date.format('DD/MM/YYYY') === moment.tz('America/Martinique').format('DD/MM/YYYY') && [TAKEAWAY, DELIVERY].includes(bookingType)) {
+   if(date.isSame(moment.tz("America/Martinique"), "day") ){
+    if([TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
+        console.log("stop yesterday case")
         isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
       }
       else {
+        console.log("not stop yesterday case")
+
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
               noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock,
@@ -306,9 +310,13 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
               dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
               dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
-        console.log('testNoonNight_Stop', date, dateNoonblock, dateNightstart, dateNightblock)
+          
         isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
+        console.log(isValid)
       }
+    }}
+    else{
+      isValid=true
     }
     return isValid
   }
@@ -328,13 +336,11 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       const consumed = await Parse.Cloud.run("checkStock", params)
       
       if (menu.attributes.provisionStockBase.length > 0) {
-        let provision = await menu.attributes.provisionStockBase.filter((x:any) => moment.tz(day, 'America/Martinique').isSame(moment.tz(x.date,'America/Martinique')))
-        if(provision.length > 0) {
-          isValid = provision[0].provision > consumed + 1
-          if(!isValid){
-            Alert.alert("Information",`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
-            break
-          }
+        let provision = menu.attributes.provisionStockBase.filter((x:any) => moment.tz(x.date, 'America/Martinique').isSame(moment.tz(x.date, 'America/Martinique'), "day"));
+        isValid = provision[0].provision > consumed + 1
+        if(!isValid){
+          Alert.alert(`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner à la sélection`)
+          break
         }
       }
     }
@@ -360,8 +366,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           testQty       = true
 
       if(!testOC){
-        Alert.alert("Information","La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
-        navigation.navigate("RestoScreen", {
+        Alert.alert("La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
+        navigation.navigate("hourSelectScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
           day: day
@@ -371,8 +377,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         // Tester si le nombre de commande à emporter < orderDaily_Stop
         testOD = await testOrderDaily_Stop()
         if(!testOD){
-          Alert.alert("Information","La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
-          navigation.navigate("RestoScreen", {
+          Alert.alert("La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
+          navigation.navigate("crenSelectScreen", {
             restoId: intcust.id,
             bookingType: bookingType,
             day: 'null'
@@ -381,8 +387,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         else {
           testDelayCren = await testDelayCren_Stop()
           if(!testDelayCren) {
-            Alert.alert("Information","Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
-            navigation.navigate("RestoScreen", {
+            Alert.alert("Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
+            navigation.navigate("crenSelectScreen", {
               restoId: intcust.id,
               bookingType: bookingType,
               day: 'null'
@@ -391,8 +397,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           else {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
-              Alert.alert("Information","L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
-              navigation.navigate("RestoScreen", {
+              Alert.alert("L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
+              navigation.navigate("hourSelectScreen", {
                 restoId: intcust.id,
                 bookingType: bookingType,
                 day: day
@@ -408,7 +414,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       if(testOC && testOD && testDelayCren && testNoonNight && testQty) {
         await createResa();
         if (intcust.paymentChoice !== "stripeOptin") {
+          console.log("On est dans payplug")
           await getPayPlugPaymentUrl();
+          console.log("On est sorti")
+
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
             restoId: restoId,
@@ -457,20 +466,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     const params1 = {
       itid: intcust.id,
       winl: "window.location.host",
-      resaid: "34dUynZnXC",
+      resaid: resa.id,
       customeremail: email,
       customerfirstname: firstname,
       customerlastname: lastname,
       customerphone: phone,
       type: "order",
-      amount: 100,
+      amount: totalCashBasket,
       apikeypp: intcust.apikeypp,
       mode: bookingType,
       noukarive: intcust.option_DeliveryByNoukarive,
       toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
-
     const response = await Parse.Cloud.run("getPayPlugPaymentUrl", params1);
+    console.log(response)
 
     setPaylink(response);
   }
