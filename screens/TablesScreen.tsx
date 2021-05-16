@@ -138,7 +138,7 @@ export default class TablesScreen extends React.Component<props, state> {
   FilterButton = (props:any) => {
     const { selectedMode, restaurantList } = this.state
     return (
-      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode, restaurantList: selectedMode === props.mode? restaurantList : restaurantList.filter((resto:any) => resto.attributes[`EngagMode${props.mode}`])})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'black', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold', color: selectedMode === props.mode? 'white' : 'black'}}/>
+      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode, restaurantList: selectedMode === props.mode? restaurantList : restaurantList.filter((resto:any) => resto.attributes[`EngagMode${props.mode}`])})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold',  fontFamily:"geometria-regular",color: selectedMode === props.mode? 'white' : 'grey'}}/>
     )
   }
 
@@ -153,7 +153,7 @@ export default class TablesScreen extends React.Component<props, state> {
       }}>
         <View style={{justifyContent:'center'}}>
           <Image source={props.item.img} resizeMode={'cover'} style={{borderRadius: 20, alignSelf:'center', width: 80, height: 80}}/>
-          <Text style={{textAlign:'center', color: props.item.selected? '#ff5050' : 'black'}}>{ props.item.title }</Text>
+          <Text style={{textAlign:'center', fontFamily:"geometria-regular", color: props.item.selected? '#ff5050' : 'black'}}>{ props.item.title }</Text>
         </View>
       </TouchableOpacity>
     )
@@ -194,13 +194,13 @@ export default class TablesScreen extends React.Component<props, state> {
           </View>  
         </Modal>
         <View style={{marginTop: 60, alignSelf:'center', width: '85%', flexDirection:'row', alignItems:'center'}}>
-          <Text style={{marginRight: 10}}>{this.state.martinique? 'Toute la Martinique' : this.state.fdfrance? 'Fort-de-France' : this.state.schoelcher? 'Schoelcher' : this.state.guadelope? 'Toute la Goadelope' : 'Baie-Mahault'}</Text>
-          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12}} buttonStyle={{ paddingHorizontal: 15, height: 30, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
+          <Text style={{marginRight: 10, fontFamily:"geometria-regular"}}>{this.state.martinique? 'Toute la Martinique' : this.state.fdfrance? 'Fort-de-France' : this.state.schoelcher? 'Schoelcher' : this.state.guadelope? 'Toute la Goadelope' : 'Baie-Mahault'}</Text>
+          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12, fontFamily:"geometria-regular"}} buttonStyle={{ paddingHorizontal: 15, height: 35, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
         </View>
         <View style={styles.searchHeader}>
           <Ionicons name="search" style={styles.searchIcon} />
           <TextInput
-            placeholder="Rechercher un restaurant"
+            placeholder="Rechercher un restaurant par nom"
             style={styles.searchInput}
             defaultValue={this.state.searchValue}
             onChangeText={(value) => this.onChangeSearch(value)}
