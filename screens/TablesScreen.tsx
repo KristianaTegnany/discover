@@ -183,11 +183,9 @@ export default class TablesScreen extends React.Component<props, state> {
           style={{margin: 0}}
         >
           <View style={{position:'absolute', bottom: 0, padding: 20, right: 0, left: 0, height: '50%'}}>
-            <View style={{width: '100%', height: 30, marginHorizontal: 20, alignSelf:'center', justifyContent:'center', padding: 10, borderRadius: 5, marginBottom: 20, backgroundColor: '#f4f4f4'}}>
-              <View style={{width: 20, height: 20, backgroundColor:'grey'}}/>
-            </View>
-            <this.RadioItem title='Toute la Martinique' parent checked={this.state.martinique} onPress={() => this.setState({martinique: !this.state.martinique, fdfrance: !this.state.martinique, schoelcher: !this.state.martinique, guadelope: !this.state.martinique? false : this.state.guadelope, mahault: !this.state.martinique? false : this.state.mahault})}/>
-            <this.RadioItem title='Fort-de-France' checked={this.state.fdfrance} onPress={() => this.setState({fdfrance: !this.state.fdfrance, martinique: !this.state.fdfrance && this.state.schoelcher,  guadelope: !this.state.fdfrance? false : this.state.guadelope, mahault: !this.state.fdfrance? false : this.state.mahault})}/>
+           
+            <this.RadioItem titleStyle={{fontFamily:"geometria-regular"}} title='Toute la Martinique' parent checked={this.state.martinique} onPress={() => this.setState({martinique: !this.state.martinique, fdfrance: !this.state.martinique, schoelcher: !this.state.martinique, guadelope: !this.state.martinique? false : this.state.guadelope, mahault: !this.state.martinique? false : this.state.mahault})}/>
+            <this.RadioItem style={{fontFamily:"geometria-regular"}}  title='Fort-de-France' checked={this.state.fdfrance} onPress={() => this.setState({fdfrance: !this.state.fdfrance, martinique: !this.state.fdfrance && this.state.schoelcher,  guadelope: !this.state.fdfrance? false : this.state.guadelope, mahault: !this.state.fdfrance? false : this.state.mahault})}/>
             <this.RadioItem title='Schoelcher' checked={this.state.schoelcher} onPress={() => this.setState({schoelcher: !this.state.schoelcher, martinique: this.state.fdfrance && !this.state.schoelcher, guadelope: !this.state.schoelcher? false : this.state.guadelope, mahault: !this.state.schoelcher? false : this.state.mahault})}/>
             <this.RadioItem title='Toute la Guadelope' parent checked={this.state.guadelope} onPress={() => this.setState({guadelope: !this.state.guadelope, mahault: !this.state.guadelope, martinique: !this.state.guadelope? false : this.state.martinique, fdfrance: !this.state.guadelope? false : this.state.fdfrance, schoelcher: !this.state.guadelope? false : this.state.schoelcher})}/>
             <this.RadioItem title='Baie-Mahault' checked={this.state.mahault} onPress={() => this.setState({mahault: !this.state.mahault, guadelope: !this.state.mahault, martinique: !this.state.mahault? false : this.state.martinique, fdfrance: !this.state.mahault? false : this.state.fdfrance, schoelcher: !this.state.mahault? false : this.state.schoelcher })}/>
@@ -200,7 +198,7 @@ export default class TablesScreen extends React.Component<props, state> {
         <View style={styles.searchHeader}>
           <Ionicons name="search" style={styles.searchIcon} />
           <TextInput
-            placeholder="Rechercher un restaurant par nom"
+            placeholder="Tapez le nom d'un restaurant"
             style={styles.searchInput}
             defaultValue={this.state.searchValue}
             onChangeText={(value) => this.onChangeSearch(value)}
