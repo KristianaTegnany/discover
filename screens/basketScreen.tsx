@@ -116,6 +116,28 @@ export const basketScreen = ({ route, navigation }: Props) => {
           </ListItem.Subtitle>
         </ListItem.Content>
       </ListItem>
+
+      {route.params.bookingType=="Delivery" && [''].map(x => {
+   var Intcust = Parse.Object.extend("Intcust");
+   let myintcustRaw = new Intcust();
+   myintcustRaw.id = route.params.restoId;
+ return  myintcustRaw.attributes.minOrderDelivery>0 && totalCashBasket < myintcustRaw.attributes.minOrderDelivery &&
+      <ListItem
+        bottomDivider
+        containerStyle={{
+          backgroundColor: "green",
+          borderColor: "transparent",
+        }}
+      >
+       
+        <ListItem.Content>
+          <ListItem.Subtitle style={styles.headertext}>
+            Ce restaurant a un minimum de commande de {myintcustRaw.attributes.minOrderDelivery}€ en livraison. 
+          </ListItem.Subtitle>
+        </ListItem.Content>
+      </ListItem>
+        })
+        }
       <ScrollView>
         <View>
           {products
@@ -290,7 +312,8 @@ export const basketScreen = ({ route, navigation }: Props) => {
         }}
         style={styles.appButtonContainer}
       >
-        <Text style={styles.appButtonText}>💳 🔐 Continuer</Text>
+
+        <Text style={styles.appButtonText}>Continuer</Text>
       </TouchableOpacity>
     </View>
   );
