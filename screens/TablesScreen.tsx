@@ -18,6 +18,7 @@ import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
+
 import Modal from 'react-native-modal'
 import { CheckBox } from 'react-native-elements'
 
