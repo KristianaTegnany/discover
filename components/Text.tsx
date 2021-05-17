@@ -22,6 +22,6 @@ export default function MyText(props: any) {
   }
 
   return (
-    <Text {...props} style={[props.style, { color: textColor }]}>{props.children}</Text>
+    <Text {...props} style={[props.style, { fontFamily: props.style?.fontWeight === 'bold'? 'geometria-bold' : 'geometria-regular', color: props.style?.color? props.style?.color : textColor }]}>{props.children}</Text>
   )
 }

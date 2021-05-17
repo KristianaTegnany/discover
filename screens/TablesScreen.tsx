@@ -18,8 +18,6 @@ import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
-import Colors from "../constants/Colors";
-import useColorScheme from "../hooks/useColorScheme";
 import Modal from 'react-native-modal'
 import { RadioButton } from 'react-native-paper'
 import Text from '../components/Text'
@@ -69,6 +67,7 @@ type state = {
   parent: any;
   child1: any;
   child2: any;
+  isFiltre: boolean;
 };
 
 export default class TablesScreen extends React.Component<props, state> {
@@ -114,6 +113,7 @@ export default class TablesScreen extends React.Component<props, state> {
       parent: null,
       child1: null,
       child2: null,
+      isFiltre: true,
       loading: true
     };
   }
@@ -312,10 +312,10 @@ export default class TablesScreen extends React.Component<props, state> {
               <View style={{flex: 1}}>
                 {
                   this.state.countries.map((country:any,i:any) => (
-                  <this.RadioItem index={i} title={country.name} checked={country.checked}>
+                  <this.RadioItem key={i} index={i} title={country.name} checked={country.checked}>
                     {
                       country.cities.map((city:any,j:any) => (
-                          <this.RadioItem index={j} title={city.name} checked={city.checked}/>
+                          <this.RadioItem key={j} index={j} title={city.name} checked={city.checked}/>
                       ))
                     }
                   </this.RadioItem>
@@ -339,6 +339,14 @@ export default class TablesScreen extends React.Component<props, state> {
 
             //   onChangeText={this.filterResultsSearch}
           ></TextInput>
+          <Ionicons name={"options"} color={this.state.isFiltre? '#F50F50' : 'black'} size={25} onPress={() => {
+              this.setState({isFiltre: !this.state.isFiltre})
+              if(!this.state.isFiltre)
+                this.filtre()
+              else
+                this.setState({restaurantList: this.state.restaurantListOrigin})}
+            }
+          />
         </View>
         <View style={{marginBottom: 20, alignSelf:'center', flexDirection:'row', width: '85%'}}>
           <this.FilterButton title='Réservation' mode='OnSite'/>
@@ -475,7 +483,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
     color: "black",
     marginLeft: "auto",
-    paddingRight: 20,
     marginBottom: 10,
     alignSelf: "baseline",
   },

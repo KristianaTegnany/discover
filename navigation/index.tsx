@@ -20,11 +20,10 @@ import termsScreen from "../screens/termsScreen";
 import { RootStackParamList } from "../types";
 import BottomTabNavigator from "./BottomTabNavigator";
 
-import LinkingConfiguration from "./LinkingConfiguration";
 import paymentStripeScreen from "../screens/paymentStripeScreen";
 import { persoScreen } from "../screens/persoScreen";
 import hourSelectScreen from "../screens/hourSelectScreen";
-
+  
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({
@@ -32,9 +31,19 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  const config = {
+    screens: {
+      successScreen: 'success',
+      custInfoScreen: 'custinfo'
+    }
+  }
+  const linking = {
+    prefixes: ['https://discover.fr', 'discover://'],
+    config
+  }
   return (
     <NavigationContainer
-      linking={LinkingConfiguration}
+      linking={linking}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
       <RootNavigator />
@@ -59,7 +68,7 @@ function RootNavigator() {
         options={{ headerTitle: "", headerTransparent: true,
         headerBackTitleStyle: {
           fontFamily: "geometria-regular",
-          fontWeight: "200", 
+          fontWeight: "200",
         //  color:"green"
         } }}
         component={GuideScreen}

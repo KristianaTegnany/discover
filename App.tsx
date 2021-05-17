@@ -21,7 +21,7 @@ Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; //`https:
 export default   function    App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-   
+
   loadResourcesAsync() ;
   if (!isLoadingComplete) {
     return null;
