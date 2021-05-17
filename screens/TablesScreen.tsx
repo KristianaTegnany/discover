@@ -18,6 +18,8 @@ import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
 import Modal from 'react-native-modal'
 import { RadioButton } from 'react-native-paper'
 import Text from '../components/Text'
@@ -71,6 +73,9 @@ type state = {
 
 export default class TablesScreen extends React.Component<props, state> {
   restaurantListCast: any[] = [];
+  
+
+ 
   constructor(props: any) {
     super(props);
     this.state = {
@@ -230,7 +235,7 @@ export default class TablesScreen extends React.Component<props, state> {
       }}>
         <View style={{justifyContent:'center'}}>
           <Image source={props.item.img} resizeMode={'cover'} style={{borderRadius: 20, alignSelf:'center', width: 80, height: 80}}/>
-          <Text style={{textAlign:'center', color: props.item.selected? '#ff5050' : 'black'}}>{ props.item.title }</Text>
+          <Text style={{textAlign:'center', fontFamily:"geometria-regular", color: props.item.selected? '#ff5050' : 'black'}}>{ props.item.title }</Text>
         </View>
       </TouchableOpacity>
     )
@@ -327,7 +332,7 @@ export default class TablesScreen extends React.Component<props, state> {
         <View style={styles.searchHeader}>
           <Ionicons name="search" style={styles.searchIcon} />
           <TextInput
-            placeholder="Rechercher un restaurant"
+            placeholder="Tapez le nom d'un restaurant"
             style={styles.searchInput}
             defaultValue={this.state.searchValue}
             onChangeText={(value) => this.onChangeSearch(value)}

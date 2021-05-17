@@ -1,18 +1,9 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import { Route, StyleSheet } from "react-native";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
-import { Text, View } from "../components/Themed";
-import { useSelector } from "react-redux";
-
-import { ProductItem } from "../global";
-import { Icon, ListItem } from "react-native-elements";
 import { useEffect } from "react";
-import { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { remove, store } from "../store";
 import { WebView } from "react-native-webview";
 
 interface NavigationParams {
@@ -27,10 +18,7 @@ interface Props {
   restaurant: [];
 }
 
-export const basketScreen = ({ route, navigation }: Props) => {
-  const products = useSelector((state: ProductItem[]) => state);
-
-  async function fetchIntcust() {}
+export const paymentScreen = ({ route, navigation }: Props) => {
 
   useEffect(() => {}, []);
 
@@ -114,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default basketScreen;
+export default paymentScreen;

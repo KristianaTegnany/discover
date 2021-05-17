@@ -1,6 +1,6 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
-import { Alert, Image, Route, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, Image, Route, StyleSheet } from "react-native";
 import { ListItem } from "react-native-elements";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
@@ -232,6 +232,11 @@ export const DishScreen = ({ route, navigation }: Props) => {
 
   return (
     <View style={styles.container}>
+      {!menu && 
+        <View key="123" style={styles.wrapindicator}>
+                  <ActivityIndicator size="large" color="#F50F50" />
+                </View>
+                }
       <ScrollView style={styles.scrollview}>
         {menu && menu.imageUrl && (
           <Image style={styles.image} source={{ uri: menu.imageUrl }} />
@@ -521,6 +526,11 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-regular",
     fontSize: 16,
     padding: 20,
+  },
+  wrapindicator: {
+    alignItems: "center",
+    height: "100%",
+    justifyContent: "center",
   },
   textCat: {
     flex: 1,

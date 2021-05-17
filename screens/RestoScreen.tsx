@@ -1,8 +1,8 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Alert, Image, Route, StyleSheet, ActivityIndicator } from "react-native";
-import { Divider } from "react-native-elements";
+import { ActivityIndicator, Alert, Button, Image, Route, StyleSheet } from "react-native";
+import { Avatar, Divider, ListItem } from "react-native-elements";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import HTML from "react-native-render-html";
 import { NavigationScreenProp } from "react-navigation";
@@ -35,7 +35,26 @@ interface Props {
   restaurant: [];
 }
 
+interface IMenus {
+  id: string;
+  price: number;
+  imageUrl: string;
+  title: string;
+  order: number;
+  description: string;
+  category: string;
+}
+interface ICats {
+  id: string;
+  title: string;
+  order: number;
+  numExact: number;
+}
 export const RestoScreen = ({ route, navigation }: Props) => {
+  const [menus, setMenus] = useState<IMenus[]>();
+  const [cats, setCats] = useState<ICats[]>();
+  const [html, setHtml] = useState('');
+
   const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState([
     {
       daysOfWeek: [],
@@ -72,7 +91,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     cityvenue: "",
     onsitenoonblock: "",
     onsitenightblock: "",
-    preswebsite: "",
+    preswebsite: " ",
     businessHoursTakeAway: [],
     businessHoursDelivery: [],
     businessHours: [],
@@ -83,6 +102,10 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     contactphone: "",
     noNightTakeAway: false,
     noNightDelivery: false,
+    minOrderDelivery:0,
+    citiesChoice:[],
+    delayorderDelivery:0,
+    confirmModeOrderOptions_delayorder:0
   });
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
@@ -103,13 +126,52 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       return Colors[theme][colorName];
     }
   }
-  // horaires
-  // Limites de commande
+
   const products = useSelector((state: ProductItem[]) => state);
   const tagsStyles = {
     p: { fontFamily: "geometria-regular", fontSize: 18, color: textColor },
   };
-  const html = myintcust.preswebsite;
+
+
+  async function fetchCatsAndMenus() {
+    var Intcust = Parse.Object.extend("Intcust");
+    let intcust = new Intcust();
+    intcust.id = route.params.restoId;
+    var rawCats = intcust.attributes.subcatIm;
+    const sortedCats = rawCats.sort(function (a: any, b: any) {
+      if (a.order < b.order) {
+        return -1;
+      }
+      if (a.order > b.order) {
+        return 1;
+      }
+    });
+    setCats(sortedCats);
+    let params = {
+      itid: route.params.restoId,
+    };
+    var rawMenus = await Parse.Cloud.run("getMenusActive", params);
+
+    rawMenus = rawMenus
+      .map((menu: any) => ({
+        id: menu.id,
+        price: menu.attributes.price,
+        title: menu.attributes.title,
+        category: menu.attributes.category,
+        order: menu.attributes.order,
+        imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
+      }));
+
+    const sortedMenu = rawMenus.sort(function (a: any, b: any) {
+      if (a.order < b.order) {
+        return -1;
+      }
+      if (a.order > b.order) {
+        return 1;
+      }
+    });
+    setMenus(sortedMenu);
+  }
 
   //Cren
   const [bookingType, setBookingType] = useState(route.params.bookingType)
@@ -185,7 +247,12 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     setDaystobook(days);
     setLoading(false);
   }
-
+  function getCountOfMenusOfcat(cattitle: string) {
+    if (menus) {
+      let count = menus.filter((x: any) => x.category == cattitle).length;
+      return count;
+    }
+  }
   async function fetchIntcust() {
     var Intcust = Parse.Object.extend("Intcust");
     let myintcustRaw = new Intcust();
@@ -205,7 +272,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       businessHoursTakeAway: myintcustRaw.attributes.businessHoursTaway,
       businessHoursDelivery: myintcustRaw.attributes.businessHoursDelivery,
       businessHours: myintcustRaw.attributes.businesshours || [],
-      preswebsite: myintcustRaw.attributes.preswebsite || "",
+      preswebsite: myintcustRaw.attributes.preswebsite || " ",
       onsitenoonblock: myintcustRaw.attributes.onsitenoonblock || "",
       onsitenightblock: myintcustRaw.attributes.onsitenightblock || "",
       takeawaynoonblock: myintcustRaw.attributes.takeawaynoonblock || "",
@@ -215,8 +282,13 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       contactphone: myintcustRaw.attributes.contactphone || "",
       noNightTakeAway: myintcustRaw.attributes.noNightTakeAway || false,
       noNightDelivery: myintcustRaw.attributes.noNightDelivery || false,
+      minOrderDelivery: myintcustRaw.attributes.minOrderDelivery || 0,
+      citiesChoice: myintcustRaw.attributes.citiesChoice2 || [],
+      delayorderDelivery: myintcustRaw.attributes.delayorderDelivery || 0,
+      confirmModeOrderOptions_delayorder:  myintcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
     };
     setMyintcust(myintcustRaw);
+    console.log(myintcustRaw);
     let results: any = [];
     let businessHours = sortBy(myintcustRaw.businessHours, ["daysOfWeek"]);
     await businessHours.forEach((element) => {
@@ -465,20 +537,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
               <Text style={styles.textstrong}>
                 Plus d'horaires disponibles ! 🤷🏽‍♂️
               </Text>
-              <Text style={styles.crenText}>Les raisons possibles : </Text>
-              <Text style={styles.crenText}>
-                ➡️ L'heure limite de commande est passée.
-              </Text>
-              <Text style={styles.crenText}>
-                ➡️ Le restaurant nous a informé d'un nombre limite de commande
-                atteint pour ce créneau.
-              </Text>
-              <Text style={styles.crenText}>➡️ Il est fermé exceptionnellement.</Text>
-
-              <Text style={styles.crenText}>
-                Vous pouvez choisir un autre jour ou un autre restaurant en
-                revenant en arrière.
-              </Text>
+           
             </View>
           )}
         {loading && (
@@ -492,6 +551,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
   useEffect(() => {
     fetchIntcust();
+    fetchCatsAndMenus();
+     setHtml(myintcust && myintcust.preswebsite|| ' ');
   }, []);
 
   useEffect(() => {
@@ -539,11 +600,15 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
           <Text style={styles.textItalic}>{myintcust.introwebsite} </Text>
-
+          
+          { myintcust.preswebsite && 
           <View style={styles.wrapperHTML}>
-            <HTML tagsStyles={tagsStyles} source={{ html: html || " " }} />
-          </View>
+            <HTML tagsStyles={tagsStyles} source={{ html: myintcust.preswebsite || "<p>a</p> " }} />
+          </View> 
+          }
 
+{myintcust.EngagModeTakeAway== true || myintcust.EngagModeDelivery==true && 
+<View>
           <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
           <Text style={styles.textMoli}>
             ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
@@ -551,8 +616,13 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           </Text>
           <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
+          </View>
+}
+
           {myintcust.EngagModeOnSite == true && (
-            <View>
+
+<View>
+
               <Text style={styles.textSub}>Réservation sur place </Text>
 
               {businessHours &&
@@ -581,54 +651,180 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
           {myintcust.EngagModeTakeAway == true && (
             <View>
+                        <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
+
               <Text style={styles.textSub}>Commande à emporter </Text>
               {businessHoursTakeAway &&
                 businessHoursTakeAway.length !== 0 &&
                 businessHoursTakeAway.map((bh2: any) => (
                   <Text
-                    style={styles.textMoli}
+                    style={styles.textPiti}
                     key={bh2.daysOfWeek + bh2.startTime}
                   >
                     {bh2.daysOfWeek} {bh2.startTime}-{bh2.endTime}
                   </Text>
                 ))}
               <Text style={styles.textMoli}>
-                Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
+              🕛 Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
               </Text>
               {myintcust.noNightTakeAway !== true && (
                 <Text style={styles.textMoli}>
-                  Fin de commande le soir : {myintcust.takeawaynightblock}{" "}
+                 🕡 Fin de commande le soir : {myintcust.takeawaynightblock}{" "}
                 </Text>
               )}
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+                 {myintcust.confirmModeOrderOptions_delayorder >0 && (
+              <Text style={styles.textMoli}>
+                Délai entre la commande et la récupération : {myintcust.confirmModeOrderOptions_delayorder}{" "} minutes
+              </Text>
+                            )}
+           
             </View>
           )}
 
           {myintcust.EngagModeDelivery == true && (
             <View>
+                 <Divider
+                style={{ backgroundColor: "grey", marginVertical: 20 }}
+              />
               <Text style={styles.textSub}>Commande en livraison </Text>
               {businessHoursDelivery &&
                 businessHoursDelivery.length !== 0 &&
                 businessHoursDelivery.map((bh: any) => (
                   <Text
-                    style={styles.textMoli}
+                    style={styles.textPiti}
                     key={bh.daysOfWeek + bh.startTime}
                   >
                     {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
                   </Text>
                 ))}
               <Text style={styles.textMoli}>
-                Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
+               🕛 Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
               </Text>
               {myintcust.noNightDelivery !== true && (
                 <Text style={styles.textMoli}>
-                  Fin de commande le soir : {myintcust.deliverynightblock}{" "}
+                 🕡 Fin de commande le soir : {myintcust.deliverynightblock}{" "}
                 </Text>
               )}
+               {myintcust.delayorderDelivery >0 && (
+              <Text style={styles.textMoli}>
+                Délai entre la commande et la livraison : {myintcust.delayorderDelivery}{" "} minutes
+              </Text>
+                            )}
+{  myintcust.minOrderDelivery >0  && (
+                  <View>
+                <Text style={styles.textMoli}>
+                 Minimum de commande en livraison : {myintcust.minOrderDelivery||0}€
+                </Text>
+                </View>
+                )
+              }
+                        <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
+
+                 <Text 
+                style={styles.textSub}>
+                Zone de livraison
+                </Text>
+                  { myintcust.citiesChoice && myintcust.citiesChoice.length>0   && myintcust.citiesChoice.map((city:any) =>(
+                <Text key={city.city}
+                style={styles.textMoli}>
+                {city.city || ' '} : {city.tar|| 0}€
+                </Text>
+                  ))}
+                  
             </View>
           )}
+        
+<View>
+<Divider
+                style={{ backgroundColor: "grey", marginVertical: 20 }}
+              />
+<Text  style={styles.title}>La Carte</Text>
+{myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true && 
+<Text  style={styles.textSub2}>Pour commander, choisissez votre mode.</Text>
+}
+          {!cats ||
+            (!menus &&
+              [""].map(() => {
+                <View key="123" style={styles.wrapindicator}>
+                  <ActivityIndicator size="large" color="#F50F50" />
+                </View>;
+              }))}
+          {cats &&
+            menus &&
+            cats.map((cat) => {
+              if (getCountOfMenusOfcat(cat.title) !== 0) {
+                return (
+                  <View key={cat.title + "view"}>
+                    <ListItem
+                      key={cat.title}
+                      bottomDivider
+                      containerStyle={{
+                        backgroundColor: "#ff5050",
+                        borderColor: "#ff5050",
+                      }}
+                    >
+                      <ListItem.Content>
+                        <ListItem.Title style={styles.textcattitle}>
+                          {cat.title}
+                          {cat.numExact}{" "}
+                        </ListItem.Title>
+                      </ListItem.Content>
+                    </ListItem>
+
+                    {menus.map((menu) => {
+                      if (menu.category == cat.title) {
+                        return (
+                          <View key={cat.id + menu.id}>
+                            <ListItem
+                              key={cat.id + menu.id}
+                              bottomDivider
+                              containerStyle={{
+                                backgroundColor: backgroundColor,
+                              }}
+                             
+                            >
+                              {menu && menu.imageUrl !== "" && (
+                                <Avatar
+                                  rounded
+                                  source={{ uri: menu.imageUrl || " " }}
+                                />
+                              )}
+
+                              <ListItem.Content>
+                                <ListItem.Title
+                                  style={{
+                                    marginTop: 5,
+                                    color: textColor,
+                                    fontSize: 20,
+                                    fontFamily: "geometria-bold",
+                                  }}
+                                >
+                                  {menu.title}{" "}
+                                </ListItem.Title>
+
+{menu.price > 0 && 
+                                <ListItem.Subtitle
+                                  style={{
+                                    marginTop: 2,
+                                    color: textColor,
+                                    fontSize: 18,
+                                    fontFamily: "geometria-regular",
+                                  }}
+                                >
+                                  {menu.price} €
+                                </ListItem.Subtitle>
+                      }
+                              </ListItem.Content>
+                            </ListItem>
+                          </View>
+                        );
+                      }
+                    })}
+                  </View>
+                );
+              }
+            })}
+        </View>
         </ScrollView>
       </View>
       <View style={{ flex: 0, marginTop: 10 }}>
@@ -764,6 +960,12 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontStyle: "italic",
   },
+  textcattitle: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontFamily: "geometria-bold",
+  },
+
   textSub: {
     flex: 1,
     fontSize: 20,
@@ -777,6 +979,15 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-bold",
     paddingLeft: 20,
     paddingBottom: 10,
+  },
+  textPiti: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: "geometria-regular",
+    paddingLeft: 30,
+    paddingBottom: 10,
+    paddingTop: 10,
+
   },
   separator: {
     marginVertical: 30,
