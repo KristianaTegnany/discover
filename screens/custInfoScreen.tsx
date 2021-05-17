@@ -167,6 +167,7 @@ console.log("On va create")
       };
       const res3 = await Parse.Cloud.run("getTakeAwayAsSeating", params2);
       resaRaw.set("seating", res3[0]); // en cours
+      console.log(res3);
       let arraySeating = [
         {
           name: res3[0].attributes.name,
@@ -424,6 +425,7 @@ console.log("On va create")
             paylink: paylink,
             bookingType: bookingType,
             resaId: resa.id,
+            amount: totalCashBasket,
           });
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
@@ -478,7 +480,7 @@ console.log("On va create")
       noukarive: intcust.option_DeliveryByNoukarive,
       toutalivrer: intcust.option_DeliveryByToutAlivrer,
     };
-    const response = await Parse.Cloud.run("getPayPlugPaymentUrl", params1);
+    const response = await Parse.Cloud.run("getPayPlugPaymentUrlRN", params1);
     console.log(response)
 
     setPaylink(response);

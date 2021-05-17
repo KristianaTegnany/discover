@@ -123,6 +123,7 @@ export const basketScreen = ({ route, navigation }: Props) => {
    myintcustRaw.id = route.params.restoId;
  return  myintcustRaw.attributes.minOrderDelivery>0 && totalCashBasket < myintcustRaw.attributes.minOrderDelivery &&
       <ListItem
+       key={x}
         bottomDivider
         containerStyle={{
           backgroundColor: "green",

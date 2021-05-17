@@ -537,20 +537,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
               <Text style={styles.textstrong}>
                 Plus d'horaires disponibles ! 🤷🏽‍♂️
               </Text>
-              <Text style={styles.crenText}>Les raisons possibles : </Text>
-              <Text style={styles.crenText}>
-                ➡️ L'heure limite de commande est passée.
-              </Text>
-              <Text style={styles.crenText}>
-                ➡️ Le restaurant nous a informé d'un nombre limite de commande
-                atteint pour ce créneau.
-              </Text>
-              <Text style={styles.crenText}>➡️ Il est fermé exceptionnellement.</Text>
-
-              <Text style={styles.crenText}>
-                Vous pouvez choisir un autre jour ou un autre restaurant en
-                revenant en arrière.
-              </Text>
+           
             </View>
           )}
         {loading && (

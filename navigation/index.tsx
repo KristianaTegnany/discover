@@ -184,7 +184,13 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="paymentStripeScreen"
-        options={{ headerTitle: "Paiement" }}
+        options={{ headerTitle: "Paiement", headerTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        } , headerBackTitleStyle: {
+          fontFamily: "geometria-regular",
+          fontWeight: "200"
+        } }}
         component={paymentStripeScreen}
       />
       <Stack.Screen

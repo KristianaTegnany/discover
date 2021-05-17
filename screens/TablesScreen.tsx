@@ -18,7 +18,8 @@ import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
-
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
 import Modal from 'react-native-modal'
 import { CheckBox } from 'react-native-elements'
 
@@ -55,6 +56,9 @@ type state = {
 
 export default class TablesScreen extends React.Component<props, state> {
   restaurantListCast: any[] = [];
+  
+
+ 
   constructor(props: any) {
     super(props);
     this.state = {
@@ -138,7 +142,7 @@ export default class TablesScreen extends React.Component<props, state> {
   FilterButton = (props:any) => {
     const { selectedMode, restaurantList } = this.state
     return (
-      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode, restaurantList: selectedMode === props.mode? restaurantList : restaurantList.filter((resto:any) => resto.attributes[`EngagMode${props.mode}`])})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold',  fontFamily:"geometria-regular",color: selectedMode === props.mode? 'white' : 'grey'}}/>
+      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode, restaurantList: selectedMode === props.mode? restaurantList : restaurantList.filter((resto:any) => resto.attributes[`EngagMode${props.mode}`])})} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]}  titleStyle={{fontSize: 10, fontWeight: 'bold',  fontFamily:"geometria-regular",color: selectedMode === props.mode? 'white' : 'grey'}}/>
     )
   }
 

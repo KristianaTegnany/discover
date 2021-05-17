@@ -33,6 +33,13 @@ export const paymentStripeScreen = ({ route, navigation }: Props) => {
       }}
       onCancel={() => {
         console.log(`Stripe checkout session cancelled.`);
+        navigation.navigate("custInfoScreen", {
+          bookingType: route.params.bookingType,
+          resaId: route.params.resaId,
+          day: route.params.day,
+          hour: route.params.hour,
+          amount: route.params.amount,
+        });
       }}
     />
   );
