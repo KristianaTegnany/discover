@@ -5,7 +5,6 @@ var Parse = require("parse/react-native");
 import PostComponent from "../components/PostComponent";
 import {
   FlatList,
-  Text,
   Animated,
   TouchableOpacity,
   StyleSheet,
@@ -21,6 +20,7 @@ import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
 import Modal from 'react-native-modal'
 import { RadioButton } from 'react-native-paper'
+import Text from '../components/Text'
 
 // @ts-ignore
 const asia          = require('../assets/images/asia.jpeg'),
@@ -207,6 +207,7 @@ export default class TablesScreen extends React.Component<props, state> {
     }
   }
 
+
   FilterButton = (props:any) => {
     const { selectedMode } = this.state
     return (
@@ -286,6 +287,7 @@ export default class TablesScreen extends React.Component<props, state> {
       <View style={{alignSelf:'center', marginTop: 60, alignItems:'center', justifyContent:'center'}}><Text style={{textAlign:'center', width: '70%', fontSize: 18, marginBottom: 10 }}>Pas de résultat trouvé</Text><Text style={{textAlign:'center', width: '70%', fontSize: 18 }}>mais trouvez votre bonheur ici</Text></View>
     )
   }
+
 
   render() {
     //  const { search } = this.state.searchValue;
