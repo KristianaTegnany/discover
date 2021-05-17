@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   postWrapper: {
-    marginTop: 90,
-    height: 200,
     // alignItems: "flex-start",
     justifyContent: "space-around",
     width: "100%",
@@ -52,28 +50,29 @@ const styles = StyleSheet.create({
 
   postHeader: {
     width: "100%",
-    height: 230,
-
-    alignSelf: "center",
+    height: 110,
+    flexDirection:'row',
     justifyContent: "center",
     marginRight: 0,
     marginLeft: 0,
   },
   image: {
-    width: '100%',
-    height: 150,
+    width: 110,
+    height: 110,
     borderRadius: 17,
     padding: 0
   },
   headerGroup: {
-    width: "100%",
+    width: 200,
     height: 100,
     marginTop: 5,
     marginLeft: 10,
+    alignSelf:'center',
+    justifyContent:'center'
   },
   postTitleWrap: {
     flexDirection: "row",
-    width: '100%',
+    width: '100%'
   },
   postTitle: {
     fontSize: 22,

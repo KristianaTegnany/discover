@@ -6,6 +6,7 @@ import PostComponent from "../components/PostComponent";
 import {
   FlatList,
   Text,
+  Animated,
   TouchableOpacity,
   StyleSheet,
   TextInput,
@@ -13,13 +14,13 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { TouchableWithoutFeedback, ScrollView } from "react-native-gesture-handler";
 import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
 import Modal from 'react-native-modal'
-import { CheckBox } from 'react-native-elements'
+import { RadioButton } from 'react-native-paper'
 
 // @ts-ignore
 const asia          = require('../assets/images/asia.jpeg'),
@@ -58,6 +59,14 @@ type state = {
   fdfrance: boolean;
   schoelcher: boolean;
   mahault: boolean;
+  showCarousel: boolean;
+  scale: any;
+  opacity: any;
+  loading: boolean;
+  countries: any;
+  parent: any;
+  child1: any;
+  child2: any;
 };
 
 export default class TablesScreen extends React.Component<props, state> {
@@ -79,6 +88,9 @@ export default class TablesScreen extends React.Component<props, state> {
       schoelcher: true,
       guadelope: false,
       mahault: false,
+      showCarousel: true,
+      opacity: new Animated.Value(1),
+      scale: new Animated.Value(1),
       menus: [
         {title:'Asiatique', key: 'asia', img: asia, selected: false}, 
         {title:'Bord de mer', key:'beach', img: beach, selected: false},
@@ -92,7 +104,12 @@ export default class TablesScreen extends React.Component<props, state> {
         {title:'Cheffe', key: 'woman', img: woman, selected: false},
         {title:'Authentique', key: 'authentic', img: authentic, selected: false},
         {title:'Excellence', key: 'crea', img: crea, selected: false}
-      ]
+      ],
+      countries: [],
+      parent: null,
+      child1: null,
+      child2: null,
+      loading: true
     };
   }
 
@@ -102,41 +119,66 @@ export default class TablesScreen extends React.Component<props, state> {
   }
 
   async getIntcusts() {
+    this.setState({loading: true})
     await Parse.Cloud.run("getIntcustsDiscover")
       .then((response: any) => {
         this.setState({
           restaurantList: response,
           restaurantListOrigin: response,
         });
+        let countries:any = []
+        response.forEach((intcust:any) => {
+          const country = { name: intcust.attributes.country.trim().replace(/^\w/, (c:any) => c.toUpperCase()), cities: [], checked: false},
+                city = { name: intcust.attributes.cityvenue.trim().replace(/^\w/, (c:any) => c.toUpperCase()), checked: false }
+
+          if(country) {
+            let index = countries.findIndex((item:any) => item.name === country.name)
+            if(index === -1)
+              countries.push(country)
+            index = countries.findIndex((item:any) => item.name === country.name)
+            const indexCity = countries[index].cities.findIndex((item:any) => item.name === city.name)
+            if(city && indexCity === -1)
+              countries[index].cities.push(city)
+          }
+        })
+        this.setState({countries, loading: false})
       })
       .catch((error: any) => console.log(error));
   }
 
   filtre = () => {
+    this.setState({loading: true})
     const { searchValue, selectedMode, menus, restaurantListOrigin } = this.state
+    const selectedPlace = this.getSelectedPlace().toLowerCase()
     this.setState({
       restaurantList: restaurantListOrigin.length === 0? [] : restaurantListOrigin.filter((resto: any) => {
-        const byValue = searchValue !== '', byMode = selectedMode !== '', byCateg = menus? menus.filter(menu => menu.selected).length === 1 : false
+        const byValue = searchValue !== '', byMode = selectedMode !== '', byCateg = menus? menus.filter(menu => menu.selected).length === 1 : false, place = selectedPlace !== 'toutes les régions'
         const condByValue = resto.attributes.corporation.toLowerCase().includes(searchValue.toLowerCase()),
               condByMode  = resto.attributes[`EngagMode${selectedMode}`],
-              condByCateg = byCateg? resto.attributes.qualifDiscover[menus.filter(menu => menu.selected)[0].key] : false
+              condByCateg = byCateg? resto.attributes.qualifDiscover[menus.filter(menu => menu.selected)[0].key] : false,
+              condByPlace = place? (resto.attributes.country.toLowerCase() === selectedPlace || resto.attributes.cityvenue.toLowerCase() === selectedPlace) : false
 
+        let result = true
         if(byValue && byMode && byCateg)
-          return condByValue && condByMode && condByCateg
+          result = condByValue && condByMode && condByCateg
         else if(byValue && byMode)
-          return condByValue && condByMode
+          result = condByValue && condByMode
         else if(byValue && byCateg)
-          return condByValue && condByCateg
+          result = condByValue && condByCateg
         else if(byMode && byCateg)
-          return condByMode && condByCateg
+          result = condByMode && condByCateg
         else if(byMode)
-          return condByMode
+          result = condByMode
         else if(byCateg)
-          return condByCateg
+          result = condByCateg
         else if(byValue)
-          return condByValue
+          result = condByValue
+        else result = true
+        
+        return result && (place? condByPlace : true)
       })
     })
+    this.setState({loading: false})
   }
 
   async onChangeSearch(event: any) {
@@ -194,11 +236,54 @@ export default class TablesScreen extends React.Component<props, state> {
   }
 
   RadioItem = (props:any) => {
+    const { index, children, checked, title } = props
     return(
-      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-        <Text style={{fontSize: 18, fontWeight: props.parent? 'bold' : 'normal', marginBottom: props.parent? 10 : 5 }}>{props.title}</Text>
-        <CheckBox onPress={props.onPress} checked={props.checked} checkedIcon='dot-circle-o' uncheckedIcon='circle-o'/>
-      </View>
+      <>
+        <View style={{marginTop: (index === 0 || !children)? 0 : 20, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+          <Text style={{fontSize: 18, fontWeight: children? 'bold' : 'normal', marginBottom: children? 10 : 5 }}>{title}</Text>
+          <RadioButton.Android onPress={() => {
+            let { countries } = this.state
+            let indexCountry = 0
+            countries = countries.map((country:any,i:any) => {
+              country.cities = country.cities.map((city:any,j:any) => {
+                if(city.name === title)
+                  indexCountry = i 
+                return {
+                  ...city, checked: children? (i === index ? true : false) : (title === city.name)
+                }
+              })
+              return { ...country, checked: children? (i === index ? true : false) : ( 
+                i === indexCountry? country.cities.filter((city:any) => !city.checked).length === 0 : false 
+              )}
+            })
+            this.setState({countries}, this.filtre)
+          }} color="#F50F50" status={checked? 'checked' : 'unchecked'} value={title}/>
+        </View>
+        {  children }
+      </>
+    )
+  }
+
+  getSelectedPlace = () => {
+    let place = 'Toutes les régions'
+    this.state.countries.forEach((country:any) => {
+      if(country.checked)
+        place = country.name
+      else {
+        country.cities.forEach((city:any) => {
+          if(city.checked)
+            place = city.name
+        })
+      }
+    })
+    return place
+  }
+
+  renderEmpty = () => {
+    if(this.state.loading)
+      return null
+    else return (
+      <View style={{alignSelf:'center', marginTop: 60, alignItems:'center', justifyContent:'center'}}><Text style={{textAlign:'center', width: '70%', fontSize: 18, marginBottom: 10 }}>Pas de résultat trouvé</Text><Text style={{textAlign:'center', width: '70%', fontSize: 18 }}>mais trouvez votre bonheur ici</Text></View>
     )
   }
 
@@ -210,22 +295,31 @@ export default class TablesScreen extends React.Component<props, state> {
       <View style={styles.container}>
         <Modal
           isVisible={isPlaceModal}
-          swipeDirection="down"
           onSwipeComplete={(e) => this.setState({isPlaceModal: false})}
           onBackButtonPress={() => this.setState({isPlaceModal: false})}
           onBackdropPress={() => this.setState({isPlaceModal: false})}
           style={{margin: 0}}
         >
           <View style={{position:'absolute', bottom: 0, padding: 20, right: 0, left: 0, height: '50%'}}>
-            <this.RadioItem title='Toute la Martinique' parent checked={this.state.martinique} onPress={() => this.setState({martinique: !this.state.martinique, fdfrance: !this.state.martinique, schoelcher: !this.state.martinique, guadelope: !this.state.martinique? false : this.state.guadelope, mahault: !this.state.martinique? false : this.state.mahault})}/>
-            <this.RadioItem title='Fort-de-France' checked={this.state.fdfrance} onPress={() => this.setState({fdfrance: !this.state.fdfrance, martinique: !this.state.fdfrance && this.state.schoelcher,  guadelope: !this.state.fdfrance? false : this.state.guadelope, mahault: !this.state.fdfrance? false : this.state.mahault})}/>
-            <this.RadioItem title='Schoelcher' checked={this.state.schoelcher} onPress={() => this.setState({schoelcher: !this.state.schoelcher, martinique: this.state.fdfrance && !this.state.schoelcher, guadelope: !this.state.schoelcher? false : this.state.guadelope, mahault: !this.state.schoelcher? false : this.state.mahault})}/>
-            <this.RadioItem title='Toute la Guadelope' parent checked={this.state.guadelope} onPress={() => this.setState({guadelope: !this.state.guadelope, mahault: !this.state.guadelope, martinique: !this.state.guadelope? false : this.state.martinique, fdfrance: !this.state.guadelope? false : this.state.fdfrance, schoelcher: !this.state.guadelope? false : this.state.schoelcher})}/>
-            <this.RadioItem title='Baie-Mahault' checked={this.state.mahault} onPress={() => this.setState({mahault: !this.state.mahault, guadelope: !this.state.mahault, martinique: !this.state.mahault? false : this.state.martinique, fdfrance: !this.state.mahault? false : this.state.fdfrance, schoelcher: !this.state.mahault? false : this.state.schoelcher })}/>
-          </View>  
+            <ScrollView>
+              <View style={{flex: 1}}>
+                {
+                  this.state.countries.map((country:any,i:any) => (
+                  <this.RadioItem index={i} title={country.name} checked={country.checked}>
+                    {
+                      country.cities.map((city:any,j:any) => (
+                          <this.RadioItem index={j} title={city.name} checked={city.checked}/>
+                      ))
+                    }
+                  </this.RadioItem>
+                  ))
+                }
+              </View>
+            </ScrollView>
+          </View>
         </Modal>
         <View style={{marginTop: 60, alignSelf:'center', width: '85%', flexDirection:'row', alignItems:'center'}}>
-          <Text style={{marginRight: 10}}>{this.state.martinique? 'Toute la Martinique' : this.state.fdfrance? 'Fort-de-France' : this.state.schoelcher? 'Schoelcher' : this.state.guadelope? 'Toute la Goadelope' : 'Baie-Mahault'}</Text>
+          <Text style={{marginRight: 10}}>{this.getSelectedPlace()}</Text>
           <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12, fontWeight:'bold'}} buttonStyle={{ paddingHorizontal: 15, height: 30, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
         </View>
         <View style={styles.searchHeader}>
@@ -239,34 +333,64 @@ export default class TablesScreen extends React.Component<props, state> {
             //   onChangeText={this.filterResultsSearch}
           ></TextInput>
         </View>
-        <View style={{alignSelf:'center', marginBottom: 20, flexDirection:'row', width: '70%', justifyContent:'space-around'}}>
+        <View style={{marginBottom: 20, alignSelf:'center', flexDirection:'row', width: '85%'}}>
           <this.FilterButton title='Réservation' mode='OnSite'/>
           <this.FilterButton title='A emporter' mode='TakeAway'/>
           <this.FilterButton title='Livraison' mode='Delivery'/>
         </View>
-        <View style={{height: 100}}>
-          <Carousel
-            data={this.state.menus}
-            renderItem={this._renderItem}
-            sliderWidth={Dimensions.get('window').width}
-            itemWidth={100}
-            inactiveSlideScale={1}
-            loop
-            autoplay
-          />
-        </View>
+        { this.state.showCarousel &&
+          <Animated.View style={{height: 100, transform:[{scale: this.state.scale}], opacity: this.state.opacity}}>
+            <Carousel
+              data={this.state.menus}
+              renderItem={this._renderItem}
+              sliderWidth={Dimensions.get('window').width}
+              itemWidth={100}
+              inactiveSlideScale={1}
+              loop
+              autoplay
+            />
+          </Animated.View>
+        }
         <View style={styles.container2}>
-          {/*!this.state.restaurantList ||
-            (this.state.restaurantList.length == 0 && (
-              <View style={styles.wrapindicator}>
-                <ActivityIndicator size="large" color="#F50F50" />
-              </View>
-            ))*/}
+          {
+            this.state.loading &&
+            <View style={styles.wrapindicator}>
+              <ActivityIndicator size="large" color="#F50F50" />
+            </View>
+          }
           <FlatList
             style={styles.FlatList}
             data={this.state.restaurantList}
             contentContainerStyle={{paddingTop: 0, paddingBottom: 60}}
-            ListEmptyComponent={<View style={{alignSelf:'center', marginTop: 60, alignItems:'center', justifyContent:'center'}}><Text style={{textAlign:'center', width: '70%', fontSize: 18, marginBottom: 10 }}>Pas de résultat trouvé</Text><Text style={{textAlign:'center', width: '70%', fontSize: 18 }}>mais trouvez votre bonheur ici</Text></View>}
+            ListEmptyComponent={this.renderEmpty}
+            renderScrollComponent={(props) => <ScrollView {...props} onScroll={(event) => {
+              const scrolling = event.nativeEvent.contentOffset.y
+              if (scrolling > 100) {
+                Animated.timing(this.state.opacity, {
+                  toValue: 0,
+                  duration: 250,
+                  useNativeDriver: true
+                }).start()
+                Animated.timing(this.state.scale, {
+                  toValue: 0,
+                  duration: 250,
+                  useNativeDriver: true
+                }).start()
+                this.setState({showCarousel: false})
+              } else {
+                Animated.timing(this.state.opacity, {
+                  toValue: 1,
+                  duration: 250,
+                  useNativeDriver: true
+                }).start()
+                Animated.timing(this.state.scale, {
+                  toValue: 1,
+                  duration: 250,
+                  useNativeDriver: true
+                }).start()
+                this.setState({showCarousel: true})
+              }
+            }} />}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -316,7 +440,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   filterButtonItem: {
-    paddingVertical: 5, paddingHorizontal: 10, borderRadius: 10
+    paddingVertical: 5, marginRight: 20, paddingHorizontal: 10, borderRadius: 10
   },
   FlatList: {
     width: "100%",
@@ -327,7 +451,7 @@ const styles = StyleSheet.create({
     //  backgroundColor: "rgba(255,255,255,1)"
   },
   postComponent: {
-    height: 210,
+    height: 110,
     width: "100%",
     //  alignSelf: "stretch",
     //  backgroundColor: "rgba(255,255,255,1)"
