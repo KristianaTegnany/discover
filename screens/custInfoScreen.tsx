@@ -445,7 +445,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           const params1 = {
             itid: intcust.id,
             winl: "http://www.amazon.com",
-            resaid: resa.id,
+            resaid:  resaRaw.id,
             paidtype: "order",
             customeremail: "satyam.dorville@gmail.com",
             type: "order",

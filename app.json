@@ -19,7 +19,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.satyamdorville.discover"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,9 +30,11 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "data": [{
-            "scheme": "discover"
-          }],
+          "data": [
+            {
+              "scheme": "discover"
+            }
+          ],
           "category": [
             "BROWSABLE",
             "DEFAULT"
