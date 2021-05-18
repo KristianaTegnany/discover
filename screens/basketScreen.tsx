@@ -85,6 +85,14 @@ export const basketScreen = ({ route, navigation }: Props) => {
   }
   async function calculusTotalQuantityBasket() {
     let sumRaw = await sum(products, "quantity");
+    if(sumRaw === 0) {
+      navigation.navigate('orderScreen', {
+        restoId: route.params.restoId,
+        bookingType: route.params.bookingType,
+        day: route.params.day,
+        hour: route.params.hour
+      })
+    }
     setTotalQuantityBasket(sumRaw);
   }
 
