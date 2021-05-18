@@ -18,6 +18,13 @@ import { Ionicons } from "@expo/vector-icons";
 import Modal from 'react-native-modal';
 import moment from "moment-timezone";
 import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
+DropDownPicker.addTranslation("FR", {
+  PLACEHOLDER: "Sélectionnez un élément",
+  SEARCH_PLACEHOLDER: "Tapez quelque chose...",
+  SELECTED_ITEMS_COUNT_TEXT: "\d éléments ont été sélectionnés",
+  NOTHING_TO_SHOW: "Il n'y a rien à montrer!"
+});
+DropDownPicker.setLanguage("FR");
 
 interface NavigationParams {
   restoId: string;
@@ -552,7 +559,6 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   useEffect(() => {
     fetchIntcust();
     fetchCatsAndMenus();
-     setHtml(myintcust && myintcust.preswebsite|| ' ');
   }, []);
 
   useEffect(() => {
@@ -1005,6 +1011,7 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: "transparent",
     backgroundColor: "#ff5050",
+    color:'white'
   },
   labeldropdown: {
     color: "white",
@@ -1015,6 +1022,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 14,
     fontWeight: "bold",
+    color:'white',
     fontFamily:'geometria-regular'
   },
   hourText: {
@@ -1023,17 +1031,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 14,
     fontWeight: "bold",
+    color:'white'
   },
   btnNextContainer: {
     position: "absolute",
     bottom: 20,
     right: 20,
     borderRadius: 25,
+    color:'white',
     backgroundColor: "#ff5050"
   },
   btnNext: {
     height: 50,
     width: 50,
+    color:'white',
     justifyContent: "center",
     alignItems: "center",
   },
