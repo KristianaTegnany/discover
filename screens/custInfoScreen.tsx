@@ -121,97 +121,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function onChangeTextPhone(phone: any) {
     setPhone(phone);
   }
-  async function createResa() {
-    let params = {
-      email: email,
-      itid: intcust.id,
-    };
-console.log("On va create")
-    const res = await Parse.Cloud.run("getGuest", params);
-    var Guest = Parse.Object.extend("Guest");
-    let guestRaw = new Guest();
-    if (res.length == 0) {
-      guestRaw.set("firstname", firstname);
-      guestRaw.set("lastname", lastname);
-      guestRaw.set("email", email);
-      await guestRaw.save();
-    } else if (res.length > 0) {
-      guestRaw.id = res[0].id;
-    }
-
-    var Reservation = Parse.Object.extend("Reservation");
-    let resaRaw = new Reservation();
-    resaRaw.set("date", moment.tz(day, 'America/Martinique').toDate());
-    resaRaw.set("guest", guestRaw);
-    let arrayGuest = [
-      {
-        firstname: firstname,
-        lastname: lastname,
-        mobilephone: phone,
-        email: email,
-      },
-    ];
-    resaRaw.set("line_items", products);
-    var Intcust = Parse.Object.extend("Intcust");
-    let intcustRawY = new Intcust();
-    intcustRawY.id = intcust.id;
-    resaRaw.set("intcust", intcustRawY);
-    resaRaw.set("guestFlat", arrayGuest);
-    resaRaw.set("order", true);
-    resaRaw.set("notes", notecom);
-    resaRaw.set("process", "appdisco");
-
-    if (bookingType == "TakeAway") {
-      let params2 = {
-        itid: intcust.id,
-      };
-      const res3 = await Parse.Cloud.run("getTakeAwayAsSeating", params2);
-      resaRaw.set("seating", res3[0]); // en cours
-      console.log(res3);
-      let arraySeating = [
-        {
-          name: res3[0].attributes.name,
-          type: res3[0].attributes.type,
-          description: res3[0].attributes.description,
-          capacity: res3[0].attributes.capacity,
-        },
-      ];
-      resaRaw.set("seatingFlat", arraySeating);
-    }
-
-    if (bookingType == "Delivery") {
-      let params2 = {
-        itid: intcust.id,
-      };
-      const res3 = await Parse.Cloud.run("getDeliveryAsSeating", params2);
-      resaRaw.set("seating", res3[0]); // en cours
-      let arraySeating = [
-        {
-          name: res3[0].attributes.name,
-          type: res3[0].attributes.type,
-          description: res3[0].attributes.description,
-          capacity: res3[0].attributes.capacity,
-        },
-      ];
-
-      resaRaw.set("seatingFlat", arraySeating);
-    }
-    resaRaw.set("status", "En cours"); // en cours
-    resaRaw.set("engagModeResa", bookingType);
-    resaRaw.set("source", {
-      utm_campaign: "APP",
-      utm_medium: Platform.OS,
-      utm_source: Platform.Version,
-      utm_content: "APP",
-    });
-
-    await resaRaw.save();
-    setResa({
-      id: resaRaw.id || "",
-      engagModeResa: resaRaw.attributes.engagModeResa || "",
-      guestFlat: resaRaw.attributes.guestFlat || [],
-    });
-  }
+  
 
   async function calculusTotalCashBasket() {
     let sumRaw = 0;
@@ -413,18 +323,122 @@ console.log("On va create")
       }
 
       if(testOC && testOD && testDelayCren && testNoonNight && testQty) {
-        await createResa();
+        let params = {
+          email: email,
+          itid: intcust.id,
+        };
+        const res = await Parse.Cloud.run("getGuest", params);
+        var Guest = Parse.Object.extend("Guest");
+        let guestRaw = new Guest();
+        if (res.length == 0) {
+          guestRaw.set("firstname", firstname);
+          guestRaw.set("lastname", lastname);
+          guestRaw.set("email", email);
+          await guestRaw.save();
+        } else if (res.length > 0) {
+          guestRaw.id = res[0].id;
+        }
+    
+        var Reservation = Parse.Object.extend("Reservation");
+        let resaRaw = new Reservation();
+        resaRaw.set("date", moment.tz(day, 'America/Martinique').toDate());
+        resaRaw.set("guest", guestRaw);
+        let arrayGuest = [
+          {
+            firstname: firstname,
+            lastname: lastname,
+            mobilephone: phone,
+            email: email,
+          },
+        ];
+        resaRaw.set("line_items", products);
+        var Intcust = Parse.Object.extend("Intcust");
+        let intcustRawY = new Intcust();
+        intcustRawY.id = intcust.id;
+        resaRaw.set("intcust", intcustRawY);
+        resaRaw.set("guestFlat", arrayGuest);
+        resaRaw.set("order", true);
+        resaRaw.set("notes", notecom);
+        resaRaw.set("process", "appdisco");
+    
+        if (bookingType == "TakeAway") {
+          let params2 = {
+            itid: intcust.id,
+          };
+          const res3 = await Parse.Cloud.run("getTakeAwayAsSeating", params2);
+          resaRaw.set("seating", res3[0]); // en cours
+          let arraySeating = [
+            {
+              name: res3[0].attributes.name,
+              type: res3[0].attributes.type,
+              description: res3[0].attributes.description,
+              capacity: res3[0].attributes.capacity,
+            },
+          ];
+          resaRaw.set("seatingFlat", arraySeating);
+        }
+    
+        if (bookingType == "Delivery") {
+          let params2 = {
+            itid: intcust.id,
+          };
+          const res3 = await Parse.Cloud.run("getDeliveryAsSeating", params2);
+          resaRaw.set("seating", res3[0]); // en cours
+          let arraySeating = [
+            {
+              name: res3[0].attributes.name,
+              type: res3[0].attributes.type,
+              description: res3[0].attributes.description,
+              capacity: res3[0].attributes.capacity,
+            },
+          ];
+    
+          resaRaw.set("seatingFlat", arraySeating);
+        }
+        resaRaw.set("status", "En cours"); // en cours
+        resaRaw.set("engagModeResa", bookingType);
+        resaRaw.set("source", {
+          utm_campaign: "APP",
+          utm_medium: Platform.OS,
+          utm_source: Platform.Version,
+          utm_content: "APP",
+        });
+    
+        await resaRaw.save();
+        await setResa({
+          id: resaRaw.id || "",
+          engagModeResa: resaRaw.attributes.engagModeResa || "",
+          guestFlat: resaRaw.attributes.guestFlat || [],
+        });
+
         if (intcust.paymentChoice !== "stripeOptin") {
           console.log("On est dans payplug")
-          await getPayPlugPaymentUrl();
-          console.log("On est sorti")
+          const params1 = {
+            itid: intcust.id,
+            winl: "window.location.host",
+            resaid: resaRaw.id,
+            customeremail: email,
+            customerfirstname: firstname,
+            customerlastname: lastname,
+            customerphone: phone,
+            type: "order",
+            amount: totalCashBasket,
+            apikeypp: intcust.apikeypp,
+            mode: bookingType,
+            noukarive: intcust.option_DeliveryByNoukarive,
+            toutalivrer: intcust.option_DeliveryByToutAlivrer,
+          };
+      
+          const response = await Parse.Cloud.run("getPayPlugPaymentUrlRN", params1);
 
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
             restoId: restoId,
-            paylink: paylink,
+            paylink: response,
             bookingType: bookingType,
-            resaId: resa.id,
+            resaId: resaRaw.id,
+            day: day,
+            hour: hour,
             amount: totalCashBasket,
           });
         } else if (intcust.paymentChoice == "stripeOptin") {
@@ -465,25 +479,8 @@ console.log("On va create")
     }
   }
   async function getPayPlugPaymentUrl() {
-    const params1 = {
-      itid: intcust.id,
-      winl: "window.location.host",
-      resaid: resa.id,
-      customeremail: email,
-      customerfirstname: firstname,
-      customerlastname: lastname,
-      customerphone: phone,
-      type: "order",
-      amount: totalCashBasket,
-      apikeypp: intcust.apikeypp,
-      mode: bookingType,
-      noukarive: intcust.option_DeliveryByNoukarive,
-      toutalivrer: intcust.option_DeliveryByToutAlivrer,
-    };
-    const response = await Parse.Cloud.run("getPayPlugPaymentUrlRN", params1);
-    console.log(response)
+    
 
-    setPaylink(response);
   }
 
   useEffect(() => {

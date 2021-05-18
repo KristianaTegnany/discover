@@ -216,7 +216,7 @@ export default class TablesScreen extends React.Component<props, state> {
   FilterButton = (props:any) => {
     const { selectedMode } = this.state
     return (
-      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode}, this.filtre)} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'black', backgroundColor: selectedMode === props.mode? '#ff5050' : 'white' } ]} titleStyle={{fontSize: 10, fontWeight: 'bold', color: selectedMode === props.mode? 'white' : 'black'}}/>
+      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode}, this.filtre)} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' :'transparent' } ]} titleStyle={{fontSize: 13, fontWeight: 'bold', fontFamily:"geometria-regular", color: selectedMode === props.mode? 'white' : 'grey'}}/>
     )
   }
 
@@ -234,8 +234,8 @@ export default class TablesScreen extends React.Component<props, state> {
         this.setState({menus: Object.assign([], menus)}, this.filtre)
       }}>
         <View style={{justifyContent:'center'}}>
-          <Image source={props.item.img} resizeMode={'cover'} style={{borderRadius: 20, alignSelf:'center', width: 80, height: 80}}/>
-          <Text style={{textAlign:'center', fontFamily:"geometria-regular", color: props.item.selected? '#ff5050' : 'black'}}>{ props.item.title }</Text>
+          <Image source={props.item.img} resizeMode={'cover'} style={{borderRadius: 20, alignSelf:'center', width: 80, height: 80, marginBottom:2}}/>
+          <Text style={{textAlign:'center', fontFamily:"geometria-regular", }}>{ props.item.title }</Text>
         </View>
       </TouchableOpacity>
     )
@@ -246,7 +246,7 @@ export default class TablesScreen extends React.Component<props, state> {
     return(
       <>
         <View style={{marginTop: (index === 0 || !children)? 0 : 20, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-          <Text style={{fontSize: 18, fontWeight: children? 'bold' : 'normal', marginBottom: children? 10 : 5 }}>{title}</Text>
+          <Text style={{fontSize: 18, color:'white' ,fontWeight: children? 'bold' : 'normal', marginBottom: children? 10 : 5 }}>{title}</Text>
           <RadioButton.Android onPress={() => {
             let { countries } = this.state
             let indexCountry = 0
@@ -263,7 +263,7 @@ export default class TablesScreen extends React.Component<props, state> {
               )}
             })
             this.setState({countries}, this.filtre)
-          }} color="#F50F50" status={checked? 'checked' : 'unchecked'} value={title}/>
+          }} color={checked? "#F50F50" : 'white'} status={checked? 'checked' : 'unchecked'} value={title}/>
         </View>
         {  children }
       </>
@@ -289,7 +289,21 @@ export default class TablesScreen extends React.Component<props, state> {
     if(this.state.loading)
       return null
     else return (
-      <View style={{alignSelf:'center', marginTop: 60, alignItems:'center', justifyContent:'center'}}><Text style={{textAlign:'center', width: '70%', fontSize: 18, marginBottom: 10 }}>Pas de résultat trouvé</Text><Text style={{textAlign:'center', width: '70%', fontSize: 18 }}>mais trouvez votre bonheur ici</Text></View>
+      <View style={{alignSelf:'center', marginTop: 60, alignItems:'center', justifyContent:'center'}}>
+        <Text onPress={() => {
+              this.setState({isFiltre: !this.state.isFiltre})
+              if(!this.state.isFiltre)
+                this.filtre()
+              else
+                this.setState({restaurantList: this.state.restaurantListOrigin})}
+            } style={{textAlign:'center', width: '70%', fontSize: 18, marginBottom: 10 }}>Pas de résultat trouvé.</Text>
+      <Text onPress={() => {
+              this.setState({isFiltre: !this.state.isFiltre})
+              if(!this.state.isFiltre)
+                this.filtre()
+              else
+                this.setState({restaurantList: this.state.restaurantListOrigin})}
+            }> Touchez ici pour effacer tous les filtres.</Text></View>
     )
   }
 
@@ -312,10 +326,10 @@ export default class TablesScreen extends React.Component<props, state> {
               <View style={{flex: 1}}>
                 {
                   this.state.countries.map((country:any,i:any) => (
-                  <this.RadioItem key={i} index={i} title={country.name} checked={country.checked}>
+                  <this.RadioItem key={i} index={i} title={country.name}  checked={country.checked}>
                     {
                       country.cities.map((city:any,j:any) => (
-                          <this.RadioItem key={j} index={j} title={city.name} checked={city.checked}/>
+                          <this.RadioItem key={j} index={j} title={city.name}   checked={city.checked}/>
                       ))
                     }
                   </this.RadioItem>
@@ -326,9 +340,18 @@ export default class TablesScreen extends React.Component<props, state> {
           </View>
         </Modal>
         <View style={{marginTop: 60, alignSelf:'center', width: '85%', flexDirection:'row', alignItems:'center'}}>
-          <Text style={{marginRight: 10}}>{this.getSelectedPlace()}</Text>
-          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 12, fontWeight:'bold'}} buttonStyle={{ paddingHorizontal: 15, height: 30, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
+          <Text style={{marginRight: 10, fontSize:16}}>{this.getSelectedPlace()}</Text>
+          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 14, fontWeight:'bold', fontFamily:"geometria-regular"}} buttonStyle={{ paddingHorizontal: 10, marginRight:30, height: 35, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
+          {/* <Ionicons name={"options"} color={this.state.isFiltre? '#F50F50' : 'grey'} size={25} onPress={() => {
+              this.setState({isFiltre: !this.state.isFiltre})
+              if(!this.state.isFiltre)
+                this.filtre()
+              else
+                this.setState({restaurantList: this.state.restaurantListOrigin})}
+            }
+          /> */}
         </View>
+        
         <View style={styles.searchHeader}>
           <Ionicons name="search" style={styles.searchIcon} />
           <TextInput
@@ -339,17 +362,10 @@ export default class TablesScreen extends React.Component<props, state> {
 
             //   onChangeText={this.filterResultsSearch}
           ></TextInput>
-          <Ionicons name={"options"} color={this.state.isFiltre? '#F50F50' : 'black'} size={25} onPress={() => {
-              this.setState({isFiltre: !this.state.isFiltre})
-              if(!this.state.isFiltre)
-                this.filtre()
-              else
-                this.setState({restaurantList: this.state.restaurantListOrigin})}
-            }
-          />
+        
         </View>
         <View style={{marginBottom: 20, alignSelf:'center', flexDirection:'row', width: '85%'}}>
-          <this.FilterButton title='Réservation' mode='OnSite'/>
+          <this.FilterButton style={{fontFamily:'geometria-regular', border:"grey"}} title='Réservation' mode='OnSite'/>
           <this.FilterButton title='A emporter' mode='TakeAway'/>
           <this.FilterButton title='Livraison' mode='Delivery'/>
         </View>
@@ -360,9 +376,10 @@ export default class TablesScreen extends React.Component<props, state> {
               renderItem={this._renderItem}
               sliderWidth={Dimensions.get('window').width}
               itemWidth={100}
-              inactiveSlideScale={1}
-              loop
-              autoplay
+              firstItem={3}
+              // inactiveSlideScale={1}
+              
+              
             />
           </Animated.View>
         }
@@ -455,7 +472,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   filterButtonItem: {
-    paddingVertical: 5, marginRight: 20, paddingHorizontal: 10, borderRadius: 10
+    paddingVertical: 5, marginRight: 20, paddingHorizontal: 10, borderRadius: 10, 
+    fontFamily:"geometria-regular"
   },
   FlatList: {
     width: "100%",

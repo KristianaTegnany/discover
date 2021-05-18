@@ -463,7 +463,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   const CrenSelectScreen = () => {
     return (
       <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 320 : openHour? 380 : 280 }]}>
-        <Text style={[styles.dateText, { color: textColor }]}>
+        <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
         <DropDownPicker
@@ -480,7 +480,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           placeholderStyle={styles.labeldropdown}
           dropDownContainerStyle={styles.dropdown}
         />
-        <Text style={[styles.hourText, { color: textColor, marginTop: openDate? 120 : 20 }]}>
+        <Text style={[styles.hourText, { color: textColor,  fontFamily:'geometria-regular', marginTop: openDate? 120 : 20 }]}>
           Sélectionnez l'heure
         </Text>
         <DropDownPicker
@@ -1009,13 +1009,16 @@ const styles = StyleSheet.create({
   labeldropdown: {
     color: "white",
     fontWeight: "bold",
+    fontFamily:'geometria-regular'
   },
   dateText: {
     marginBottom: 10,
     fontSize: 14,
     fontWeight: "bold",
+    fontFamily:'geometria-regular'
   },
   hourText: {
+    fontFamily:'geometria-regular',
     marginTop: 20,
     marginBottom: 10,
     fontSize: 14,
