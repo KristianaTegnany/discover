@@ -26,6 +26,7 @@ DropDownPicker.addTranslation("FR", {
 });
 DropDownPicker.setLanguage("FR");
 
+
 interface NavigationParams {
   restoId: string;
   day: string;
@@ -481,7 +482,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           setValue={setSelectedDay}
           setItems={setDaystobook}
           placeholder="Date ..."
-          maxHeight={100}
+          maxHeight={200}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
           placeholderStyle={styles.labeldropdown}
@@ -498,7 +499,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           setValue={setSelectedHour}
           setItems={setHourstobook}
           placeholder="Heure ..."
-          maxHeight={100}
+          maxHeight={200}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
           placeholderStyle={styles.labeldropdown}
