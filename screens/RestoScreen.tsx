@@ -18,6 +18,14 @@ import { Ionicons } from "@expo/vector-icons";
 import Modal from 'react-native-modal';
 import moment from "moment-timezone";
 import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
+DropDownPicker.addTranslation("FR", {
+  PLACEHOLDER: "Sélectionnez un élément",
+  SEARCH_PLACEHOLDER: "Tapez quelque chose...",
+  SELECTED_ITEMS_COUNT_TEXT: "\d éléments ont été sélectionnés",
+  NOTHING_TO_SHOW: "Il n'y a rien à montrer!"
+});
+DropDownPicker.setLanguage("FR");
+
 
 interface NavigationParams {
   restoId: string;
@@ -462,8 +470,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
   const CrenSelectScreen = () => {
     return (
-      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 320 : openHour? 380 : 280 }]}>
-        <Text style={[styles.dateText, { color: textColor }]}>
+      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 420 : openHour? 480 : 280 }]}>
+        <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
         <DropDownPicker
@@ -474,13 +482,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           setValue={setSelectedDay}
           setItems={setDaystobook}
           placeholder="Date ..."
-          maxHeight={100}
+          maxHeight={200}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
+          textStyle={{fontFamily:'geometria-regular', color:"white"}}
           placeholderStyle={styles.labeldropdown}
+          zIndex={3000}
+          zIndexInverse={1000}
           dropDownContainerStyle={styles.dropdown}
         />
-        <Text style={[styles.hourText, { color: textColor, marginTop: openDate? 120 : 20 }]}>
+        <Text style={[styles.hourText, { color: textColor,  fontFamily:'geometria-regular', marginTop: openDate? 120 : 20 }]}>
           Sélectionnez l'heure
         </Text>
         <DropDownPicker
@@ -488,10 +499,13 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           value={selectedHour}
           items={hourstobook}
           setOpen={setOpenHour}
+          zIndex={2000}
+          zIndexInverse={2000}
           setValue={setSelectedHour}
           setItems={setHourstobook}
+          textStyle={{fontFamily:'geometria-regular', color:"white"}}
           placeholder="Heure ..."
-          maxHeight={100}
+          maxHeight={200}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
           placeholderStyle={styles.labeldropdown}
@@ -552,7 +566,6 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   useEffect(() => {
     fetchIntcust();
     fetchCatsAndMenus();
-     setHtml(myintcust && myintcust.preswebsite|| ' ');
   }, []);
 
   useEffect(() => {
@@ -1005,32 +1018,41 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: "transparent",
     backgroundColor: "#ff5050",
+    color:'white',
+    fontFamily:'geometria-regular'
   },
   labeldropdown: {
     color: "white",
     fontWeight: "bold",
+    fontFamily:'geometria-bold'
   },
   dateText: {
     marginBottom: 10,
     fontSize: 14,
     fontWeight: "bold",
+    color:'white',
+    fontFamily:'geometria-regular'
   },
   hourText: {
+    fontFamily:'geometria-regular',
     marginTop: 20,
     marginBottom: 10,
     fontSize: 14,
     fontWeight: "bold",
+    color:'white'
   },
   btnNextContainer: {
     position: "absolute",
     bottom: 20,
     right: 20,
     borderRadius: 25,
+    color:'white',
     backgroundColor: "#ff5050"
   },
   btnNext: {
     height: 50,
     width: 50,
+    color:'white',
     justifyContent: "center",
     alignItems: "center",
   },

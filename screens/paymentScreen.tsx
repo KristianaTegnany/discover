@@ -20,10 +20,38 @@ interface Props {
 
 export const paymentScreen = ({ route, navigation }: Props) => {
 
-  useEffect(() => {}, []);
+  function checkUrlState(url:any) {
+    if (url.includes('tablediscover')) {
+      // code to hide WebView
+      navigation.navigate("successScreen", {
+        bookingType: route.params.bookingType,
+        resaId: route.params.resaId,
+        day: route.params.day,
+        hour: route.params.hour,
+        amount: route.params.amount,
+      });
+    } 
+    if (url.includes('tablebig')) {
+      navigation.navigate("custInfoScreen", {
+        bookingType: route.params.bookingType,
+        resaId: route.params.resaId,
+        day: route.params.day,
+        hour: route.params.hour,
+        amount: route.params.amount,
+      });
+    } 
+
+}
+  useEffect(() => {
+console.log("start")
+console.log(route.params)
+
+  }, []);
 
   return (
-    <WebView source={{ uri: route.params.paylink }} style={{ marginTop: 0 }} />
+    <WebView source={{ uri: route.params.paylink }} style={{ marginTop: 0 }}
+    onNavigationStateChange={state => checkUrlState(state.url)}
+    />
   );
 };
 
