@@ -341,7 +341,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     
         var Reservation = Parse.Object.extend("Reservation");
         let resaRaw = new Reservation();
-        resaRaw.set("date", moment.tz(day, 'America/Martinique').toDate());
+        resaRaw.set("date", moment.tz(day, 'America/Martinique').hours(route.params.hour.substring(0, 2))
+        .minute(route.params.hour.substring(3)).toDate());
         resaRaw.set("guest", guestRaw);
         let arrayGuest = [
           {
