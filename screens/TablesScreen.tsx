@@ -19,7 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
 import Modal from 'react-native-modal'
-import { RadioButton } from 'react-native-paper'
+import RadioButton from '../components/Radio'
 import Text from '../components/Text'
 
 // @ts-ignore
@@ -160,7 +160,7 @@ export default class TablesScreen extends React.Component<props, state> {
         const byValue = searchValue !== '', byMode = selectedMode !== '', byCateg = menus? menus.filter(menu => menu.selected).length === 1 : false, place = selectedPlace !== 'toutes les régions'
         const condByValue = resto.attributes.corporation.toLowerCase().includes(searchValue.toLowerCase()),
               condByMode  = resto.attributes[`EngagMode${selectedMode}`],
-              condByCateg = byCateg? resto.attributes.qualifDiscover[menus.filter(menu => menu.selected)[0].key] : false,
+              condByCateg = byCateg && resto.attributes.qualifDiscover.length > 0? resto.attributes.qualifDiscover[0][menus.filter(menu => menu.selected)[0].key] : false,
               condByPlace = place? (resto.attributes.country.toLowerCase() === selectedPlace || resto.attributes.cityvenue.toLowerCase() === selectedPlace) : false
 
         let result = true
@@ -247,7 +247,7 @@ export default class TablesScreen extends React.Component<props, state> {
       <>
         <View style={{marginTop: (index === 0 || !children)? 0 : 20, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
           <Text style={{fontSize: 18, fontWeight: children? 'bold' : 'normal', marginBottom: children? 10 : 5 }}>{title}</Text>
-          <RadioButton.Android onPress={() => {
+          <RadioButton onPress={() => {
             let { countries } = this.state
             let indexCountry = 0
             countries = countries.map((country:any,i:any) => {
@@ -263,7 +263,7 @@ export default class TablesScreen extends React.Component<props, state> {
               )}
             })
             this.setState({countries}, this.filtre)
-          }} color="#F50F50" status={checked? 'checked' : 'unchecked'} value={title}/>
+          }} uncheckedColor="black" color="#F50F50" status={checked? 'checked' : 'unchecked'} value={title}/>
         </View>
         {  children }
       </>
