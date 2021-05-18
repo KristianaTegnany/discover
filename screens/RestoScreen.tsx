@@ -470,7 +470,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
   const CrenSelectScreen = () => {
     return (
-      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 320 : openHour? 380 : 280 }]}>
+      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 420 : openHour? 480 : 280 }]}>
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
@@ -486,6 +486,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
           placeholderStyle={styles.labeldropdown}
+          zIndex={3000}
+          zIndexInverse={1000}
           dropDownContainerStyle={styles.dropdown}
         />
         <Text style={[styles.hourText, { color: textColor,  fontFamily:'geometria-regular', marginTop: openDate? 120 : 20 }]}>
@@ -496,6 +498,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           value={selectedHour}
           items={hourstobook}
           setOpen={setOpenHour}
+          zIndex={2000}
+          zIndexInverse={2000}
           setValue={setSelectedHour}
           setItems={setHourstobook}
           placeholder="Heure ..."
