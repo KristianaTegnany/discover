@@ -485,6 +485,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           maxHeight={200}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
+          textStyle={{fontFamily:'geometria-regular', color:"white"}}
           placeholderStyle={styles.labeldropdown}
           zIndex={3000}
           zIndexInverse={1000}
@@ -502,6 +503,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           zIndexInverse={2000}
           setValue={setSelectedHour}
           setItems={setHourstobook}
+          textStyle={{fontFamily:'geometria-regular', color:"white"}}
           placeholder="Heure ..."
           maxHeight={200}
           style={[styles.dropdown, styles.shadow]}
@@ -1016,12 +1018,13 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: "transparent",
     backgroundColor: "#ff5050",
-    color:'white'
+    color:'white',
+    fontFamily:'geometria-regular'
   },
   labeldropdown: {
     color: "white",
     fontWeight: "bold",
-    fontFamily:'geometria-regular'
+    fontFamily:'geometria-bold'
   },
   dateText: {
     marginBottom: 10,
