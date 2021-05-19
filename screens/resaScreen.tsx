@@ -110,15 +110,11 @@ export const resaScreen = ({ route, navigation }: Props) => {
       blockGo = true;
     }
     // controler le nombre de places dispo sur la journée
-    console.log(myintcust.id);
-    console.log(route.params.day);
-    console.log(route.params.hour);
-
+ 
     let starttime = moment(route.params.day)
       .clone()
       .hours(route.params.hour.substring(0, 2))
       .minute(route.params.hour.substring(3));
-    console.log(starttime);
 
     let params01 = {
       itid: myintcust.id,
@@ -129,8 +125,6 @@ export const resaScreen = ({ route, navigation }: Props) => {
       "getReservationsSafeOnsiteByDateAndCren",
       params01
     );
-    console.log("coversForCren" + coversForCren);
-    console.log("onsite_shift" + myintcust.onsite_shift);
 
     console.log(
       "myintcust.onsite_maxresbycren" + myintcust.onsite_maxresbycren
@@ -213,11 +207,12 @@ export const resaScreen = ({ route, navigation }: Props) => {
             ];
             res.set("intcust", it);
             res.set("guestFlat", arrayGuest);
-            res.set("process", "selfcare");
+            res.set("process", "appdisco");
             res.set("numguest", nbcover);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date", moment(route.params.day).toDate());
+            res.set("date",  moment.tz(route.params.day, 'America/Martinique').hours(route.params.hour.substring(0, 2))
+            .minute(route.params.hour.substring(3)).toDate());
             res.set("notes", notecom);
             res.set("status", "Confirmé"); // en cours
             await res.save();
@@ -271,6 +266,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
               bookingType: "Onsite",
               resaId: res.id,
               restoname: myintcust.corporation,
+              day:route.params.day,
               hour: route.params.hour,
               nbcover: nbcover,
               name: lastname,
@@ -302,6 +298,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       },
     ];
     setMyintcust(intcustRawX[0]);
+  
   }, []);
 
   return (

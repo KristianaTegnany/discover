@@ -469,7 +469,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
   const CrenSelectScreen = () => {
     return (
-      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 420 : openHour? 480 : 280 }]}>
+      <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
@@ -481,7 +481,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           setValue={setSelectedDay}
           setItems={setDaystobook}
           placeholder="Date ..."
-          maxHeight={200}
+          maxHeight={300}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
           textStyle={{fontFamily:'geometria-regular', color:"white"}}
@@ -504,7 +504,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           setItems={setHourstobook}
           textStyle={{fontFamily:'geometria-regular', color:"white"}}
           placeholder="Heure ..."
-          maxHeight={200}
+          maxHeight={300}
           style={[styles.dropdown, styles.shadow]}
           labelStyle={styles.labeldropdown}
           placeholderStyle={styles.labeldropdown}
@@ -619,14 +619,12 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           </View> 
           }
 
-{myintcust.EngagModeTakeAway== true || myintcust.EngagModeDelivery==true && 
+{(myintcust.EngagModeTakeAway== true || myintcust.EngagModeDelivery==true) && 
 <View>
-          <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
           <Text style={styles.textMoli}>
             ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
             {myintcust.contactphone}
           </Text>
-          <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
           </View>
 }
@@ -655,9 +653,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                   Fin de commande le soir : {myintcust.onsitenightblock}{" "}
                 </Text>
               )}
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+            
             </View>
           )}
 
@@ -751,8 +747,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 style={{ backgroundColor: "grey", marginVertical: 20 }}
               />
 <Text  style={styles.title}>La Carte</Text>
-{myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true && 
-<Text  style={styles.textSub2}>Pour commander, choisissez votre mode.</Text>
+{(myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true) && 
+<Text  style={styles.textMoli}>Pour commander, choisissez votre mode.</Text>
 }
           {!cats ||
             (!menus &&
@@ -884,11 +880,33 @@ export const RestoScreen = ({ route, navigation }: Props) => {
             <Text style={styles.appButtonText}>Commandez à emporter</Text>
           </TouchableOpacity>
         )}
-        {myintcust && myintcust.EngagModeTakeAway && (
+        {myintcust && myintcust.EngagModeDelivery && (
           <TouchableOpacity
             onPress={() => {
-              setBookingType("Delivery")
-              setCrenModalVisible(true)
+              if (products.length > 0 && products[0].restoId !== myintcust.id) {
+                Alert.alert(
+                  "",
+                  "Vous avez déjà initié une commande avec un autre restaurant. Si vous continuez votre panier sera remis à zéro.",
+                  [
+                    {
+                      text: "Revenir",
+                      onPress: () => console.log("Cancel Pressed"),
+                      style: "cancel",
+                    },
+                    {
+                      text: "Continuer",
+                      onPress: () => {
+                        store.dispatch(emptyall(products));
+                        setBookingType("Delivery")
+                        setCrenModalVisible(true)
+                      }
+                    },
+                  ]
+                );
+              } else {
+                setBookingType("Delivery")
+                setCrenModalVisible(true)
+              }
             }}
             style={styles.appButtonContainer}
           >
