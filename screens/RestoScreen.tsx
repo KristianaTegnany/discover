@@ -622,7 +622,6 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
 {(myintcust.EngagModeTakeAway== true || myintcust.EngagModeDelivery==true) && 
 <View>
-          <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
           <Text style={styles.textMoli}>
             ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
             {myintcust.contactphone}
@@ -656,9 +655,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                   Fin de commande le soir : {myintcust.onsitenightblock}{" "}
                 </Text>
               )}
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+            
             </View>
           )}
 
