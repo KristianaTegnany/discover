@@ -26,15 +26,18 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="Tables"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
+      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint, labelStyle:{fontFamily:"geometria-regular"} }}
     >
       <BottomTab.Screen
-        name="Love"
-        component={LoveNavigator}
-        options={{
+        name="Discover"
+        component={LoveNavigator}      
+        
+         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+          
         }}
       />
+      
       <BottomTab.Screen
         name="Tables"
         component={TablesNavigator}
@@ -44,6 +47,13 @@ export default function BottomTabNavigator() {
           ),
         }}
       />
+       {/* <BottomTab.Screen
+        name="Evenements"
+        component={LoveNavigator}
+         options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+        }}
+      /> */}
       <BottomTab.Screen
         name="Guides"
         component={GuidesNavigator}

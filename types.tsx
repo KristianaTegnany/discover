@@ -24,6 +24,8 @@ export type BottomTabParamList = {
   Guides: undefined;
   Love: undefined;
   Perso: undefined;
+  Discover: undefined;
+  Evenements:undefined
 
 };
 
