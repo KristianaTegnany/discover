@@ -626,7 +626,6 @@ export const RestoScreen = ({ route, navigation }: Props) => {
             ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
             {myintcust.contactphone}
           </Text>
-          <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
           </View>
 }

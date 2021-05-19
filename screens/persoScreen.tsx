@@ -173,7 +173,14 @@ export const persoScreen = ({ route, navigation }: Props) => {
 
         <Text style={styles.text2Bold}>Vous souhaitez inscrire votre restaurant ? </Text>
       <Text style={styles.text2}>Rendez-vous sur www.tablebig.com. Inscrivez-vous et on vous rappelle.  </Text>
-        <Text style={styles.text2}>TABLE est concu et opéré en Martinique. Accompagné par Le Village By CA. Soutenu par la CTM, notamment à travers le dispositif "Plas Dijital" et par la CCIM.  </Text>
+
+      <Text style={styles.text2Bold}>En savoir plus sur TABLE </Text>
+        <Text style={styles.text2}>TABLE est concu et opéré en Martinique, avec la Guadeloupe aussi dans le coeur. Accompagné par Le Village By CA. Soutenu par la CTM, notamment à travers le dispositif "Plas Dijital" et par la CCIM.  </Text>
+        <Text style={styles.text2}>TABLE DISCOVER est une application mobile et un site internet pour tous les amoureux de la bonne cuisine et des restaurants. Nous souhaitons devenir un "media marchand" sur le Fooding lifeStyle.  </Text>
+        <Text style={styles.text2}>TABLE BIG est une suite logicielle complète pour la gestion de restaurant couvrant tout le processus Client & Marketing jusqu'à l'encaissement. Notre objectif est d'aider plus de 10 000 restaurants d'ici 2025 à se développer.  </Text>
+
+        <Text style={styles.text2}>Nous recrutons des développeurs MEAN ou React Native, des commerciaux, des experts Marketing, des contributeurs amoureux du Fooding : hello@tablebig.com.</Text>
+
         <Text style={styles.text2}>Responsable de publication : Satyam Dorville - 0696 45 04 45  </Text>
 
       </View>
