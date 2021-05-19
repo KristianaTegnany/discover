@@ -61,8 +61,7 @@ interface ICats {
 export const RestoScreen = ({ route, navigation }: Props) => {
   const [menus, setMenus] = useState<IMenus[]>();
   const [cats, setCats] = useState<ICats[]>();
-  const [html, setHtml] = useState('');
-
+  
   const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState([
     {
       daysOfWeek: [],
@@ -578,7 +577,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   }, [bookingType])
 
   useEffect(() => {
-    if (selectedDay) fetchHours();
+    if (crenModalVisible && selectedDay) fetchHours();
   }, [selectedDay]);
 
   return (
