@@ -208,11 +208,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
    if(date.isSame(moment.tz("America/Martinique"), "day") ){
     if([TAKEAWAY, DELIVERY].includes(bookingType)) {
       if(stopYesterday) {
-        console.log("stop yesterday case")
         isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
       }
       else {
-        console.log("not stop yesterday case")
 
         const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
               nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
@@ -278,7 +276,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
       if(!testOC){
         Alert.alert("La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
-        navigation.navigate("hourSelectScreen", {
+        navigation.navigate("RestoScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
           day: day
@@ -289,7 +287,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         testOD = await testOrderDaily_Stop()
         if(!testOD){
           Alert.alert("La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
-          navigation.navigate("crenSelectScreen", {
+          navigation.navigate("RestoScreen", {
             restoId: intcust.id,
             bookingType: bookingType,
             day: 'null'
@@ -299,7 +297,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           testDelayCren = await testDelayCren_Stop()
           if(!testDelayCren) {
             Alert.alert("Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
-            navigation.navigate("crenSelectScreen", {
+            navigation.navigate("RestoScreen", {
               restoId: intcust.id,
               bookingType: bookingType,
               day: 'null'
@@ -309,7 +307,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
               Alert.alert("L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
-              navigation.navigate("hourSelectScreen", {
+              navigation.navigate("RestoScreen", {
                 restoId: intcust.id,
                 bookingType: bookingType,
                 day: day
