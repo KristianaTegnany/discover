@@ -253,8 +253,9 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("notes", notecom);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date", moment(route.params.day).toDate());
-            res.set("process", "selfcare");
+            res.set("date",  moment.tz(route.params.day, 'America/Martinique').hours(route.params.hour.substring(0, 2))
+            .minute(route.params.hour.substring(3)).toDate());           
+             res.set("process", "appdisco");
             res.set("status", "Confirmé"); //
             await res.save();
             return res;
