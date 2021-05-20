@@ -397,7 +397,7 @@ export default class TablesScreen extends React.Component<props, state> {
             data={this.state.restaurantList}
             contentContainerStyle={{paddingTop: 0, paddingBottom: 60}}
             ListEmptyComponent={this.renderEmpty}
-            initialNumToRender={this.state.restaurantList.length}
+            initialNumToRender={13}
             renderScrollComponent={(props) => <ScrollView {...props} onScroll={(event) => {
               const scrolling = event.nativeEvent.contentOffset.y
               if (scrolling > 100) {
