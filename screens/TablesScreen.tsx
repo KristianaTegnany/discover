@@ -131,6 +131,8 @@ export default class TablesScreen extends React.Component<props, state> {
           restaurantList: response,
           restaurantListOrigin: response,
         });
+
+        console.log(response.length)
         let countries:any = []
         response.forEach((intcust:any) => {
           const country = { name: intcust.attributes.country.trim().replace(/^\w/, (c:any) => c.toUpperCase()), cities: [], checked: false},
@@ -395,6 +397,7 @@ export default class TablesScreen extends React.Component<props, state> {
             data={this.state.restaurantList}
             contentContainerStyle={{paddingTop: 0, paddingBottom: 60}}
             ListEmptyComponent={this.renderEmpty}
+            initialNumToRender={this.state.restaurantList.length}
             renderScrollComponent={(props) => <ScrollView {...props} onScroll={(event) => {
               const scrolling = event.nativeEvent.contentOffset.y
               if (scrolling > 100) {
