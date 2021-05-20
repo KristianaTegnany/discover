@@ -393,9 +393,10 @@ export default class TablesScreen extends React.Component<props, state> {
           <FlatList
             style={styles.FlatList}
             data={this.state.restaurantList}
-            contentContainerStyle={{paddingTop: 0, paddingBottom: 60}}
+            initialNumToRender={this.state.restaurantList.length}
+            contentContainerStyle={{paddingTop: 0, paddingBottom: 0}}
             ListEmptyComponent={this.renderEmpty}
-            renderScrollComponent={(props) => <ScrollView {...props} onScroll={(event) => {
+            onScroll={(event) => {
               const scrolling = event.nativeEvent.contentOffset.y
               if (scrolling > 100) {
                 Animated.timing(this.state.opacity, {
@@ -422,7 +423,7 @@ export default class TablesScreen extends React.Component<props, state> {
                 }).start()
                 this.setState({showCarousel: true})
               }
-            }} />}
+            }}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -438,7 +439,6 @@ export default class TablesScreen extends React.Component<props, state> {
                     corponame={item.attributes.corporation}
                     city={item.attributes.cityvenue}
                     StyleK={item.attributes.style}
-                    style={styles.postComponent}
                   ></PostComponent>
                 )}
               </TouchableWithoutFeedback>
@@ -481,12 +481,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20
     // justifyContent: "flex-start",
     // justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
-  },
-  postComponent: {
-    height: 110,
-    width: "100%",
-    //  alignSelf: "stretch",
     //  backgroundColor: "rgba(255,255,255,1)"
   },
   searchHeader: {

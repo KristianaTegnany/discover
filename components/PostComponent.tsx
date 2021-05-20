@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { StyleSheet, Image, Dimensions } from "react-native";
+import React from "react";
+import { StyleSheet, Image } from "react-native";
 import { Text, View } from "./Themed";
 
 function PostComponent(props: any) {
@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "space-around",
-    marginTop: 30,
     width: "100%",
+    height: 130
   },
   postWrapper: {
     // alignItems: "flex-start",
@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
 
   postHeader: {
     width: "100%",
-    height: 110,
     flexDirection:'row',
     justifyContent: "center",
     marginRight: 0,
