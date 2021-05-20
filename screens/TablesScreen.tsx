@@ -131,6 +131,8 @@ export default class TablesScreen extends React.Component<props, state> {
           restaurantList: response,
           restaurantListOrigin: response,
         });
+
+        console.log(response.length)
         let countries:any = []
         response.forEach((intcust:any) => {
           const country = { name: intcust.attributes.country.trim().replace(/^\w/, (c:any) => c.toUpperCase()), cities: [], checked: false},
@@ -160,7 +162,7 @@ export default class TablesScreen extends React.Component<props, state> {
         const byValue = searchValue !== '', byMode = selectedMode !== '', byCateg = menus? menus.filter(menu => menu.selected).length === 1 : false, place = selectedPlace !== 'toutes les régions'
         const condByValue = resto.attributes.corporation.toLowerCase().includes(searchValue.toLowerCase()),
               condByMode  = resto.attributes[`EngagMode${selectedMode}`],
-              condByCateg = byCateg && resto.attributes.qualifDiscover.length > 0? resto.attributes.qualifDiscover[0][menus.filter(menu => menu.selected)[0].key] : false,
+              condByCateg = byCateg && resto.attributes.qualifDiscover && resto.attributes.qualifDiscover.length > 0? resto.attributes.qualifDiscover[0][menus.filter(menu => menu.selected)[0].key] : false,
               condByPlace = place? (resto.attributes.country.toLowerCase() === selectedPlace || resto.attributes.cityvenue.toLowerCase() === selectedPlace) : false
 
         let result = true

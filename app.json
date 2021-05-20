@@ -40,7 +40,8 @@
             "DEFAULT"
           ]
         }
-      ]
+      ],
+      "package": "com.satyamdorville.discover"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
