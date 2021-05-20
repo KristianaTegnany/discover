@@ -73,8 +73,6 @@ type state = {
 export default class TablesScreen extends React.Component<props, state> {
   restaurantListCast: any[] = [];
   
-
- 
   constructor(props: any) {
     super(props);
     this.state = {
@@ -358,6 +356,7 @@ export default class TablesScreen extends React.Component<props, state> {
           <Ionicons name="search" style={styles.searchIcon} />
           <TextInput
             placeholder="Tapez le nom d'un restaurant"
+            placeholderTextColor={'grey'}
             style={styles.searchInput}
             defaultValue={this.state.searchValue}
             onChangeText={(value) => this.onChangeSearch(value)}

@@ -19,8 +19,9 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
-import moment from 'moment-timezone'
 import * as EmailValidator from "email-validator";
+import moment from 'moment-timezone'
+import DropDownPicker from "react-native-dropdown-picker";
 moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
   
 interface NavigationParams {
@@ -74,6 +75,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     takeawaynightblock: "",
     deliverynightstart: "",
     deliverynoonblock: "",
+    citiesChoice:[],
     deliverynightblock: ""
   });
   const products = useSelector((state: ProductItem[]) => state);
@@ -482,7 +484,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       alert("Merci de saisir tous les champs. ");
     }
   }
-  async function getPayPlugPaymentUrl() {
+  async function handleChangeCityChoice(city:any,tar:any) {
     
 
   }
@@ -517,10 +519,11 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         takeawaynightblock: intcustRaw.attributes.takeawaynightblock || "",
         deliverynightstart: intcustRaw.attributes.deliverynightstart || "",
         deliverynoonblock: intcustRaw.attributes.deliverynoonblock || "",
-        deliverynightblock: intcustRaw.attributes.deliverynightblock || ""
+        deliverynightblock: intcustRaw.attributes.deliverynightblock || "",
+        citiesChoice : intcustRaw.attributes.citiesChoice2 || [],
       },
     ];
-
+console.log(intcustRaw)
     setIntcust(intcustRawX[0]);
     calculusTotalCashBasket();
   }, []);
@@ -670,6 +673,37 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
                 placeholder="Fort-de-france"
                 value={city}
               />
+              {intcust.citiesChoice.map((city:any) => (
+            <TouchableOpacity
+                        onPress={() =>
+                         handleChangeCityChoice(city.city, city.tar)
+                        }
+                        style={{
+                          elevation: 8,
+                          marginTop: 10,
+                          marginHorizontal: 9,
+                          marginBottom: 10,
+                          borderWidth: 1,
+                          backgroundColor: "#ff5050",
+                          borderColor: "transparent",
+                          borderRadius: 10,
+                          padding: 5,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "bold",
+                            alignSelf: "center",
+                            fontFamily: "geometria-regular",
+                            color: textColor,
+                          }}
+                        >
+                          {city.city}{" "}
+                          {city.tar && city.tar > 0 && +"+" + city.tar + "€"}
+                        </Text>
+                      </TouchableOpacity>
+          ) )}
             </View>
           )}
 
