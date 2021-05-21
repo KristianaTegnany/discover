@@ -471,6 +471,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             "createCheckoutSessionStripeForApp",
             params1
           );
+          console.log(session)
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg",
