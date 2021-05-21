@@ -632,6 +632,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           {myintcust.EngagModeOnSite == true && (
 
 <View>
+<Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
               <Text style={styles.textSub}>Réservation sur place </Text>
 
