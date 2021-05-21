@@ -475,7 +475,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg",
             bookingType: bookingType,
-            resaId: resa.id,
+            resaId: resaRaw.id,
             day: day,
             hour: hour,
             amount: totalCashBasket + Number(delifare),
