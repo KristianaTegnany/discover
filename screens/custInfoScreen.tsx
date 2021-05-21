@@ -20,6 +20,7 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
 import * as EmailValidator from "email-validator";
+import RadioButton from '../components/Radio'
 import moment from 'moment-timezone'
 import DropDownPicker from "react-native-dropdown-picker";
 moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
@@ -42,6 +43,12 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
+  const [delifare, setDelifare] = useState(0);
+  const [intcustCityChoice, setIntcustCityChoice] = useState([{
+    city : "",
+    tar:0,
+    checked:false
+  }]);
   const [phone, setPhone] = useState("");
   const [line1, setLine1] = useState();
   const [city, setCity] = useState();
@@ -75,7 +82,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     takeawaynightblock: "",
     deliverynightstart: "",
     deliverynoonblock: "",
-    citiesChoice:[],
     deliverynightblock: ""
   });
   const products = useSelector((state: ProductItem[]) => state);
@@ -223,7 +229,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
           
         isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
-        console.log(isValid)
       }
     }}
     else{
@@ -245,7 +250,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         date: day
       }
       const consumed = await Parse.Cloud.run("checkStock", params)
-      console.log(consumed)
       if (menu.attributes.provisionStockBase.length > 0) {
         let provision = menu.attributes.provisionStockBase.filter((x:any) => moment.tz(x.date, 'America/Martinique').isSame(moment.tz(x.date, 'America/Martinique'), "day"));
         isValid = provision[0].provision > consumed + 1
@@ -418,7 +422,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         });
 
         if (intcust.paymentChoice !== "stripeOptin") {
-          console.log("On est dans payplug")
           const params1 = {
             itid: intcust.id,
             winl: "window.location.host",
@@ -428,7 +431,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             customerlastname: lastname,
             customerphone: phone,
             type: "order",
-            amount: totalCashBasket,
+            amount: totalCashBasket +Number(delifare),
             apikeypp: intcust.apikeypp,
             mode: bookingType,
             noukarive: intcust.option_DeliveryByNoukarive,
@@ -445,7 +448,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             resaId: resaRaw.id,
             day: day,
             hour: hour,
-            amount: totalCashBasket,
+            amount: totalCashBasket + Number(delifare),
           });
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
@@ -455,7 +458,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             paidtype: "order",
             customeremail: "satyam.dorville@gmail.com",
             type: "order",
-            amount: totalCashBasket,
+            amount: totalCashBasket + Number(delifare),
             mode: resa.engagModeResa,
             noukarive: intcust.option_DeliveryByNoukarive,
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
@@ -472,7 +475,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             resaId: resa.id,
             day: day,
             hour: hour,
-            amount: totalCashBasket,
+            amount: totalCashBasket + Number(delifare),
           });
         }
       }
@@ -484,16 +487,13 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       alert("Merci de saisir tous les champs. ");
     }
   }
-  async function handleChangeCityChoice(city:any,tar:any) {
-    
-
-  }
+ 
 
   useEffect(() => {
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
     intcustRaw.id = restoId;
-
+    setIntcustCityChoice(intcustRaw.attributes.citiesChoice2)
     let intcustRawX = [
       {
         id: intcustRaw.id,
@@ -520,10 +520,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         deliverynightstart: intcustRaw.attributes.deliverynightstart || "",
         deliverynoonblock: intcustRaw.attributes.deliverynoonblock || "",
         deliverynightblock: intcustRaw.attributes.deliverynightblock || "",
-        citiesChoice : intcustRaw.attributes.citiesChoice2 || [],
       },
     ];
-console.log(intcustRaw)
     setIntcust(intcustRawX[0]);
     calculusTotalCashBasket();
   }, []);
@@ -654,56 +652,27 @@ console.log(intcustRaw)
                 value={zip}
               />
 
-              <Text style={styles.label}>Ville</Text>
+              <Text style={styles.label}>Choisir une ville / zone de livraison</Text>
 
-              <TextInput
-                style={{
-                  color: textColor,
-                  fontFamily: "geometria-regular",
-                  height: 50,
-                  marginHorizontal: 20,
-                  marginTop: 4,
-                  paddingLeft: 20,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  fontSize: 15,
-                  borderColor: "grey",
-                }}
-                onChangeText={onChangeTextCity}
-                placeholder="Fort-de-france"
-                value={city}
-              />
-              {intcust.citiesChoice.map((city:any) => (
-            <TouchableOpacity
-                        onPress={() =>
-                         handleChangeCityChoice(city.city, city.tar)
-                        }
-                        style={{
-                          elevation: 8,
-                          marginTop: 10,
-                          marginHorizontal: 9,
-                          marginBottom: 10,
-                          borderWidth: 1,
-                          backgroundColor: "#ff5050",
-                          borderColor: "transparent",
-                          borderRadius: 10,
-                          padding: 5,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            fontWeight: "bold",
-                            alignSelf: "center",
-                            fontFamily: "geometria-regular",
-                            color: textColor,
-                          }}
-                        >
-                          {city.city}{" "}
-                          {city.tar && city.tar > 0 && +"+" + city.tar + "€"}
-                        </Text>
-                      </TouchableOpacity>
-          ) )}
+             {intcustCityChoice &&
+                intcustCityChoice.map((city: any, index8: any) => (
+                  <View style={{ flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:30, marginTop:10}}>
+          <Text style={{fontFamily:'geometria-regular' }}>{city.city} {city.tar && city.tar > 0 && "+" + city.tar + "€"}</Text>
+          <RadioButton onPress={() => {
+            setCity(city.city)
+            setDelifare(city.tar)
+            if(city.checked==false || !city.checked){
+             city.checked=true;}
+             else{
+              city.checked=false;
+             }
+          
+          }} color="#ff5050" status={city.checked==true? 'checked' : 'unchecked'} value={city} style={{ marginRight:80 }}/>
+        </View>
+                  
+                ))}
+
+          
             </View>
           )}
 
