@@ -367,7 +367,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         intcustRawY.id = intcust.id;
         resaRaw.set("intcust", intcustRawY);
         resaRaw.set("guestFlat", arrayGuest);
-        resaRaw.set("delifare", delifare);
+        resaRaw.set("delifare", Number(delifare));
         resaRaw.set("order", true);
         resaRaw.set("notes", notecom);
         resaRaw.set("process", "appdisco");
@@ -408,7 +408,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         }
         resaRaw.set("status", "En cours"); // en cours
         resaRaw.set("engagModeResa", bookingType);
-        resaRaw.set("delifare", delifare);
+        resaRaw.set("delifare", Number(delifare));
         resaRaw.set("source", {
           utm_campaign: "APP",
           utm_medium: Platform.OS,
@@ -658,11 +658,11 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
              {intcustCityChoice &&
                 intcustCityChoice.map((city: any, index8: any) => (
-                  <View style={{ flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:30, marginTop:10}}>
-          <Text style={{fontFamily:'geometria-regular' }}>{city.city} {city.tar && city.tar > 0 && "+" + city.tar + "€"}</Text>
-          <RadioButton onPress={() => {
+                  <View key={city.city +'view'} style={{ flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:30, marginTop:10}}>
+          <Text key={city.city +'text'} style={{fontFamily:'geometria-regular' }}>{city.city} {city.tar && city.tar > 0 && "+" + city.tar + "€"}</Text>
+          <RadioButton key={city.city +'radio'} onPress={() => {
             setCity(city.city)
-            setDelifare(city.tar)
+            setDelifare(Number(city.tar))
             if(city.checked==false || !city.checked){
              city.checked=true;}
              else{
