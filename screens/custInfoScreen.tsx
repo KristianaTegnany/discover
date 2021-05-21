@@ -367,6 +367,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         intcustRawY.id = intcust.id;
         resaRaw.set("intcust", intcustRawY);
         resaRaw.set("guestFlat", arrayGuest);
+        resaRaw.set("delifare", delifare);
         resaRaw.set("order", true);
         resaRaw.set("notes", notecom);
         resaRaw.set("process", "appdisco");
@@ -407,6 +408,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         }
         resaRaw.set("status", "En cours"); // en cours
         resaRaw.set("engagModeResa", bookingType);
+        resaRaw.set("delifare", delifare);
         resaRaw.set("source", {
           utm_campaign: "APP",
           utm_medium: Platform.OS,
