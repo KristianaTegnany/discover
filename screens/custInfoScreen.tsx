@@ -461,18 +461,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             customeremail: "satyam.dorville@gmail.com",
             type: "order",
             amount: totalCashBasket + Number(delifare),
-            mode: resa.engagModeResa,
+            mode: resaRaw.attributes.engagModeResa,
             noukarive: intcust.option_DeliveryByNoukarive,
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
             stripeAccount: intcust.stripeAccId,
           };
+          console.log(params1)
           const session = await Parse.Cloud.run(
             "createCheckoutSessionStripeForApp",
             params1
           );
+          console.log(session.id)
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
-            STRIPE_PUBLIC_KEY: "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl",
+            STRIPE_PUBLIC_KEY: "pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg",
             bookingType: bookingType,
             resaId: resa.id,
             day: day,
