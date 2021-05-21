@@ -13,7 +13,10 @@ interface Props {
 }
 
 export const paymentStripeScreen = ({ route, navigation }: Props) => {
-  useEffect(() => {}, []);
+  useEffect(() => {
+console.log(route.params)
+
+  }, []);
 
   return (
     <StripeCheckout
@@ -21,6 +24,10 @@ export const paymentStripeScreen = ({ route, navigation }: Props) => {
       checkoutSessionInput={{
         sessionId: route.params.CHECKOUT_SESSION_ID,
       }}
+      options={{
+        htmlContentLoading: '<center><h1  style="margin-top:120px;">Chargement</h1></center>',
+      }}
+      
       onSuccess={() => {
         console.log(`Stripe checkout session succeeded. session id: .`);
         navigation.navigate("successScreen", {

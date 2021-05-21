@@ -22,9 +22,9 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import * as EmailValidator from "email-validator";
 import RadioButton from '../components/Radio'
 import moment from 'moment-timezone'
-import DropDownPicker from "react-native-dropdown-picker";
 moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
-  
+
+
 interface NavigationParams {
   restoId: string;
 }
@@ -40,6 +40,7 @@ const TAKEAWAY = 'TakeAway',
       DELIVERY = 'Delivery'
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
+  
   const [email, setEmail] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -460,18 +461,16 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             paidtype: "order",
             customeremail: "satyam.dorville@gmail.com",
             type: "order",
-            amount: totalCashBasket + Number(delifare),
+            amount: Math.ceil(totalCashBasket) + Number(delifare),
             mode: resaRaw.attributes.engagModeResa,
             noukarive: intcust.option_DeliveryByNoukarive,
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
             stripeAccount: intcust.stripeAccId,
           };
-          console.log(params1)
           const session = await Parse.Cloud.run(
             "createCheckoutSessionStripeForApp",
             params1
           );
-          console.log(session.id)
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg",
@@ -701,6 +700,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             placeholder="Fort-de-france"
             value={notecom}
           />
+
+
           <TouchableOpacity
             onPress={() => goPay()}
             style={styles.appButtonContainer}
