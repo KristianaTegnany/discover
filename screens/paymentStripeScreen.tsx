@@ -23,6 +23,7 @@ console.log(route.params)
       stripePublicKey={route.params.STRIPE_PUBLIC_KEY}
       checkoutSessionInput={{
         sessionId: route.params.CHECKOUT_SESSION_ID,
+        stripeAccount: route.params.stripeAccount,
       }}
       options={{
         htmlContentLoading: '<center><h1  style="margin-top:120px;">Chargement</h1></center>',

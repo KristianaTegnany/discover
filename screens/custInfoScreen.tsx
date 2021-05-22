@@ -456,7 +456,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         } else if (intcust.paymentChoice == "stripeOptin") {
           const params1 = {
             itid: intcust.id,
-            winl: "http://www.amazon.com",
+            winl: "https://www.tablediscover.com",
             resaid:  resaRaw.id,
             paidtype: "order",
             customeremail: "satyam.dorville@gmail.com",
@@ -476,6 +476,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             CHECKOUT_SESSION_ID: session.id,
             STRIPE_PUBLIC_KEY: "pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg",
             bookingType: bookingType,
+            stripeAccount: intcust.stripeAccId,
             resaId: resaRaw.id,
             day: day,
             hour: hour,
