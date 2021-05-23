@@ -13,6 +13,7 @@ import {AppRegistry} from 'react-native';
 import {expo as appName} from './app.json';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
@@ -29,6 +30,8 @@ export default   function    App() {
     
 
     return (
+      <StripeProvider publishableKey="pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg">
+
       <Provider store={store}>
 
       <AppearanceProvider>
@@ -39,6 +42,7 @@ export default   function    App() {
       </SafeAreaProvider>
       </AppearanceProvider>
       </Provider>
+      </StripeProvider>
     );
   }
 

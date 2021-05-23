@@ -1200,6 +1200,26 @@
     xcode "^3.0.1"
     xml2js "^0.4.23"
 
+"@expo/config-plugins@^1.0.24":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-1.0.32.tgz#abf4ab24a1cfd53e824fefdf15f727687491a856"
+  integrity sha512-goQoBvWYq1fk/jdDYYioN5gYlEhmPVRP6Y9jxmCLTHoHhZHSI+Pl5BXidUqVNdE2XFhoiz9yLbjQrGgYFPXuwQ==
+  dependencies:
+    "@expo/config-types" "^40.0.0-beta.2"
+    "@expo/configure-splash-screen" "0.4.0"
+    "@expo/image-utils" "0.3.14"
+    "@expo/json-file" "8.2.30"
+    "@expo/plist" "0.0.13"
+    find-up "~5.0.0"
+    fs-extra "9.0.0"
+    getenv "^1.0.0"
+    glob "7.1.6"
+    resolve-from "^5.0.0"
+    slash "^3.0.0"
+    slugify "^1.3.4"
+    xcode "^3.0.1"
+    xml2js "^0.4.23"
+
 "@expo/config-types@^40.0.0-beta.2":
   version "40.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/@expo/config-types/-/config-types-40.0.0-beta.2.tgz#4fea4ef5654d02218b02b0b3772529a9ce5b0471"
@@ -2103,6 +2123,13 @@
   integrity sha512-xkNcLAn/wZaX14RPlwizcKicDk9G3F8m2nU3L7Ukm5zBgTwiT0wsoFAHx9Jq56fJA1z/7uKGtCRu16sOUCLIHQ==
   dependencies:
     type-detect "4.0.8"
+
+"@stripe/stripe-react-native@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-react-native/-/stripe-react-native-0.1.2.tgz#4388552b2c668ec1bc9432b4cd7809e2e26ba4f4"
+  integrity sha512-vjHQ05gyDEDNSX39/WPC1X8Fgmr2dysOE458sqL8yC9xrBkGoH1ccd032o8stsgDtnPFomqLukWXFh88fclS9w==
+  dependencies:
+    "@expo/config-plugins" "^1.0.24"
 
 "@types/babel__core@^7.1.7":
   version "7.1.14"
@@ -7555,11 +7582,6 @@ react-native-snap-carousel@^3.9.1:
   dependencies:
     prop-types "^15.6.1"
     react-addons-shallow-compare "15.6.2"
-
-react-native-stripe-checkout-webview@0.0.12:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/react-native-stripe-checkout-webview/-/react-native-stripe-checkout-webview-0.0.12.tgz#3a35865f39d7f73eda6e553c010161c0a8bbc0e9"
-  integrity sha512-BncH6+OudZs23r592Vdkp271AAsA+RhBmxrwePZmnw416dgQ4Y55MHFA1Dpq/berceMP91n9EtXjZN4fkAJhGg==
 
 react-native-text-size@4.0.0-rc.1:
   version "4.0.0-rc.1"

@@ -23,6 +23,7 @@ import * as EmailValidator from "email-validator";
 import RadioButton from '../components/Radio'
 import moment from 'moment-timezone'
 moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
+import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
 
 
 interface NavigationParams {
@@ -40,7 +41,11 @@ const TAKEAWAY = 'TakeAway',
       DELIVERY = 'Delivery'
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
-  
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const [loading, setLoading] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string>();
+  const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false);
+
   const [email, setEmail] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -131,6 +136,53 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     setPhone(phone);
   }
   
+  const fetchPaymentSheetParams = async () => {
+    let params = {
+    
+    }
+    const { paymentIntent, ephemeralKey, customer }  = await Parse.Cloud.run("stripeCheckoutForRN", params)
+    setClientSecret(paymentIntent);
+    return {
+      paymentIntent,
+      ephemeralKey,
+      customer,
+    };
+  };
+
+  const initializePaymentSheet = async () => {
+    const {
+      paymentIntent,
+      ephemeralKey,
+      customer,
+    } = await fetchPaymentSheetParams();
+
+    const { error } = await initPaymentSheet({
+      customerId: customer,
+      customerEphemeralKeySecret: ephemeralKey,
+      paymentIntentClientSecret: paymentIntent,
+    });
+    if (!error) {
+      setLoading(true);
+    }
+  };
+
+  const openPaymentSheet = async () => {
+    if (!clientSecret) {
+      return;
+    }
+    setLoading(true);
+    const { error } = await presentPaymentSheet({
+      clientSecret,
+    });
+
+    if (error) {
+      Alert.alert(`Error code: ${error.code}`, error.message);
+    } else {
+      Alert.alert('Success', 'The payment was confirmed successfully');
+    }
+    setPaymentSheetEnabled(false);
+    setLoading(false);
+  };
 
   async function calculusTotalCashBasket() {
     let sumRaw = 0;
@@ -471,6 +523,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             "createCheckoutSessionStripeForApp",
             params1
           );
+
+      
+
           console.log(session)
           navigation.navigate("paymentStripeScreen", {
             CHECKOUT_SESSION_ID: session.id,
@@ -492,9 +547,10 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       alert("Merci de saisir tous les champs. ");
     }
   }
- 
 
   useEffect(() => {
+    initializePaymentSheet();
+
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
     intcustRaw.id = restoId;
@@ -702,7 +758,15 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             placeholder="Fort-de-france"
             value={notecom}
           />
-
+  <TouchableOpacity
+        onPress={openPaymentSheet}
+        style={styles.appButtonContainer}
+          >
+            <Text style={styles.appButtonText}>
+              {" "}
+              <Text style={styles.payText}>Valider et payer</Text>{" "}
+            </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => goPay()}
