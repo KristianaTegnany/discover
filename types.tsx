@@ -13,7 +13,7 @@ export type RootStackParamList = {
  termsScreen: undefined;
  paymentScreen: undefined;
  paymentStripeScreen: undefined;
- loveScreen: undefined;
+ //loveScreen: undefined;
   persoScreen:undefined;
  custInfoScreen: undefined;
  successScreen: undefined;
@@ -22,7 +22,7 @@ export type RootStackParamList = {
 export type BottomTabParamList = {
   Tables: undefined;
   Guides: undefined;
-  Love: undefined;
+  //Love: undefined;
   Perso: undefined;
   Discover: undefined;
   Evenements:undefined
@@ -41,9 +41,9 @@ export type RestoParamList = {
   RestoScreen: undefined;
 };
 
-export type LoveParamList = {
-  loveScreen: undefined;
-};
+// export type LoveParamList = {
+//   loveScreen: undefined;
+// };
 
 export type PersoParamList = {
   persoScreen: undefined;

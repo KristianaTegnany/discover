@@ -19,10 +19,8 @@ import successScreen from "../screens/successScreen";
 import termsScreen from "../screens/termsScreen";
 import { RootStackParamList } from "../types";
 import BottomTabNavigator from "./BottomTabNavigator";
-
 import paymentStripeScreen from "../screens/paymentStripeScreen";
 import { persoScreen } from "../screens/persoScreen";
-import hourSelectScreen from "../screens/hourSelectScreen";
   
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
@@ -114,36 +112,6 @@ function RootNavigator() {
           fontWeight: "200"
         }}}
         component={DishScreen}
-      />
-      {/* <Stack.Screen
-        name="crenSelectScreen"
-        options={{ headerTitle: "Choisir un jour", 
-        headerBackTitle: 'Retour',
-        headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        },
-        headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        }
-      }}
-        component={crenSelectScreen}
-      /> */}
-      <Stack.Screen
-        name="hourSelectScreen"
-        options={{ headerTitle: "Choisir une heure",
-        headerBackTitle: 'Retour',
-        headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        },
-        headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        }
-      }}
-        component={hourSelectScreen}
       />
       <Stack.Screen
         name="basketScreen"

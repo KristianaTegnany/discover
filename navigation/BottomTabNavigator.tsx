@@ -12,10 +12,10 @@ import {
   BottomTabParamList,
   TablesParamList,
   GuidesParamList,
-  LoveParamList,
+ // LoveParamList,
   PersoParamList,
 } from "../types";
-import loveScreen from "../screens/loveScreen";
+//import loveScreen from "../screens/loveScreen";
 import { persoScreen } from "../screens/persoScreen";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
@@ -120,23 +120,23 @@ function GuidesNavigator() {
   );
 }
 
-const LoveStack = createStackNavigator<LoveParamList>();
+// const LoveStack = createStackNavigator<LoveParamList>();
 
-function LoveNavigator() {
-  return (
-    <LoveStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <LoveStack.Screen
-        name="loveScreen"
-        component={loveScreen}
-        options={{ headerTitle: "Love" }}
-      />
-    </LoveStack.Navigator>
-  );
-}
+// function LoveNavigator() {
+//   return (
+//     <LoveStack.Navigator
+//       screenOptions={{
+//         headerShown: false,
+//       }}
+//     >
+//       <LoveStack.Screen
+//         name="loveScreen"
+//         component={loveScreen}
+//         options={{ headerTitle: "Love" }}
+//       />
+//     </LoveStack.Navigator>
+//   );
+// }
 
 const PersoStack = createStackNavigator<PersoParamList>();
 
