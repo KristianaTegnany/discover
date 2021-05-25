@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     width: "100%",
-    height: 290,
+    height: 320,
     marginTop:10
   },
   postWrapper: {
@@ -55,8 +55,9 @@ const styles = StyleSheet.create({
    // flexDirection:'row',
   //  justifyContent: "center",
     marginRight: 0,
-    marginTop:10,
+    marginTop:50,
     marginLeft: 0,
+    marginBottom:50
   },
   image: {
     width: '100%',
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     flexWrap: "wrap",
     fontFamily: "geometria-bold",
-    //  marginTop:30,
+      marginTop:7,
     // justifyContent: 'center', //Centered vertically
     // color: "#fff",
   },

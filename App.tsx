@@ -15,10 +15,11 @@ import { Provider, useSelector } from 'react-redux';
 import { store } from './store';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { stripeAccIdResto } from "./screens/RestoScreen";
+import * as Sentry from "@sentry/react-native";
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = `https://pptableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
+Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
 
 export default   function    App() {
   const isLoadingComplete = useCachedResources();
@@ -36,7 +37,7 @@ export default   function    App() {
       <Provider store={store}>
       <StripeProvider 
      stripeAccountId={stripeAccIdRestoValue}
-      publishableKey="pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl">
+      publishableKey="pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg">
       <AppearanceProvider>
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
