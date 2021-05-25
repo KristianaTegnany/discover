@@ -475,7 +475,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   const CrenSelectScreen = () => {
     return (
       <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
-        
+         
+
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
@@ -496,6 +497,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           zIndexInverse={1000}
           dropDownContainerStyle={styles.dropdown}
         />
+      
+
         <Text style={[styles.hourText, { color: textColor,  fontFamily:'geometria-regular', marginTop: openDate? 120 : 20 }]}>
           Sélectionnez l'heure 
         </Text>
@@ -516,6 +519,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           placeholderStyle={styles.labeldropdown}
           dropDownContainerStyle={styles.dropdown}
         />
+
         {
           !openDate &&
           <View
@@ -540,7 +544,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 })
               }}
               style={styles.btnNext}
-              disabled={selectedDay === "" || selectedHour === ""}
+           //   disabled={selectedDay === "" || selectedHour === ""}
             >
               <Ionicons
                 name="arrow-back"
@@ -1060,7 +1064,6 @@ const styles = StyleSheet.create({
   dateText: {
     marginBottom: 10,
     fontSize: 14,
-  //  fontWeight: "bold",
     color:'white',
     fontFamily:'geometria-bold'
   },
@@ -1069,23 +1072,19 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     fontSize: 14,
-  //  fontWeight: "bold",
     color:'white'
   },
   btnNextContainer: {
     position: "absolute",
     bottom: 20,
     right: 20,
-    width:200,
     borderRadius: 25,
     color:'white',
-    elevation:4000,
     backgroundColor: "#ff5050"
   },
   btnNext: {
     height: 50,
     width: 50,
-    elevation:4000,
     color:'white',
     justifyContent: "center",
     alignItems: "center",

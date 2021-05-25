@@ -5,17 +5,19 @@ import { Text, View } from "./Themed";
 function PostComponent(props: any) {
   return (
     <View style={[styles.container, props.style]}>
+           
       <View style={styles.postWrapper}>
-        <View style={styles.postHeader}>
-          <Image
+      <View style={styles.imageWrapper}>
+      <Image
             source={{
               uri: props.imgUrl,
             }}
             resizeMode="cover"
             style={styles.image}
           ></Image>
-          <View style={styles.headerGroup}>
-            <View style={styles.postTitleWrap}>
+</View>
+        <View style={styles.postHeader}>
+        
               <Text
                 style={styles.postTitle}
                 lightColor="rgba(0,0,0,0.8)"
@@ -23,12 +25,10 @@ function PostComponent(props: any) {
               >
                 {props.corponame || "nondef"}{" "}
               </Text>
-            </View>
             <Text style={styles.postDetailsK}>{props.StyleK || "Nondef"} </Text>
             <Text style={styles.postDetailsCity}>
               {props.city || "Nondef"}{" "}
             </Text>
-          </View>
         </View>
       </View>
     </View>
@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     width: "100%",
-    height: 130
+    height: 290,
+    marginTop:10
   },
   postWrapper: {
     // alignItems: "flex-start",
@@ -50,15 +51,16 @@ const styles = StyleSheet.create({
 
   postHeader: {
     width: "100%",
-    flexDirection:'row',
-    justifyContent: "center",
+   // flexDirection:'row',
+  //  justifyContent: "center",
     marginRight: 0,
+    marginTop:10,
     marginLeft: 0,
   },
   image: {
-    width: 110,
-    height: 110,
-    borderRadius: 17,
+    width: '100%',
+    height: 210,
+    borderRadius: 9,
     padding: 0
   },
   headerGroup: {
@@ -102,6 +104,9 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-regular",
     //   letterSpacing: 1,
     alignSelf: "baseline",
+  },
+  imageWrapper:{
+
   },
   moreIcon: {
     color: "grey",

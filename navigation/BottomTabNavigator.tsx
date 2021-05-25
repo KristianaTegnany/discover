@@ -28,7 +28,7 @@ export default function BottomTabNavigator() {
       initialRouteName="Tables"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint, labelStyle:{fontFamily:"geometria-regular"} }}
     >
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Discover"
         component={LoveNavigator}      
         
@@ -36,7 +36,7 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
           
         }}
-      />
+      /> */}
       
       <BottomTab.Screen
         name="Tables"

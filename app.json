@@ -23,7 +23,7 @@
       "bundleIdentifier": "com.satyamdorville.discover"
     },
     "android": {
-
+      "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
