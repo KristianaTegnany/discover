@@ -1,9 +1,9 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Button, Image, Route, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, Button, TouchableOpacity, Image, Route, StyleSheet } from "react-native";
 import { Avatar, Divider, ListItem } from "react-native-elements";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView,  } from "react-native-gesture-handler";
 import HTML from "react-native-render-html";
 import { NavigationScreenProp } from "react-navigation";
 import { useSelector } from "react-redux";
@@ -476,9 +476,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     return (
       <View style={[styles.crenContainer,  { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
          
-         
-       
-        
+          
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
@@ -561,7 +559,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           !loading &&
           hourstobook &&
           hourstobook.length == 0 && (
-            <View>
+            <View style={{ backgroundColor:"transparent" }}>
               <Text style={styles.textstrong}>
                 Plus d'horaires disponibles ! 🤷🏽‍♂️
               </Text>
@@ -1050,7 +1048,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 20,
-    borderRadius: 10
+    borderRadius: 10, 
   },
   dropdown: {
     borderColor: "transparent",
@@ -1082,14 +1080,12 @@ const styles = StyleSheet.create({
     right: 20,
     borderRadius: 25,
     color:'white',
-    zIndex:5000,
     backgroundColor: "#ff5050"
   },
   btnNext: {
+
     height: 50,
     width: 50,
-    zIndex:5000,
-    elevation:4,
     color:'white',
     justifyContent: "center",
     alignItems: "center",
@@ -1102,12 +1098,12 @@ const styles = StyleSheet.create({
     ],
   },
   wrapindicator: {
-    position: "absolute",
+  position: "absolute",
     alignItems: "center",
     top: "50%",
     left: "50%",
     justifyContent: "center",
-    zIndex: 10000,
+    zIndex: 20000,
     backgroundColor: 'transparent'
   },
   textstrong: {
@@ -1116,6 +1112,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     fontSize: 18,
     paddingLeft: 4,
+    backgroundColor:'transparent'
   },
   crenText: {
     fontSize: 16,
