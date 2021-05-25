@@ -16,6 +16,7 @@ import { store } from './store';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { stripeAccIdResto } from "./screens/RestoScreen";
 import * as Sentry from "@sentry/react-native";
+import { newRidgeState } from "react-ridge-state";
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
@@ -25,7 +26,7 @@ export default   function    App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [stripeAccIdRestoValue, setstripeAccIdRestoValue] = stripeAccIdResto.use();
-
+console.log(stripeAccIdRestoValue)
 
   loadResourcesAsync() ;
   if (!isLoadingComplete) {

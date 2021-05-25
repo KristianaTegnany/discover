@@ -27,7 +27,7 @@ DropDownPicker.addTranslation("FR", {
 DropDownPicker.setLanguage("FR");
 import { newRidgeState } from "react-ridge-state";
 
-export const stripeAccIdResto = newRidgeState<string>(''); // 0 could be something else like objects etc. you decide!
+export const stripeAccIdResto = newRidgeState<string>('acct_1FwTt6GC5CDQhYZj'); // 0 could be something else like objects etc. you decide!
 
 interface NavigationParams {
   restoId: string;
@@ -296,7 +296,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       noNightDelivery: myintcustRaw.attributes.noNightDelivery || false,
       minOrderDelivery: myintcustRaw.attributes.minOrderDelivery || 0,
       citiesChoice: myintcustRaw.attributes.citiesChoice2 || [],
-      stripeAccId: myintcustRaw.attributes.stripeAccId || [],
+      stripeAccId: myintcustRaw.attributes.stripeAccId || '',
       delayorderDelivery: myintcustRaw.attributes.delayorderDelivery || 0,
       confirmModeOrderOptions_delayorder:  myintcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
     };
@@ -535,6 +535,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 console.log(selectedDay)
 
                 setCrenModalVisible(false)
+                console.log(myintcust)
+                console.log(typeof myintcust.stripeAccId)
+
                 setstripeAccIdRestoValue(myintcust.stripeAccId)
                 navigation.navigate(goto, {
                   restoId: route.params.restoId,
