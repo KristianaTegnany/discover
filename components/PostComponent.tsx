@@ -27,7 +27,8 @@ function PostComponent(props: any) {
               </Text>
             <Text style={styles.postDetailsK}>{props.StyleK || "Nondef"} </Text>
             <Text style={styles.postDetailsCity}>
-              {props.city || "Nondef"}{" "}
+              {props.city || "Nondef"}{" - "}{props.country || "Nondef"}{" "}
+
             </Text>
         </View>
       </View>

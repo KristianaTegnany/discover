@@ -439,6 +439,7 @@ export default class TablesScreen extends React.Component<props, state> {
                     imgUrl={item.attributes.frontpic._url}
                     corponame={item.attributes.corporation}
                     city={item.attributes.cityvenue}
+                    country={item.attributes.country}
                     StyleK={item.attributes.style}
                   ></PostComponent>
                 )}
