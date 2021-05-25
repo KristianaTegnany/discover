@@ -246,7 +246,7 @@ export default class TablesScreen extends React.Component<props, state> {
     return(
       <>
         <View style={{marginTop: (index === 0 || !children)? 0 : 20, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-          <Text style={{fontSize: 18, fontFamily: children? 'geometria-bold' : 'geometria-ormal', marginBottom: children? 10 : 5 }}>{title}</Text>
+          <Text style={{fontSize: 18, fontFamily: children? 'geometria-bold' : 'geometria-regular', marginBottom: children? 10 : 5 }}>{title}</Text>
           <RadioButton onPress={() => {
             let { countries } = this.state
             let indexCountry = 0
