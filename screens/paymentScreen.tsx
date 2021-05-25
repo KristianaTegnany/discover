@@ -43,8 +43,6 @@ export const paymentScreen = ({ route, navigation }: Props) => {
 
 }
   useEffect(() => {
-console.log("start")
-console.log(route.params)
 
   }, []);
 
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     //textTransform: "uppercase",
     fontFamily: "geometria-bold",
@@ -100,14 +98,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   textBold: {
     flex: 1,
     fontSize: 16,
     top: 0,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
 
     padding: 20,
   },

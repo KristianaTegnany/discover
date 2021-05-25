@@ -13,6 +13,8 @@ export interface ProductItem {
     restoId:string
   }
 
+  export interface selectedIntcustStripeAccountId {id:string};
+
 
  
   declare module 'react-native-stripe-checkout-webview'

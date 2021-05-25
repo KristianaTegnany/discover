@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
     //marginLeft: 20,
     fontSize: 30,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily: "geometria-bold",
     backgroundColor: "transparent",
     color: "white",

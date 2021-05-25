@@ -412,9 +412,9 @@ export const DishScreen = ({ route, navigation }: Props) => {
                         <Text
                           style={{
                             fontSize: 16,
-                            fontWeight: "bold",
+                         //   fontWeight: "bold",
                             alignSelf: "center",
-                            fontFamily: "geometria-regular",
+                            fontFamily: "geometria-bold",
                             color: textColor,
                           }}
                         >
@@ -444,9 +444,9 @@ export const DishScreen = ({ route, navigation }: Props) => {
                         <Text
                           style={{
                             fontSize: 16,
-                            fontWeight: "bold",
+                           // fontWeight: "bold",
                             alignSelf: "center",
-                            fontFamily: "geometria-regular",
+                            fontFamily: "geometria-bold",
                             color: textColor,
                           }}
                         >
@@ -481,9 +481,9 @@ const styles = StyleSheet.create({
 
   appButtonTextCheckbox: {
     fontSize: 16,
-    fontWeight: "bold",
+ //   fontWeight: "bold",
     alignSelf: "center",
-    fontFamily: "geometria-regular",
+    fontFamily: "geometria-bold",
   },
   appButtonContainer: {
     elevation: 8,
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+   // fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
     textTransform: "uppercase",
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   text: {
     flex: 1,

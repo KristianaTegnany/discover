@@ -51,9 +51,7 @@ export const hourSelectScreen = ({ route, navigation }: Props) => {
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
     intcustRaw.id = route.params.restoId;
-    console.log(route.params.restoId)
-    console.log(moment.tz(route.params.day, 'America/Martinique').format())
-    console.log(route.params.bookingType)
+   
     
     let params2 = {
       itid: route.params.restoId,
@@ -151,7 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   textstrong: {
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily: "geometria-bold",
     paddingVertical: 20,
     fontSize: 18,
@@ -181,14 +179,17 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     textTransform: "uppercase",
+    fontFamily: "geometria-regular",
+
   },
   title: {
     fontSize: 20,
+    fontFamily: "geometria-regular",
     padding: 30,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   text: {
     fontSize: 16,

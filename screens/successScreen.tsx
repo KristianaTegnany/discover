@@ -22,7 +22,6 @@ interface Props {
 
 export const successScreen = ({ route, navigation }: Props) => {
   useEffect(() => {
-    console.log(route.params);
   }, []);
 
   return (
@@ -89,9 +88,9 @@ export const successScreen = ({ route, navigation }: Props) => {
         <Text
           style={{
             fontSize: 16,
-            fontWeight: "bold",
+        //    fontWeight: "bold",
             alignSelf: "center",
-            fontFamily: "geometria-regular",
+            fontFamily: "geometria-bold",
           }}
         >
           Revenir à l'accueil
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     //textTransform: "uppercase",
     fontFamily: "geometria-bold",
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+ //   fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,

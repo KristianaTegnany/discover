@@ -85,14 +85,6 @@ export const basketScreen = ({ route, navigation }: Props) => {
   }
   async function calculusTotalQuantityBasket() {
     let sumRaw = await sum(products, "quantity");
-    if(sumRaw === 0) {
-      navigation.navigate('orderScreen', {
-        restoId: route.params.restoId,
-        bookingType: route.params.bookingType,
-        day: route.params.day,
-        hour: route.params.hour
-      })
-    }
     setTotalQuantityBasket(sumRaw);
   }
 
@@ -364,7 +356,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+   // fontWeight: "bold",
     alignSelf: "center",
     //textTransform: "uppercase",
     fontFamily: "geometria-bold",
@@ -380,14 +372,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   textBold: {
     flex: 1,
     fontSize: 16,
     top: 0,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
 
     padding: 20,
   },

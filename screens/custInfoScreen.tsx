@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
@@ -43,7 +44,6 @@ const TAKEAWAY = 'TakeAway',
 export const custInfoScreen = ({ route, navigation }: Props) => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string>();
   const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -70,6 +70,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const [intcust, setIntcust] = useState({
     id: "",
     apikeypp: "",
+    corporation:"",
     paymentChoice: "",
     option_DeliveryByNoukarive: false,
     option_DeliveryByToutAlivrer: false,
@@ -136,53 +137,8 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     setPhone(phone);
   }
   
-  const fetchPaymentSheetParams = async () => {
-    let params = {
-    
-    }
-    const { paymentIntent, ephemeralKey, customer }  = await Parse.Cloud.run("stripeCheckoutForRN", params)
-    setClientSecret(paymentIntent);
-    return {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-    };
-  };
 
-  const initializePaymentSheet = async () => {
-    const {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-    } = await fetchPaymentSheetParams();
-
-    const { error } = await initPaymentSheet({
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
-      paymentIntentClientSecret: paymentIntent,
-    });
-    if (!error) {
-      setLoading(true);
-    }
-  };
-
-  const openPaymentSheet = async () => {
-    if (!clientSecret) {
-      return;
-    }
-    setLoading(true);
-    const { error } = await presentPaymentSheet({
-      clientSecret,
-    });
-
-    if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
-    } else {
-      Alert.alert('Success', 'The payment was confirmed successfully');
-    }
-    setPaymentSheetEnabled(false);
-    setLoading(false);
-  };
+ 
 
   async function calculusTotalCashBasket() {
     let sumRaw = 0;
@@ -322,6 +278,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function goPay() {
     let blockGo = false;
+    setLoading(true);
 
     if (
       email &&
@@ -477,6 +434,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         });
 
         if (intcust.paymentChoice !== "stripeOptin") {
+          
           const params1 = {
             itid: intcust.id,
             winl: "window.location.host",
@@ -506,37 +464,66 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             amount: totalCashBasket + Number(delifare),
           });
         } else if (intcust.paymentChoice == "stripeOptin") {
-          const params1 = {
-            itid: intcust.id,
-            winl: "https://www.tablediscover.com",
-            resaid:  resaRaw.id,
-            paidtype: "order",
-            customeremail: "satyam.dorville@gmail.com",
-            type: "order",
-            amount: Math.ceil(totalCashBasket) + Number(delifare),
-            mode: resaRaw.attributes.engagModeResa,
-            noukarive: intcust.option_DeliveryByNoukarive,
-            toutalivrer: intcust.option_DeliveryByToutAlivrer,
-            stripeAccount: intcust.stripeAccId,
-          };
-          const session = await Parse.Cloud.run(
-            "createCheckoutSessionStripeForApp",
-            params1
-          );
 
-      
+         
+          let sumRaw = 0;
+    products.map((product) => {
+      sumRaw = sumRaw + product.quantity * product.amount;
+    });
 
-          console.log(session)
-          navigation.navigate("paymentStripeScreen", {
-            CHECKOUT_SESSION_ID: session.id,
-            STRIPE_PUBLIC_KEY: "pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg",
-            bookingType: bookingType,
-            stripeAccount: intcust.stripeAccId,
-            resaId: resaRaw.id,
-            day: day,
-            hour: hour,
-            amount: totalCashBasket + Number(delifare),
+    let params = {
+      stripeAccount : intcust.stripeAccId, 
+      amount: sumRaw + Number(delifare),
+      customeremail:email, 
+      name : firstname + lastname,
+      resaid :  resaRaw.id,
+      mode: bookingType,
+      paidType:'order',
+      noukarive: intcust.option_DeliveryByNoukarive,
+      toutalivrer:intcust.option_DeliveryByToutAlivrer
+    }
+
+    const { paymentIntent, ephemeralKey, customer }  = await Parse.Cloud.run("stripeCheckoutForRN", params)
+
+          let ERR  = {}
+          
+          ERR = await initPaymentSheet({
+            merchantDisplayName: intcust.corporation,
+            customerId: customer,
+            customerEphemeralKeySecret: ephemeralKey,
+            paymentIntentClientSecret: paymentIntent,
           });
+      
+          if (!ERR) {
+            setLoading(true);
+          }
+
+          
+         let clientSecret = paymentIntent
+          const { error } = await presentPaymentSheet({
+            clientSecret,
+          });
+      
+          if (error) {
+            if(error.code=="Canceled"){
+            Alert.alert('Paiement annulé');
+            }else{
+              Alert.alert(`Error code: ${error.code}`, error.message);
+            }
+          } else {  Alert.alert('Paiement réussi.');
+            console.log(`Stripe checkout session succeeded. session id: .`);
+            navigation.navigate("successScreen", {
+              bookingType: bookingType,
+              resaId: resaRaw.id,
+              day: day,
+              hour:hour,
+              amount: totalCashBasket + Number(delifare),
+            });
+          }
+          setPaymentSheetEnabled(false);
+          setLoading(false);
+       
+      
         }
       }
     } else if (!email || EmailValidator.validate(email) == false) {
@@ -549,8 +536,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }
 
   useEffect(() => {
-    initializePaymentSheet();
-
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
     intcustRaw.id = restoId;
@@ -563,7 +548,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         option_DeliveryByNoukarive:
           intcustRaw.attributes.option_DeliveryByNoukarive || false,
         option_DeliveryByToutAlivrer:
-          intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
+        intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
         stripeAccId: intcustRaw.attributes.stripeAccId || "",
         orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
         orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
@@ -581,13 +566,16 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         deliverynightstart: intcustRaw.attributes.deliverynightstart || "",
         deliverynoonblock: intcustRaw.attributes.deliverynoonblock || "",
         deliverynightblock: intcustRaw.attributes.deliverynightblock || "",
+        corporation : intcustRaw.attributes.corporation || '',
       },
     ];
     setIntcust(intcustRawX[0]);
     calculusTotalCashBasket();
+
   }, []);
 
   return (
+   
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.container2}>
@@ -758,25 +746,22 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             placeholder="Fort-de-france"
             value={notecom}
           />
-  <TouchableOpacity
-        onPress={openPaymentSheet}
-        style={styles.appButtonContainer}
-          >
-            <Text style={styles.appButtonText}>
-              {" "}
-              <Text style={styles.payText}>Valider et payer</Text>{" "}
-            </Text>
-          </TouchableOpacity>
 
+
+  
           <TouchableOpacity
             onPress={() => goPay()}
             style={styles.appButtonContainer}
           >
             <Text style={styles.appButtonText}>
               {" "}
+
               <Text style={styles.payText}>Valider et payer</Text>{" "}
             </Text>
           </TouchableOpacity>
+          {loading && 
+          <ActivityIndicator size="large" color="#F50F50" />
+          }
           {intcust && intcust.paymentChoice == "stripeOptin" && (
             <Text style={styles.appButtonText}>
               {" "}
@@ -867,7 +852,7 @@ const styles = StyleSheet.create({
     display: "flex",
     fontSize: 18,
     //  color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
@@ -890,14 +875,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+   // fontWeight: "bold",
   },
   textBold: {
     flex: 1,
     fontSize: 16,
     top: 0,
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+ //   fontWeight: "bold",
     padding: 20,
   },
   textRaw: {

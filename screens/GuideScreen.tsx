@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     textTransform: "uppercase",
   },
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     flexWrap: "wrap",
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   text: {
     fontSize: 16,

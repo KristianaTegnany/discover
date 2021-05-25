@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
 
   textcattitle: {
     color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
   FlatList: {
@@ -347,13 +347,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     padding: 30,
-    fontWeight: "bold",
+ //   fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
   text: {
     fontSize: 16,
     padding: 4,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
   minitext: {
@@ -387,6 +387,6 @@ orderScreen["navigationOptions"] =  (props: Props) => ({
    
 });
 
-console.log(orderScreen["navigationOptions"])
+
 
 export default orderScreen;

@@ -25,7 +25,9 @@ DropDownPicker.addTranslation("FR", {
   NOTHING_TO_SHOW: "Il n'y a rien à montrer!"
 });
 DropDownPicker.setLanguage("FR");
+import { newRidgeState } from "react-ridge-state";
 
+export const stripeAccIdResto = newRidgeState<string>(''); // 0 could be something else like objects etc. you decide!
 
 interface NavigationParams {
   restoId: string;
@@ -42,6 +44,7 @@ interface Props {
   route: Route;
   restaurant: [];
 }
+
 
 interface IMenus {
   id: string;
@@ -61,7 +64,8 @@ interface ICats {
 export const RestoScreen = ({ route, navigation }: Props) => {
   const [menus, setMenus] = useState<IMenus[]>();
   const [cats, setCats] = useState<ICats[]>();
-  
+  const [stripeAccIdRestoValue, setstripeAccIdRestoValue] = stripeAccIdResto.use();
+
   const [businessHoursTakeAway, setBusinessHoursTakeAway] = useState([
     {
       daysOfWeek: [],
@@ -111,6 +115,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     noNightDelivery: false,
     minOrderDelivery:0,
     citiesChoice:[],
+    stripeAccId:'',
     delayorderDelivery:0,
     confirmModeOrderOptions_delayorder:0
   });
@@ -291,11 +296,11 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       noNightDelivery: myintcustRaw.attributes.noNightDelivery || false,
       minOrderDelivery: myintcustRaw.attributes.minOrderDelivery || 0,
       citiesChoice: myintcustRaw.attributes.citiesChoice2 || [],
+      stripeAccId: myintcustRaw.attributes.stripeAccId || [],
       delayorderDelivery: myintcustRaw.attributes.delayorderDelivery || 0,
       confirmModeOrderOptions_delayorder:  myintcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
     };
     setMyintcust(myintcustRaw);
-    console.log(myintcustRaw);
     let results: any = [];
     let businessHours = sortBy(myintcustRaw.businessHours, ["daysOfWeek"]);
     await businessHours.forEach((element) => {
@@ -470,6 +475,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   const CrenSelectScreen = () => {
     return (
       <View style={[styles.crenContainer, styles.shadow, { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
+        
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
@@ -491,7 +497,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           dropDownContainerStyle={styles.dropdown}
         />
         <Text style={[styles.hourText, { color: textColor,  fontFamily:'geometria-regular', marginTop: openDate? 120 : 20 }]}>
-          Sélectionnez l'heure
+          Sélectionnez l'heure 
         </Text>
         <DropDownPicker
           open={openHour}
@@ -521,8 +527,11 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           >
             <TouchableOpacity
               onPress={() => {
+                console.log("pressed to go")
                 console.log(selectedDay)
+
                 setCrenModalVisible(false)
+                setstripeAccIdRestoValue(myintcust.stripeAccId)
                 navigation.navigate(goto, {
                   restoId: route.params.restoId,
                   bookingType: bookingType,
@@ -621,6 +630,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
 {(myintcust.EngagModeTakeAway== true || myintcust.EngagModeDelivery==true) && 
 <View>
+  <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
+
           <Text style={styles.textMoli}>
             ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
             {myintcust.contactphone}
@@ -749,7 +760,10 @@ export const RestoScreen = ({ route, navigation }: Props) => {
               />
 <Text  style={styles.title}>La Carte</Text>
 {(myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true) && 
+<View>
 <Text  style={styles.textMoli}>Pour commander, choisissez votre mode.</Text>
+<Text  style={styles.textMoli}></Text>
+</View>
 }
           {!cats ||
             (!menus &&
@@ -947,7 +961,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     //textTransform: "uppercase",
     fontFamily: "geometria-bold",
@@ -964,9 +978,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     paddingBottom: 10,
-
     fontFamily: "geometria-bold",
-    fontWeight: "bold",
+   // fontWeight: "bold",
   },
   text: {
     flex: 1,
@@ -993,7 +1006,7 @@ const styles = StyleSheet.create({
   },
   textcattitle: {
     color: "#fff",
-    fontWeight: "bold",
+   // fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
 
@@ -1041,35 +1054,38 @@ const styles = StyleSheet.create({
   },
   labeldropdown: {
     color: "white",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily:'geometria-bold'
   },
   dateText: {
     marginBottom: 10,
     fontSize: 14,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     color:'white',
-    fontFamily:'geometria-regular'
+    fontFamily:'geometria-bold'
   },
   hourText: {
-    fontFamily:'geometria-regular',
+    fontFamily:'geometria-bold',
     marginTop: 20,
     marginBottom: 10,
     fontSize: 14,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     color:'white'
   },
   btnNextContainer: {
     position: "absolute",
     bottom: 20,
     right: 20,
+    width:200,
     borderRadius: 25,
     color:'white',
+    elevation:4000,
     backgroundColor: "#ff5050"
   },
   btnNext: {
     height: 50,
     width: 50,
+    elevation:4000,
     color:'white',
     justifyContent: "center",
     alignItems: "center",
@@ -1091,7 +1107,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   textstrong: {
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily: "geometria-bold",
     paddingVertical: 20,
     fontSize: 18,

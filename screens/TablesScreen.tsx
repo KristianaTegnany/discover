@@ -216,7 +216,7 @@ export default class TablesScreen extends React.Component<props, state> {
   FilterButton = (props:any) => {
     const { selectedMode } = this.state
     return (
-      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode}, this.filtre)} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' :'transparent' } ]} titleStyle={{fontSize: 13, fontWeight: 'bold', fontFamily:"geometria-regular", color: selectedMode === props.mode? 'white' : 'grey'}}/>
+      <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode}, this.filtre)} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' :'transparent' } ]} titleStyle={{fontSize: 13, fontFamily:"geometria-bold", color: selectedMode === props.mode? 'white' : 'grey'}}/>
     )
   }
 
@@ -246,7 +246,7 @@ export default class TablesScreen extends React.Component<props, state> {
     return(
       <>
         <View style={{marginTop: (index === 0 || !children)? 0 : 20, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-          <Text style={{fontSize: 18, fontWeight: children? 'bold' : 'normal', marginBottom: children? 10 : 5 }}>{title}</Text>
+          <Text style={{fontSize: 18, fontFamily: children? 'geometria-bold' : 'geometria-ormal', marginBottom: children? 10 : 5 }}>{title}</Text>
           <RadioButton onPress={() => {
             let { countries } = this.state
             let indexCountry = 0
@@ -341,7 +341,7 @@ export default class TablesScreen extends React.Component<props, state> {
         </Modal>
         <View style={{marginTop: 60, alignSelf:'center', width: '85%', flexDirection:'row', alignItems:'center'}}>
           <Text style={{marginRight: 10, fontSize:16}}>{this.getSelectedPlace()}</Text>
-          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 14, fontWeight:'bold', fontFamily:"geometria-regular"}} buttonStyle={{ paddingHorizontal: 10, marginRight:30, height: 35, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
+          <Button onPress={() => this.setState({isPlaceModal: true})} title="Changer" titleStyle={{fontSize: 14, fontFamily:"geometria-bold"}} buttonStyle={{ paddingHorizontal: 10, marginRight:30, height: 35, borderRadius: 5, borderColor: 'transparent', backgroundColor: '#ff5050'}} />
           {/* <Ionicons name={"options"} color={this.state.isFiltre? '#F50F50' : 'grey'} size={25} onPress={() => {
               this.setState({isFiltre: !this.state.isFiltre})
               if(!this.state.isFiltre)
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,

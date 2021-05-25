@@ -67,8 +67,8 @@ function RootNavigator() {
         name="GuideScreen"
         options={{ headerTitle: "", headerTransparent: true,
         headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200",
+          fontFamily: "geometria-bold",
+       //   fontWeight: "200",
         //  color:"green"
         } }}
         component={GuideScreen}
@@ -77,8 +77,8 @@ function RootNavigator() {
         name="RestoScreen"
         options={{ headerTitle: "", headerTransparent: true,
         headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200", 
+          fontFamily: "geometria-bold",
+       //   fontWeight: "200", 
         //  color:"green"
         } }}
         component={RestoScreen}

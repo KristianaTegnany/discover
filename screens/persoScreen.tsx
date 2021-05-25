@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   },
   textBold: {
     marginTop: 50,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     fontFamily: "geometria-bold",
     fontSize: 18,
     paddingHorizontal: 20,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-regular",
   },
   textstrong: {
-    fontWeight: "bold",
+ //   fontWeight: "bold",
     fontFamily: "geometria-bold",
     paddingVertical: 20,
     fontSize: 18,
@@ -286,14 +286,14 @@ const styles = StyleSheet.create({
     display: "flex",
     fontSize: 18,
     //  color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
   title: {
     fontSize: 20,
     padding: 30,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   text: {
     fontSize: 16,

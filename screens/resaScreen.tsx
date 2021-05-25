@@ -91,7 +91,6 @@ export const resaScreen = ({ route, navigation }: Props) => {
   }
 
   async function goResa() {
-    console.log("go resa");
     let blockGo = false;
 
     if (email) {
@@ -126,9 +125,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       params01
     );
 
-    console.log(
-      "myintcust.onsite_maxresbycren" + myintcust.onsite_maxresbycren
-    );
+
     if (
       blockGo == false &&
       coversForCren + nbcover > myintcust.onsite_maxresbycren
@@ -154,10 +151,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       "getNumOfGuestsForDay",
       params3
     );
-    console.log("numOfGuestsForDay" + numOfGuestsForDay);
-    console.log(
-      "myintcust.onsite_maxguestbyday" + myintcust.onsite_maxguestbyday
-    );
+ 
 
     if (numOfGuestsForDay + nbcover > myintcust.onsite_maxguestbyday) {
       blockGo = true;
@@ -449,14 +443,14 @@ const styles = StyleSheet.create({
     display: "flex",
     fontSize: 18,
     //  color: "#fff",
-    fontWeight: "bold",
+  //  fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
   title: {
     fontSize: 20,
     padding: 30,
-    fontWeight: "bold",
+  //  fontWeight: "bold",
   },
   text: {
     fontSize: 16,

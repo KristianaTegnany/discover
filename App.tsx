@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from "expo-font";
 import useCachedResources from './hooks/useCachedResources';
@@ -11,17 +11,20 @@ import {AppearanceProvider} from 'react-native-appearance';
 import {withAppContextProvider} from './components/GlobalContext'; // add this
 import {AppRegistry} from 'react-native';
 import {expo as appName} from './app.json';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store } from './store';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import { stripeAccIdResto } from "./screens/RestoScreen";
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
+Parse.serverURL = `https://pptableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
 
 export default   function    App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const [stripeAccIdRestoValue, setstripeAccIdRestoValue] = stripeAccIdResto.use();
+
 
   loadResourcesAsync() ;
   if (!isLoadingComplete) {
@@ -30,10 +33,10 @@ export default   function    App() {
     
 
     return (
-      <StripeProvider publishableKey="pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg">
-
       <Provider store={store}>
-
+      <StripeProvider 
+     stripeAccountId={stripeAccIdRestoValue}
+      publishableKey="pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl">
       <AppearanceProvider>
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
@@ -41,8 +44,8 @@ export default   function    App() {
 
       </SafeAreaProvider>
       </AppearanceProvider>
-      </Provider>
       </StripeProvider>
+      </Provider>
     );
   }
 
