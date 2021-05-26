@@ -15,6 +15,18 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "earthstudio",
+            "project": "earthstudio",
+            "authToken": "69dd8904bd6711eb9a3c0e01f2690d87"
+          }
+        }
+      ]
+    },
     "assetBundlePatterns": [
       "**/*"
     ],

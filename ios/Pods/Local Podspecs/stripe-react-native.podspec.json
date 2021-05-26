@@ -4,9 +4,7 @@
   "summary": "Stripe SDK for React Native",
   "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
-  "authors": {
-    "name": "Stripe"
-  },
+  "authors": "Stripe",
   "platforms": {
     "ios": "11.0"
   },
