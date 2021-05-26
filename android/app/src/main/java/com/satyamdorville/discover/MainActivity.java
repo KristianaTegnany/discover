@@ -33,7 +33,9 @@ public class MainActivity extends NavigationActivity {
   }
 
 
-    
+      public String getMainComponentName() {
+    return 'Hello word';
+  }
 
    // @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
