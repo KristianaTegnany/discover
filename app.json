@@ -2,7 +2,7 @@
   "expo": {
     "name": "Table Discover",
     "slug": "discover",
-    "version": "1.0.3",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "discover",
@@ -44,7 +44,7 @@
         }
       ],
       "package": "com.satyamdorville.discover",
-      "versionCode": 4
+      "versionCode": 5
 
     },
     "web": {
