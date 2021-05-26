@@ -66,8 +66,7 @@ function RootNavigator() {
         options={{ headerTitle: "", headerTransparent: true,
         headerBackTitleStyle: {
           fontFamily: "geometria-bold",
-       //   fontWeight: "200",
-        //  color:"green"
+      
         } }}
         component={GuideScreen}
       />
@@ -76,8 +75,8 @@ function RootNavigator() {
         options={{ headerTitle: "", headerTransparent: true,
         headerBackTitleStyle: {
           fontFamily: "geometria-bold",
-       //   fontWeight: "200", 
-        //  color:"green"
+       
+          
         } }}
         component={RestoScreen}
       />

@@ -1,9 +1,8 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Button, TouchableOpacity, Image, Route, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, Button, TouchableOpacity, Image, Route, StyleSheet, ScrollView } from "react-native";
 import { Avatar, Divider, ListItem } from "react-native-elements";
-import { ScrollView,  } from "react-native-gesture-handler";
 import HTML from "react-native-render-html";
 import { NavigationScreenProp } from "react-navigation";
 import { useSelector } from "react-redux";
@@ -765,7 +764,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 <Divider
                 style={{ backgroundColor: "grey", marginVertical: 20 }}
               />
-              
+
 <Text  style={styles.title}>La Carte</Text>
 {(myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true) && 
 <View>
