@@ -19,6 +19,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber":2,
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,
       "bundleIdentifier": "com.satyamdorville.discover"
