@@ -2,7 +2,7 @@
   "expo": {
     "name": "Table Discover",
     "slug": "discover",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "discover",
@@ -19,7 +19,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber":"1",
+      "buildNumber":"7",
       "userInterfaceStyle": "automatic",
       "supportsTablet": true
     },
@@ -43,7 +43,7 @@
           ]
         }
       ],
-      "versionCode": 1
+      "versionCode": 7
 
     },
     "web": {
