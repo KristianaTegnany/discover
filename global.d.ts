@@ -16,5 +16,4 @@ export interface ProductItem {
   export interface selectedIntcustStripeAccountId {id:string};
 
 
- 
   declare module 'react-native-stripe-checkout-webview'
