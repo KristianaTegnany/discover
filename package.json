@@ -52,6 +52,7 @@
     "react-native-snap-carousel": "^3.9.1",
     "react-native-stripe-checkout-webview": "0.0.13",
     "react-native-ui-lib": "^5.22.0",
+    "react-native-unimodules": "^0.13.3",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
     "react-native-webview": "^11.2.3",
