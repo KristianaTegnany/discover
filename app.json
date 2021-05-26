@@ -21,8 +21,7 @@
     "ios": {
       "buildNumber":"1",
       "userInterfaceStyle": "automatic",
-      "supportsTablet": true,
-      "bundleIdentifier": "com.satyamdorville.discover"
+      "supportsTablet": true
     },
     "android": {
       "userInterfaceStyle": "automatic",
@@ -44,7 +43,6 @@
           ]
         }
       ],
-      "package": "com.satyamdorville.discover",
       "versionCode": 1
 
     },
