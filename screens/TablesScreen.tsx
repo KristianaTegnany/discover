@@ -1,6 +1,5 @@
 import * as React from "react";
-import * as Permissions from "expo-permissions";
-import * as Location from "expo-location";
+
 var Parse = require("parse/react-native");
 import PostComponent from "../components/PostComponent";
 import {
@@ -11,9 +10,10 @@ import {
   TextInput,
   Image,
   Dimensions,
+  ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { TouchableWithoutFeedback, ScrollView } from "react-native-gesture-handler";
+import { TouchableWithoutFeedback,  } from "react-native-gesture-handler";
 import { View } from "../components/Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
@@ -198,19 +198,7 @@ export default class TablesScreen extends React.Component<props, state> {
     }
   }
 
-  async getLocationAsync() {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status === "granted") {
-      let location = await Location.getCurrentPositionAsync({});
-      this.setState({
-        hasLocationPermissions: true,
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-    } else {
-      alert("Location permission not granted");
-    }
-  }
+
 
 
   FilterButton = (props:any) => {
