@@ -26,13 +26,19 @@ export default   function    App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [stripeAccIdRestoValue, setstripeAccIdRestoValue] = stripeAccIdResto.use();
-console.log(stripeAccIdRestoValue)
 
   loadResourcesAsync() ;
+  Sentry.init({
+    dsn: 'https://8a30ffe4a08647e889bb528cf8a3b14a@o724568.ingest.sentry.io/5782293',
+    enableInExpoDevelopment: true,
+    debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
+  });
+
   if (!isLoadingComplete) {
     return null;
   } else {
-    
+
+   
 
     return (
       <Provider store={store}>

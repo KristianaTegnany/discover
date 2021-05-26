@@ -62,7 +62,8 @@
     "react-navigation": "^4.4.4",
     "react-redux": "^7.2.3",
     "react-ridge-state": "^4.2.1",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "sentry-expo": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
