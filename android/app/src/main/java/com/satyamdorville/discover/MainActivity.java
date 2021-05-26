@@ -33,14 +33,12 @@ public class MainActivity extends NavigationActivity {
   }
 
 
-      public String getMainComponentName() {
-    return 'Hello word';
-  }
+    
 
    // @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
         return new ReactActivityDelegate(this, getMainComponentName()) {
-          //  @Override
+            @Override
             protected ReactRootView createRootView() {
                 return new RNGestureHandlerEnabledRootView(MainActivity.this);
             }
