@@ -35,7 +35,7 @@ public class MainActivity extends NavigationActivity {
 
     
 
-    @Override
+   // @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
         return new ReactActivityDelegate(this, getMainComponentName()) {
             @Override

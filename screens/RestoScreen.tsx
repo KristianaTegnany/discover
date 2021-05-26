@@ -765,6 +765,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 <Divider
                 style={{ backgroundColor: "grey", marginVertical: 20 }}
               />
+              
 <Text  style={styles.title}>La Carte</Text>
 {(myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true) && 
 <View>
