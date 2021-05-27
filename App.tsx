@@ -15,15 +15,22 @@ import { Provider, useSelector } from 'react-redux';
 import { store } from './store';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { stripeAccIdResto } from "./screens/RestoScreen";
-import * as Sentry from "@sentry/react-native";
+import * as Sentry from 'sentry-expo';
 import { newRidgeState } from "react-ridge-state";
-
+Sentry.Native
+Sentry.Browser
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
 Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
+Sentry.init({
+  dsn: 'https://8a30ffe4a08647e889bb528cf8a3b14a@o724568.ingest.sentry.io/5782293',
+  enableInExpoDevelopment: true,
+  debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
+});
 
 
 export default   function    App() {
+  
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [stripeAccIdRestoValue, setstripeAccIdRestoValue] = stripeAccIdResto.use();
