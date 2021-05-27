@@ -22,7 +22,7 @@
           "config": {
             "organization": "earthstudio",
             "project": "earthstudioproject",
-            "authToken": "f5d3f8025bd646969d40eea023552318c46276de4d3f449296dea678d53e75ee"
+            "authToken": "8d2b70557e5b492395f90fcb4345df5f9be5e326bf034e43b7f8e01ff9afdfcb"
           }
         }
       ]
@@ -55,8 +55,7 @@
           ]
         }
       ],
-      "versionCode": 8,
-      "package": "com.satyamdorville.discover"
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
