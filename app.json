@@ -21,7 +21,7 @@
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
             "organization": "earthstudio",
-            "project": "earthstudio",
+            "project": "earthstudioproject",
             "authToken": "8d2b70557e5b492395f90fcb4345df5f9be5e326bf034e43b7f8e01ff9afdfcb"
           }
         }
