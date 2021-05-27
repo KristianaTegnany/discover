@@ -13,8 +13,8 @@ import { emptyall, store } from "../store";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { sortBy } from "lodash";
-import { Ionicons } from "@expo/vector-icons";
 import Modal from 'react-native-modal';
+import { Ionicons } from "@expo/vector-icons";
 import moment from "moment-timezone";
 import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 DropDownPicker.addTranslation("FR", {

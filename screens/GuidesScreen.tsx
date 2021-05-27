@@ -1,6 +1,4 @@
 import * as React from "react";
-import * as Permissions from "expo-permissions";
-import * as Location from "expo-location";
 var Parse = require("parse/react-native");
 import GuideComponent from "../components/GuideComponent";
 import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
@@ -44,19 +42,7 @@ export default class GuidesScreen extends React.Component<props, state> {
       .catch((error: any) => console.log(error));
   }
 
-  async getLocationAsync() {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status === "granted") {
-      let location = await Location.getCurrentPositionAsync({});
-      this.setState({
-        hasLocationPermissions: true,
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-    } else {
-      alert("Location permission not granted");
-    }
-  }
+
 
   render() {
     //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');

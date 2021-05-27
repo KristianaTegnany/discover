@@ -12,8 +12,6 @@ import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
-import { ProductItem } from "../global";
 
 interface NavigationParams {
   restoId: string;

@@ -19,8 +19,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import { FontAwesome5 } from "@expo/vector-icons";
 import * as EmailValidator from "email-validator";
+import { FontAwesome5 } from "@expo/vector-icons";
 import RadioButton from '../components/Radio'
 import moment from 'moment-timezone'
 moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");

@@ -15,12 +15,12 @@ import {
 } from "react-native";
 import { TouchableWithoutFeedback,  } from "react-native-gesture-handler";
 import { View } from "../components/Themed";
-import { Ionicons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import Carousel from 'react-native-snap-carousel'
 import Modal from 'react-native-modal'
 import RadioButton from '../components/Radio'
 import Text from '../components/Text'
+import { Ionicons } from "@expo/vector-icons";
 
 // @ts-ignore
 const asia          = require('../assets/images/asia.jpeg'),

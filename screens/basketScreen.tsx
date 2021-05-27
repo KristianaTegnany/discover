@@ -10,8 +10,8 @@ import { ProductItem } from "../global";
 import { Avatar, ListItem } from "react-native-elements";
 import { useEffect } from "react";
 import { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { add, remove, store } from "../store";
+import { Ionicons } from "@expo/vector-icons";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
