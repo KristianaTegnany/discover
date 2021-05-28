@@ -156,6 +156,7 @@ export const persoScreen = ({ route, navigation }: Props) => {
 
       <Text style={styles.text2}>Notre objectif est de vous permettre de vivre votre amour des restaurants de la manière la plus agréable possible. Si vous souhaitez remonter un bug ou proposer une amélioration, n'hésitez pas à nous écrire directement sur Whatsapp ou nous envoyer un email, les coordonnées sont plus bas. N'hésitez pas à joindre des copies d'écran. </Text>
       <Text style={styles.text2Bold}>A venir</Text>
+      <Text style={styles.text2}>- Evènements : Commandez et réservez. </Text>
       <Text style={styles.text2}>- Compte utilisateur pour sauvegarder vos informations. </Text>
       <Text style={styles.text2}>- Codes Promos. </Text>
       <Text style={styles.text2}>- Programme de Fidélité. </Text>
