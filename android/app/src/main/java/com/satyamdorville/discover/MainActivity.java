@@ -20,7 +20,7 @@ public class MainActivity extends NavigationActivity {
         intent.putExtra("newConfig", newConfig);
         sendBroadcast(intent);
     }
-    
+
     protected String getMainComponentName() {
         return "App"; // here
     }

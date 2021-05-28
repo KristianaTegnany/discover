@@ -1017,8 +1017,8 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   textcattitle: {
-    color: "#fff",
    // fontWeight: "bold",
+   backgroundColor: "#fzfzfz",
     fontFamily: "geometria-bold",
   },
 
