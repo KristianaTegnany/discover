@@ -620,7 +620,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           <Text style={styles.textSub2}>{myintcust.style} </Text>
           <Text style={styles.textMoli}>📍{myintcust.adressvenue} </Text>
           <Text style={styles.textMoli}>
-            {myintcust.zipvenue} {myintcust.cityvenue}
+            {myintcust.zipvenue} {myintcust.cityvenue} 
           </Text>
           <Text style={styles.textMoli}>☎️ {myintcust.contactphone}</Text>
 
@@ -765,13 +765,17 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 style={{ backgroundColor: "grey", marginVertical: 20 }}
               />
 
-<Text  style={styles.title}>La Carte</Text>
+  <View>
+<Text  key="1" style={styles.title}>La Carte</Text>
 {(myintcust.EngagModeDelivery==true || myintcust.EngagModeTakeAway==true) && 
 <View>
 <Text  style={styles.textMoli}>Pour commander, choisissez votre mode.</Text>
 <Text  style={styles.textMoli}></Text>
 </View>
 }
+</View>
+
+
           {!cats ||
             (!menus &&
               [""].map(() => {
@@ -813,12 +817,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                               }}
                              
                             >
-                              {menu && menu.imageUrl !== "" && (
-                                <Avatar
-                                  rounded
-                                  source={{ uri: menu.imageUrl || " " }}
-                                />
-                              )}
+                             
 
                               <ListItem.Content>
                                 <ListItem.Title
@@ -845,6 +844,12 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                                 </ListItem.Subtitle>
                       }
                               </ListItem.Content>
+                              {menu && menu.imageUrl !== "" && (
+                                <Avatar
+                                 
+                                  source={{ uri: menu.imageUrl || " " }}
+                                />
+                              )}
                             </ListItem>
                           </View>
                         );
