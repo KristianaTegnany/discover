@@ -429,6 +429,9 @@ export default class TablesScreen extends React.Component<props, state> {
                     city={item.attributes.cityvenue}
                     country={item.attributes.country}
                     StyleK={item.attributes.style}
+                    resaOpen={item.attributes.EngagModeOnSite}
+                    deliveryOpen={item.attributes.EngagModeDelivery}
+                    takeawayOpen={item.attributes.EngagModeTakeAway}
                   ></PostComponent>
                 )}
               </TouchableWithoutFeedback>
