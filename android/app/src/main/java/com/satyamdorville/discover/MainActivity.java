@@ -20,7 +20,7 @@ public class MainActivity extends NavigationActivity {
         intent.putExtra("newConfig", newConfig);
         sendBroadcast(intent);
     }
-    @Override
+    
     protected String getMainComponentName() {
         return "App"; // here
     }
@@ -32,7 +32,7 @@ public class MainActivity extends NavigationActivity {
     SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
   }
 
-     @Override
+
      protected ReactActivityDelegate createReactActivityDelegate() {
          return new ReactActivityDelegate(this, getMainComponentName()) {
              @Override
