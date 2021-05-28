@@ -20,9 +20,7 @@ public class MainActivity extends NavigationActivity {
         intent.putExtra("newConfig", newConfig);
         sendBroadcast(intent);
     }
-
-
-
+    
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
