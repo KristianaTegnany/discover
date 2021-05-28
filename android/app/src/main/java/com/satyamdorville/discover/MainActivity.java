@@ -22,7 +22,7 @@ public class MainActivity extends NavigationActivity {
     }
     @Override
     protected String getMainComponentName() {
-        return "Bananas"; // here
+        return "App"; // here
     }
   @Override
   protected void onCreate(Bundle savedInstanceState) {
