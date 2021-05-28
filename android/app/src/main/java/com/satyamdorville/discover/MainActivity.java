@@ -20,7 +20,10 @@ public class MainActivity extends NavigationActivity {
         intent.putExtra("newConfig", newConfig);
         sendBroadcast(intent);
     }
-
+    @Override
+    protected String getMainComponentName() {
+        return "Bananas"; // here
+    }
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
