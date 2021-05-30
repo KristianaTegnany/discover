@@ -65,7 +65,7 @@ public class MainApplication extends NavigationApplication {
       if (BuildConfig.DEBUG) {
         return super.getJSBundleFile();
       } else {
-        UpdatesController.initialize(this.getApplication().getApplicationContext());
+  //      UpdatesController.initialize(this.getApplication().getApplicationContext());
         return UpdatesController.getInstance().getLaunchAssetFile();
       }
     }
@@ -75,7 +75,7 @@ public class MainApplication extends NavigationApplication {
       if (BuildConfig.DEBUG) {
         return super.getBundleAssetName();
       } else {
-        UpdatesController.initialize(this.getApplication().getApplicationContext());
+    //    UpdatesController.initialize(this.getApplication().getApplicationContext());
         return UpdatesController.getInstance().getBundleAssetName();
       }
     }
