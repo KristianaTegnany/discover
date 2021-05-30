@@ -116,8 +116,8 @@ public class MainApplication extends NavigationApplication {
         Class<?> aClass = Class.forName("com.satyamdorville.discover.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
-            .invoke(null, context, reactInstanceManager);
-      } catch (ClassNotFoundException e) {
+   aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context,
+            reactInstanceManager);      } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (NoSuchMethodException e) {
         e.printStackTrace();
