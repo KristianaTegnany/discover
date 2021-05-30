@@ -1,43 +1,20 @@
 // Build integration with EAS
 
 import java.nio.file.Paths
-apply plugin: "com.android.application" 
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
-android {
-      compileSdkVersion 30
-   applicationId 'com.satyamdorville.discover'
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "1.0.7"
 
+android {
   signingConfigs {
-     debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
+    release {
+      // This is necessary to avoid needing the user to define a release signing config manually
+      // If no release config is defined, and this is not present, build for assembleRelease will crash
+    }
   }
 
   buildTypes {
     release {
-     debug {
-            signingConfig signingConfigs.debug
-        }
-       release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-        }
-  }
-     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
-    classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.21")
+      // This is necessary to avoid needing the user to define a release build type manually
     }
+  }
 }
 
 def isEasBuildConfigured = false

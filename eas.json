@@ -3,6 +3,7 @@
     "android": {
       "release": {
         "workflow": "generic"
+      
       }
     },
     "ios": {
