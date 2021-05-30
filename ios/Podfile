@@ -1,12 +1,13 @@
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '11.0'
 
 target 'TableDiscover' do
   use_unimodules!
   config = use_native_modules!
+
   use_react_native!(:path => config["reactNativePath"])
 
   # Uncomment to opt-in to using Flipper
@@ -17,8 +18,4 @@ target 'TableDiscover' do
   #     flipper_post_install(installer)
   #   end
   # end
-  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
-
-  pod 'RNSentry', :path => '../node_modules/@sentry/react-native'
-
 end

@@ -792,9 +792,10 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                     <ListItem
                       key={cat.title}
                       bottomDivider
+                      
                       containerStyle={{
-                        backgroundColor: "#ff5050",
-                        borderColor: "#ff5050",
+                        backgroundColor: "#F4F5F5",
+                     //   borderColor: "#ff5050",
                       }}
                     >
                       <ListItem.Content>
@@ -811,6 +812,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                           <View key={cat.id + menu.id}>
                             <ListItem
                               key={cat.id + menu.id}
+                              onPress={() => {
+                                Alert.alert("Merci de choisir un mode ci-dessous.")
+                              }}
                               bottomDivider
                               containerStyle={{
                                 backgroundColor: backgroundColor,
@@ -1018,8 +1022,8 @@ const styles = StyleSheet.create({
   },
   textcattitle: {
    // fontWeight: "bold",
-   backgroundColor: "#fzfzfz",
-    fontFamily: "geometria-bold",
+ //  backgroundColor: "#fzfzfz",
+    fontFamily: "geometria-regular",
   },
 
   textSub: {

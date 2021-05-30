@@ -33,7 +33,8 @@
     "ios": {
       "buildNumber": "7",
       "userInterfaceStyle": "automatic",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.satyamdorville.discover"
     },
     "android": {
       "userInterfaceStyle": "automatic",
@@ -55,7 +56,8 @@
           ]
         }
       ],
-      "versionCode": 8
+      "versionCode": 8,
+      "package": "com.satyamdorville.discover"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
