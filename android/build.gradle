@@ -1,4 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: "com.android.application" 
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 
 buildscript {
     ext {
@@ -20,8 +23,7 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
+
 allprojects {
     repositories {
         mavenLocal()
