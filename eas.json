@@ -2,9 +2,7 @@
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic",
-        "buildType": "apk"
-
+        "workflow": "generic"
       }
     },
     "ios": {
