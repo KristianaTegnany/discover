@@ -32,7 +32,10 @@ public class MainActivity extends NavigationActivity {
     SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
   }
 
-protected String getMainComponentName() { return "Table Discover"; } }
+protected String getMainComponentName() { 
+    return "Table Discover"; 
+    }
+     
     
 
     protected ReactActivityDelegate createReactActivityDelegate() {
