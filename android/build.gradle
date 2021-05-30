@@ -20,8 +20,8 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-apply plugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.21"
-
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 allprojects {
     repositories {
         mavenLocal()
