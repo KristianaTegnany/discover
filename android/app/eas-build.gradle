@@ -1,9 +1,16 @@
 // Build integration with EAS
 
 import java.nio.file.Paths
-
+apply plugin: "com.android.application" 
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 android {
       compileSdkVersion 30
+   applicationId 'com.satyamdorville.discover'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 10
+        versionName "1.0.7"
 
   signingConfigs {
     release {
@@ -17,6 +24,10 @@ android {
       // This is necessary to avoid needing the user to define a release build type manually
     }
   }
+     dependencies {
+        classpath("com.android.tools.build:gradle:4.1.0")
+    classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.21")
+    }
 }
 
 def isEasBuildConfigured = false
