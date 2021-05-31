@@ -1,5 +1,7 @@
 // Build integration with EAS
-
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 import java.nio.file.Paths
 
 android {
