@@ -1,23 +1,32 @@
 // Build integration with EAS
 apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
+//apply plugin: "kotlin-android"
+//apply plugin: "kotlin-android-extensions"
 import java.nio.file.Paths
 
 android {
-  compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-kotlinOptions {
-    jvmTarget = "1.8"
-}
-defaultConfig {
-        applicationId 'com.satyamdorville.discover'
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+          compileSdkVersion 30
+  applicationId 'com.satyamdorville.discover'
+        minSdkVersion 21
+        targetSdkVersion 30
         versionCode 15
         versionName "1.0.7"
+
+  compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_11
+        targetCompatibility JavaVersion.VERSION_1_11
+    }
+//kotlinOptions {
+ //   jvmTarget = "1.8"
+..}
+defaultConfig {
+        applicationId 'com.satyamdorville.discover'
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 15
+        versionName "1.0.7"
+        compileSdkVersion  30
+
     }
   signingConfigs {
     release {

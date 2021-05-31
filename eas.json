@@ -3,9 +3,8 @@
     "android": {
       "release": {
         "workflow": "generic",
-        "withoutCredentials": true,
-        "gradleCommand": ":app:assembleDebug",
-        "artifactPath": "android/app/build/outputs/apk/debug/app-debug.apk"
+        "gradleCommand": ":app:assembleRelease",
+        "artifactPath": "android/app/build/outputs/apk/release/app-release.apk"
       }
     },
     "ios": {
