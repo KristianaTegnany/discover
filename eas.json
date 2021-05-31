@@ -2,7 +2,10 @@
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic"
+        "workflow": "generic",
+        "withoutCredentials": true,
+        "gradleCommand": ":app:assembleDebug",
+        "artifactPath": "android/app/build/outputs/apk/debug/app-debug.apk"
       }
     },
     "ios": {
