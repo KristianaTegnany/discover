@@ -12,6 +12,7 @@ import {
   Dimensions,
   ScrollView,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { TouchableWithoutFeedback,  } from "react-native-gesture-handler";
 import { View } from "../components/Themed";
@@ -222,8 +223,10 @@ export default class TablesScreen extends React.Component<props, state> {
         this.setState({menus: Object.assign([], menus)}, this.filtre)
       }}>
         <View style={{justifyContent:'center'}}>
-          <Image source={props.item.img} resizeMode={'cover'} style={{borderRadius: 20, borderWidth: 1, borderColor: props.item.selected? '#ff5050' : 'transparent', alignSelf:'center', width: 80, height: 80, marginBottom:2}}/>
-          <Text style={{textAlign:'center', fontFamily:"geometria-regular" }}>{ props.item.title }</Text>
+          <ImageBackground source={props.item.img} resizeMode={'cover'} imageStyle={{borderRadius: 20,opacity:0.4}} style={{ borderWidth: 1, borderColor: props.item.selected? '#ff5050' : 'transparent', alignSelf:'center', width: 80, height: 80, marginBottom:2}}>
+         
+          <Text style={{textAlign:'center', fontFamily:"geometria-bold" }}>{ props.item.title }</Text>
+          </ImageBackground>
         </View>
       </TouchableOpacity>
     )
