@@ -12,7 +12,13 @@ android {
 kotlinOptions {
     jvmTarget = "1.8"
 }
-
+defaultConfig {
+        applicationId 'com.satyamdorville.discover'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 15
+        versionName "1.0.7"
+    }
   signingConfigs {
     release {
       // This is necessary to avoid needing the user to define a release signing config manually
