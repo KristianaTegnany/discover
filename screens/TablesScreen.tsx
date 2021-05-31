@@ -223,7 +223,7 @@ export default class TablesScreen extends React.Component<props, state> {
         this.setState({menus: Object.assign([], menus)}, this.filtre)
       }}>
         <View style={{justifyContent:'center'}}>
-          <ImageBackground source={props.item.img} resizeMode={'cover'} imageStyle={{borderRadius: 20,opacity:0.4}} style={{ borderWidth: 1, borderColor: props.item.selected? '#ff5050' : 'transparent', alignSelf:'center', width: 80, height: 80, marginBottom:2}}>
+          <ImageBackground source={props.item.img} resizeMode={'cover'} imageStyle={{borderRadius: 20,opacity:props.item.selected? 1:0.4}} style={{ borderWidth: 1,  justifyContent:'center', width: 80, height: 80, marginBottom:2}}>
          
           <Text style={{textAlign:'center', fontFamily:"geometria-bold" }}>{ props.item.title }</Text>
           </ImageBackground>
