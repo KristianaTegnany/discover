@@ -1,33 +1,8 @@
 // Build integration with EAS
-apply plugin: "com.android.application"
-//apply plugin: "kotlin-android"
-//apply plugin: "kotlin-android-extensions"
+
 import java.nio.file.Paths
 
 android {
-          compileSdkVersion 30
-  applicationId 'com.satyamdorville.discover'
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 15
-        versionName "1.0.7"
-
-  compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_11
-        targetCompatibility JavaVersion.VERSION_1_11
-    }
-//kotlinOptions {
- //   jvmTarget = "1.8"
-..}
-defaultConfig {
-        applicationId 'com.satyamdorville.discover'
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 15
-        versionName "1.0.7"
-        compileSdkVersion  30
-
-    }
   signingConfigs {
     release {
       // This is necessary to avoid needing the user to define a release signing config manually
