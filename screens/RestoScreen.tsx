@@ -473,12 +473,17 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
   const CrenSelectScreen = () => {
     return (
-      <View style={[styles.crenContainer,  { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
+      <View style={[
+      styles.crenContainer,
+         styles.shadow, 
+      { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
          
           
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
           Sélectionnez la date
         </Text>
+
+    
         <DropDownPicker
           open={openDate}
           value={selectedDay}
@@ -489,6 +494,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           placeholder="Date ..."
           maxHeight={300}
           style={[styles.dropdown]}
+       //   onChangeValue={item => alert(item)}
           labelStyle={styles.labeldropdown}
           textStyle={{fontFamily:'geometria-regular', color:"white"}}
           placeholderStyle={styles.labeldropdown}
@@ -1063,11 +1069,11 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
     backgroundColor: "#ff5050",
     color:'white',
-    fontFamily:'geometria-regular'
+   fontFamily:'geometria-regular'
   },
   labeldropdown: {
     color: "white",
-  //  fontWeight: "bold",
+    fontWeight: "bold",
     fontFamily:'geometria-bold'
   },
   dateText: {
@@ -1092,7 +1098,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff5050"
   },
   btnNext: {
-
     height: 50,
     width: 50,
     color:'white',
@@ -1112,7 +1117,7 @@ const styles = StyleSheet.create({
     top: "50%",
     left: "50%",
     justifyContent: "center",
-    zIndex: 20000,
+  zIndex: 20000,
     backgroundColor: 'transparent'
   },
   textstrong: {
@@ -1129,7 +1134,7 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-regular",
   },
   shadow: {
-   // elevation: 4,
+    elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
