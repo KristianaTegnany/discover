@@ -131,7 +131,6 @@ export default class TablesScreen extends React.Component<props, state> {
           restaurantListOrigin: response,
         });
 
-        console.log(response.length)
         let countries:any = []
         response.forEach((intcust:any) => {
           const country = { name: intcust.attributes.country.trim().replace(/^\w/, (c:any) => c.toUpperCase()), cities: [], checked: false},
@@ -206,7 +205,7 @@ export default class TablesScreen extends React.Component<props, state> {
     const { selectedMode } = this.state
     return (
       <Button onPress={() => this.setState({selectedMode: selectedMode === props.mode? '' : props.mode}, this.filtre)} title={props.title} type="outline" buttonStyle={[styles.filterButtonItem, { borderColor: selectedMode === props.mode? 'transparent' : 'grey', backgroundColor: selectedMode === props.mode? '#ff5050' :'transparent' } ]} titleStyle={{fontSize: 13, fontFamily:"geometria-bold", color: selectedMode === props.mode? 'white' : 'grey'}}/>
-    )
+     )
   }
 
   _renderItem = (props:any) => {
@@ -361,7 +360,7 @@ export default class TablesScreen extends React.Component<props, state> {
           <this.FilterButton title='A emporter' mode='TakeAway'/>
           <this.FilterButton title='Livraison' mode='Delivery'/>
         </View>
-        { this.state.showCarousel &&
+        { this.state.showCarousel && false &&
           <Animated.View style={{height: 100, transform:[{scale: this.state.scale}], opacity: this.state.opacity}}>
             <Carousel
               data={this.state.menus}

@@ -530,12 +530,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           >
             <TouchableOpacity
               onPress={() => {
-                console.log("pressed to go")
-                console.log(selectedDay)
 
                 setCrenModalVisible(false)
-                console.log(myintcust)
-                console.log(typeof myintcust.stripeAccId)
+              
 
                 setstripeAccIdRestoValue(myintcust.stripeAccId)
                 navigation.navigate(goto, {

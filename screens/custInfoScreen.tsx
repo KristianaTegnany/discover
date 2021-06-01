@@ -511,7 +511,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               Alert.alert(`Error code: ${error.code}`, error.message);
             }
           } else {  Alert.alert('Paiement réussi.');
-            console.log(`Stripe checkout session succeeded. session id: .`);
             navigation.navigate("successScreen", {
               bookingType: bookingType,
               resaId: resaRaw.id,

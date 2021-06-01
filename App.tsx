@@ -33,7 +33,6 @@ export default   function    App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [stripeAccIdRestoValue, setstripeAccIdRestoValue] = stripeAccIdResto.use();
-console.log(appName.name)
   loadResourcesAsync() ;
 
   if (!isLoadingComplete) {
