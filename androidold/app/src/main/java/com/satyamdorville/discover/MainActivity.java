@@ -4,7 +4,6 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
-import com.reactnativenavigation.NavigationActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
