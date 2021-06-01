@@ -1,68 +1,64 @@
 import * as React from "react";
 var Parse = require("parse/react-native");
 import GuideComponent from "../components/GuideComponent";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import { ActivityIndicator, FlatList, Route, StyleSheet } from "react-native";
 import _ from "lodash";
-import { Navigation } from "react-native-navigation";
 import { Text, View } from "../components/Themed";
+import { NavigationScreenProp, NavigationState } from "react-navigation";
 
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { useEffect, useState } from "react";
+interface NavigationParams {
+  text: string;
+}
+type Navigation = NavigationScreenProp<NavigationState, NavigationParams>;
+interface Props {
+  navigation: Navigation;
+  route: Route;
+  restaurant: [];
+}
 
-type props = { value: string; navigation: any };
-type state = {
-  hasLocationPermissions: boolean;
-  latitude: number;
-  longitude: number;
-  guidesList: any;
-};
-export default class GuidesScreen extends React.Component<props, state> {
-  guidesListCast: any[] = [];
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      hasLocationPermissions: false,
-      latitude: 0,
-      longitude: 0,
-      guidesList: this.guidesListCast,
-    };
-  }
 
-  async componentDidMount() {
+  export const GuidesScreen = ({ route, navigation }: Props) => {
+
+    const [guides, setGuidesList] = useState();
+    
+ 
+  useEffect(() => {
     //  this.getLocationAsync();
-    this.getGuides();
-  }
+    getGuides();
+  })
 
-  async getGuides() {
+  async function getGuides() {
     await Parse.Cloud.run("getGuides")
       .then((response: any) => {
-        this.setState({
-          guidesList: response,
-        });
+
+        setGuidesList(response)
+      
       })
       .catch((error: any) => console.log(error));
   }
 
 
 
-  render() {
+ 
     //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
     return (
       <View style={styles.container}>
         <View style={styles.container2}>
-          {!this.state.guidesList ||
-            (this.state.guidesList.length == 0 && (
+          {!guides && (
               <View style={styles.wrapindicator}>
                 <ActivityIndicator size="large" color="#F50F50" />
               </View>
-            ))}
+            )}
           <FlatList
             style={styles.FlatList}
-            data={this.state.guidesList}
+            data={guides}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
-                  this.props.navigation.navigate("GuideScreen", {
+                  navigation.navigate("GuideScreen", {
                     text: "Hello!",
                     guideId: item.id,
                   });
@@ -70,13 +66,12 @@ export default class GuidesScreen extends React.Component<props, state> {
               >
                 <GuideComponent
                   imgUrl={item.attributes.FrontPic._url}
-                  onPress={() =>
-                    Navigation.push("Guide", {
-                      component: {
-                        name: "Guide", // Push the screen registered with the 'Settings' key
-                      },
-                    })
-                  }
+                  onPress={() => {
+                    navigation.navigate("GuideScreen", {
+                      text: "Hello!",
+                      guideId: item.id,
+                    });
+                  }}
                   corponame={item.attributes.title}
                   city={item.attributes.cityvenue}
                   StyleK={item.attributes.style}
@@ -89,7 +84,7 @@ export default class GuidesScreen extends React.Component<props, state> {
       </View>
     );
   }
-}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -202,3 +197,4 @@ const styles = StyleSheet.create({
     height: 44,
   },
 });
+export default GuidesScreen;
