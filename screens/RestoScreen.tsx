@@ -1,7 +1,7 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Button, TouchableOpacity, Image, Route, StyleSheet, ScrollView } from "react-native";
+import { ActivityIndicator, Alert, Button, TouchableOpacity, Image, Route, StyleSheet, ScrollView, Platform } from "react-native";
 import { Avatar, Divider, ListItem } from "react-native-elements";
 import HTML from "react-native-render-html";
 import { NavigationScreenProp } from "react-navigation";
@@ -25,6 +25,7 @@ DropDownPicker.addTranslation("FR", {
 });
 DropDownPicker.setLanguage("FR");
 import { newRidgeState } from "react-ridge-state";
+DropDownPicker.setListMode("MODAL");
 
 export const stripeAccIdResto = newRidgeState<string>('acct_1FwTt6GC5CDQhYZj'); // 0 could be something else like objects etc. you decide!
 
@@ -473,10 +474,21 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
   const CrenSelectScreen = () => {
     return (
-      <View style={[
-      styles.crenContainer,
-         styles.shadow, 
-      { backgroundColor, height: openDate? 520 : openHour? 580 : 280 }]}>
+      <View style={{ 
+        position:'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: 20,
+      borderRadius:10,
+      elevation:10,
+      //   styles.shadow, 
+        ...(Platform.OS !== 'android' && {
+          zIndex: 100
+      }),
+    
+        //backgroundColor, 
+        height: openDate? 520 : openHour? 580 : 280 }}>
          
           
         <Text style={[styles.dateText, { color: textColor, fontFamily:'geometria-regular' }]}>
@@ -494,9 +506,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           placeholder="Date ..."
           maxHeight={300}
           style={[styles.dropdown]}
-       //   onChangeValue={item => alert(item)}
+          onChangeValue={item => alert(item)}
           labelStyle={styles.labeldropdown}
-          textStyle={{fontFamily:'geometria-regular', color:"white"}}
+          textStyle={{fontFamily:'geometria-regular'}}
           placeholderStyle={styles.labeldropdown}
           zIndex={3000}
           zIndexInverse={1000}
@@ -516,7 +528,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           zIndexInverse={2000}
           setValue={setSelectedHour}
           setItems={setHourstobook}
-          textStyle={{fontFamily:'geometria-regular', color:"white"}}
+          textStyle={{fontFamily:'geometria-regular'}}
           placeholder="Heure ..."
           maxHeight={300}
           style={[styles.dropdown]}
@@ -599,7 +611,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   }, [selectedDay]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, (Platform.OS !== 'android' && {
+      zIndex: 10
+  })]}>
       <Modal
         isVisible={crenModalVisible}
         swipeDirection="down"
@@ -607,7 +621,10 @@ export const RestoScreen = ({ route, navigation }: Props) => {
         onSwipeComplete={(e) => setCrenModalVisible(false)}
         onBackButtonPress={() => setCrenModalVisible(false)}
         onBackdropPress={() => setCrenModalVisible(false)}
-        style={{padding: 0, margin: 0, height: 280}}
+        style={{padding: 0, margin: 0, height: 280,
+          ...(Platform.OS !== 'android' && {
+            zIndex: 10
+        })}}
       >
         <CrenSelectScreen/>
       </Modal>
@@ -967,7 +984,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   appButtonContainer: {
-    elevation: 8,
+ //   elevation: 8,
     marginBottom: 10,
     backgroundColor: "#ff5050",
     borderRadius: 10,
@@ -1063,7 +1080,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 20,
-    borderRadius: 10, 
+    borderTopLeftRadius: 10, borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10, borderBottomRightRadius: 10
   },
   dropdown: {
     borderColor: "transparent",
@@ -1134,7 +1152,7 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-regular",
   },
   shadow: {
-    elevation: 4,
+  //  elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
