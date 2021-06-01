@@ -5,10 +5,9 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.facebook.react.PackageList;
-import com.reactnativenavigation.NavigationApplication;
+import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
-import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -32,12 +31,12 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class MainApplication extends NavigationApplication {
+public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()
   );
 
-  private final ReactNativeHost mReactNativeHost = new NavigationReactNativeHost(this) {
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
@@ -52,7 +51,7 @@ public class MainApplication extends NavigationApplication {
 
     @Override
     protected String getJSMainModuleName() {
-      return "Table Discover";
+      return "index";
     }
 
     @Override
@@ -65,7 +64,6 @@ public class MainApplication extends NavigationApplication {
       if (BuildConfig.DEBUG) {
         return super.getJSBundleFile();
       } else {
-        UpdatesController.initialize(this.getApplication().getApplicationContext());
         return UpdatesController.getInstance().getLaunchAssetFile();
       }
     }
@@ -75,7 +73,6 @@ public class MainApplication extends NavigationApplication {
       if (BuildConfig.DEBUG) {
         return super.getBundleAssetName();
       } else {
-        UpdatesController.initialize(this.getApplication().getApplicationContext());
         return UpdatesController.getInstance().getBundleAssetName();
       }
     }
@@ -115,10 +112,9 @@ public class MainApplication extends NavigationApplication {
         */
         Class<?> aClass = Class.forName("com.satyamdorville.discover.ReactNativeFlipper");
         aClass
-            .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class);
-             aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class).invoke(null, context,
-            reactInstanceManager);      
-            } catch (ClassNotFoundException e) {
+            .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
+            .invoke(null, context, reactInstanceManager);
+      } catch (ClassNotFoundException e) {
         e.printStackTrace();
       } catch (NoSuchMethodException e) {
         e.printStackTrace();
