@@ -2,7 +2,7 @@
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic",
+        "workflow": "generic"
      
       }
     },
