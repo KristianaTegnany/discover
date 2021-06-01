@@ -129,8 +129,8 @@ android {
         compileSdkVersion 30
  minSdkVersion 21
         targetSdkVersion 30
-        versionCode 15
-        versionName "1.0.7"
+        versionCode 16
+        versionName "1.1.0"
      //    RNNKotlinVersion = "1.4.21"
         buildToolsVersion = "30.0.0"
 
@@ -145,8 +145,8 @@ kotlinOptions {
         applicationId 'com.satyamdorville.discover'
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 15
-        versionName "1.0.7"
+        versionCode 16
+        versionName "1.1.0"
          compileSdkVersion  30
          RNNKotlinVersion = "1.4.21"
         buildToolsVersion = "30.0.0"
