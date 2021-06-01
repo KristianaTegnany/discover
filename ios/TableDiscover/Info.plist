@@ -48,10 +48,6 @@
     </array>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>UIStatusBarStyle</key>
-    <string>UIStatusBarStyleDefault</string>
-    <key>UIUserInterfaceStyle</key>
-    <string>Automatic</string>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>
@@ -64,6 +60,8 @@
     </array>
     <key>UIRequiresFullScreen</key>
     <true/>
+    <key>UIUserInterfaceStyle</key>
+    <string>Automatic</string>
     <key>CFBundleDisplayName</key>
     <string>Table Discover</string>
   </dict>
