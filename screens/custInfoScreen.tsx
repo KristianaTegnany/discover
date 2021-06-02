@@ -237,7 +237,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
               dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
           
-        isValid = date.diff(dateNoonblock) < 0 || (date.diff(dateNightstart) > 0 && date.diff(dateNightblock) < 0)
+           
+
+        isValid = moment.tz("America/Martinique").diff(dateNoonblock) < 0 || (moment.tz("America/Martinique").diff(dateNightstart) > 0 && moment.tz("America/Martinique").diff(dateNightblock) < 0)
       }
     }}
     else{
@@ -328,10 +330,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             testNoonNight = await testNoonNight_Stop()
             if(!testNoonNight) {
               Alert.alert("L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
+
               navigation.navigate("RestoScreen", {
-                restoId: intcust.id,
-                bookingType: bookingType,
-                day: day
+                restoId: intcust.id             
               })
             }
             else {
