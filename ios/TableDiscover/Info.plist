@@ -64,5 +64,9 @@
     <string>Automatic</string>
     <key>CFBundleDisplayName</key>
     <string>Table Discover</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Its for Stripe feature to detect payment card by the camera</string>
+
+    
   </dict>
 </plist>
