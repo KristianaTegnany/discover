@@ -19,7 +19,7 @@
     <key>CFBundleShortVersionString</key>
     <string>1.1.0</string>
     <key>CFBundleVersion</key>
-    <string>8</string>
+    <string>9</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
@@ -48,6 +48,8 @@
     </array>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>UIUserInterfaceStyle</key>
+    <string>Automatic</string>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>
@@ -60,13 +62,7 @@
     </array>
     <key>UIRequiresFullScreen</key>
     <true/>
-    <key>UIUserInterfaceStyle</key>
-    <string>Automatic</string>
     <key>CFBundleDisplayName</key>
     <string>Table Discover</string>
-    <key>NSCameraUsageDescription</key>
-    <string>Its for Stripe feature to detect payment card by the camera</string>
-
-    
   </dict>
 </plist>

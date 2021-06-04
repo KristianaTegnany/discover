@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
@@ -12,7 +13,7 @@ import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
 
-public class MainActivity extends NavigationActivity {
+public class MainActivity extends ReactActivity {
 
     // Added automatically by Expo Config
     @Override
@@ -31,14 +32,18 @@ public class MainActivity extends NavigationActivity {
     SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
   }
 
-protected String getMainComponentName() { 
-    return "Table Discover"; 
+
+    /**
+     * Returns the name of the main component registered from JavaScript.
+     * This is used to schedule rendering of the component.
+     */
+    protected String getMainComponentName() {
+        return "Table Discover";
     }
-     
-    
 
     protected ReactActivityDelegate createReactActivityDelegate() {
         return new ReactActivityDelegate(this, getMainComponentName()) {
+
             protected ReactRootView createRootView() {
                 return new RNGestureHandlerEnabledRootView(MainActivity.this);
             }

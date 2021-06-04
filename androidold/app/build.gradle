@@ -1,6 +1,5 @@
 apply plugin: "com.android.application"
-//apply plugin: "kotlin-android"
-//apply plugin: "kotlin-android-extensions"
+
 import com.android.build.OutputFile
 
 /**
@@ -125,31 +124,19 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
- //   compileSdkVersion rootProject.ext.compileSdkVersion
-        compileSdkVersion 30
- minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 17
-        versionName "1.1.0"
-     //    RNNKotlinVersion = "1.4.21"
-        buildToolsVersion = "30.0.0"
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_11
-        targetCompatibility JavaVersion.VERSION_1_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-kotlinOptions {
-    jvmTarget = "1.8"
-}
+
     defaultConfig {
         applicationId 'com.satyamdorville.discover'
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 17
         versionName "1.1.0"
-         compileSdkVersion  30
-         RNNKotlinVersion = "1.4.21"
-        buildToolsVersion = "30.0.0"
     }
     splits {
         abi {
