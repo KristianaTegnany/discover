@@ -17,7 +17,8 @@
 
     ]
   },
-  "source_files": "EXStructuredHeaders/**/*.{h,m}",
+  "source_files": "EXStructuredHeaders/**/*.h",
+  "vendored_frameworks": "EXStructuredHeaders.xcframework",
   "testspecs": [
     {
       "name": "Tests",

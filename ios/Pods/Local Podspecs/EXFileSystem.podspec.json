@@ -20,5 +20,6 @@
 
     ]
   },
-  "source_files": "EXFileSystem/**/*.{h,m}"
+  "source_files": "EXFileSystem/**/*.h",
+  "vendored_frameworks": "EXFileSystem.xcframework"
 }

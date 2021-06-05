@@ -20,5 +20,6 @@
 
     ]
   },
-  "source_files": "EXSplashScreen/**/*.{h,m}"
+  "source_files": "EXSplashScreen/**/*.h",
+  "vendored_frameworks": "EXSplashScreen.xcframework"
 }

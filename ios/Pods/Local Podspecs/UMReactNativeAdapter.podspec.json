@@ -23,5 +23,6 @@
 
     ]
   },
-  "source_files": "UMReactNativeAdapter/**/*.{h,m}"
+  "source_files": "UMReactNativeAdapter/**/*.h",
+  "vendored_frameworks": "UMReactNativeAdapter.xcframework"
 }
