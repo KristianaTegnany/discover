@@ -64,5 +64,8 @@
     <true/>
     <key>CFBundleDisplayName</key>
     <string>Table Discover</string>
+  <key>NSCameraUsageDescription</key>
+    <string>Stripe utilise cette fonction pour la détection et la reconnaissance par photo des cartes bancaires</string>
+    
   </dict>
 </plist>
