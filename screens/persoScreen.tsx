@@ -8,7 +8,6 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
-  
 } from "react-native";
 
 import useColorScheme from "../hooks/useColorScheme";
@@ -150,47 +149,78 @@ export const persoScreen = ({ route, navigation }: Props) => {
     <Text style={styles.appButtonText} > <Text style={styles.payText}>Enregistrer</Text> </Text>
   </TouchableOpacity>  */}
 
-<ScrollView>
-      <Text style={styles.textBold}>Besoin d'aide ? </Text>
-      <View style={styles.wrappertexts}>
-
-      <Text style={styles.text2}>Notre objectif est de vous permettre de vivre votre amour des restaurants de la manière la plus agréable possible. Si vous souhaitez remonter un bug ou proposer une amélioration, n'hésitez pas à nous écrire directement sur Whatsapp ou nous envoyer un email, les coordonnées sont plus bas. N'hésitez pas à joindre des copies d'écran. </Text>
-      <Text style={styles.text2Bold}>A venir</Text>
-      <Text style={styles.text2}>- Evènements : Commandez et réservez. </Text>
-      <Text style={styles.text2}>- Compte utilisateur pour sauvegarder vos informations. </Text>
-      <Text style={styles.text2}>- Codes Promos. </Text>
-      <Text style={styles.text2}>- Programme de Fidélité. </Text>
-
-
-</View>
-      <View style={styles.wrappertexts}>
-        <Text style={styles.text2Bold}>WhatsApp</Text>
-        <Text style={styles.text2}>
-          0696 09 22 16 du Lundi au Vendredi de 9h à 17h.{" "}
-        </Text>
-        <Text style={styles.text2Bold}>Email </Text>
-        <Text style={styles.text2}>
-          hello@tablebig.com du Lundi au Vendredi de 9h à 17h.{" "}
-        </Text>
-
-        <Text style={styles.text2Bold}>Vous souhaitez inscrire votre restaurant ? </Text>
-      <Text style={styles.text2}>Rendez-vous sur www.tablebig.com. Inscrivez-vous et on vous rappelle.  </Text>
-
-      <Text style={styles.text2Bold}>En savoir plus sur TABLE </Text>
-        <Text style={styles.text2}>TABLE est concu et opéré en Martinique, avec la Guadeloupe aussi dans le coeur. Accompagné par Le Village By CA. Soutenu par la CTM, notamment à travers le dispositif "Plas Dijital" et par la CCIM.  </Text>
-        <Text style={styles.text2}>TABLE DISCOVER est une application mobile et un site internet pour tous les amoureux de la bonne cuisine et des restaurants. Nous souhaitons devenir un "media marchand" sur le Fooding lifeStyle.  </Text>
-        <Text style={styles.text2}>TABLE BIG est une suite logicielle complète pour la gestion de restaurant couvrant tout le processus Client & Marketing jusqu'à l'encaissement. Notre objectif est d'aider plus de 10 000 restaurants d'ici 2025 à se développer.  </Text>
-
-        <Text style={styles.text2}>Nous recrutons des développeurs MEAN ou React Native, des commerciaux, des experts Marketing, des contributeurs amoureux du Fooding : hello@tablebig.com.</Text>
-
-        <Text style={styles.text2}>Responsable de publication : Satyam Dorville - 0696 45 04 45  </Text>
-
-      </View>
-      {false && (
-        <View style={styles.wrapindicator}>
-          <ActivityIndicator size="large" color="#F50F50" />
+      <ScrollView>
+        <Text style={styles.textBold}>Besoin d'aide ? </Text>
+        <View style={styles.wrappertexts}>
+          <Text style={styles.text2}>
+            Notre objectif est de vous permettre de vivre votre amour des
+            restaurants de la manière la plus agréable possible. Si vous
+            souhaitez remonter un bug ou proposer une amélioration, n'hésitez
+            pas à nous écrire directement sur Whatsapp ou nous envoyer un email,
+            les coordonnées sont plus bas. N'hésitez pas à joindre des copies
+            d'écran.{" "}
+          </Text>
+          <Text style={styles.text2Bold}>A venir</Text>
+          <Text style={styles.text2}>
+            - Evènements : Commandez et réservez.{" "}
+          </Text>
+          <Text style={styles.text2}>
+            - Compte utilisateur pour sauvegarder vos informations.{" "}
+          </Text>
+          <Text style={styles.text2}>- Codes Promos. </Text>
+          <Text style={styles.text2}>- Programme de Fidélité. </Text>
         </View>
-      )}
+        <View style={styles.wrappertexts}>
+          <Text style={styles.text2Bold}>WhatsApp</Text>
+          <Text style={styles.text2}>
+            0696 09 22 16 du Lundi au Vendredi de 9h à 17h.{" "}
+          </Text>
+          <Text style={styles.text2Bold}>Email </Text>
+          <Text style={styles.text2}>
+            hello@tablebig.com du Lundi au Vendredi de 9h à 17h.{" "}
+          </Text>
+
+          <Text style={styles.text2Bold}>
+            Vous souhaitez inscrire votre restaurant ?{" "}
+          </Text>
+          <Text style={styles.text2}>
+            Rendez-vous sur www.tablebig.com. Inscrivez-vous et on vous
+            rappelle.{" "}
+          </Text>
+
+          <Text style={styles.text2Bold}>En savoir plus sur TABLE </Text>
+          <Text style={styles.text2}>
+            TABLE est concu et opéré en Martinique, avec la Guadeloupe aussi
+            dans le coeur. Accompagné par Le Village By CA. Soutenu par la CTM,
+            notamment à travers le dispositif "Plas Dijital" et par la CCIM.{" "}
+          </Text>
+          <Text style={styles.text2}>
+            TABLE DISCOVER est une application mobile et un site internet pour
+            tous les amoureux de la bonne cuisine et des restaurants. Nous
+            souhaitons devenir un "media marchand" sur le Fooding lifeStyle.{" "}
+          </Text>
+          <Text style={styles.text2}>
+            TABLE BIG est une suite logicielle complète pour la gestion de
+            restaurant couvrant tout le processus Client & Marketing jusqu'à
+            l'encaissement. Notre objectif est d'aider plus de 10 000
+            restaurants d'ici 2025 à se développer.{" "}
+          </Text>
+
+          <Text style={styles.text2}>
+            Nous recrutons des développeurs MEAN ou React Native, des
+            commerciaux, des experts Marketing, des contributeurs amoureux du
+            Fooding : hello@tablebig.com.
+          </Text>
+
+          <Text style={styles.text2}>
+            Responsable de publication : Satyam Dorville - 0696 45 04 45{" "}
+          </Text>
+        </View>
+        {false && (
+          <View style={styles.wrapindicator}>
+            <ActivityIndicator size="large" color="#F50F50" />
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -207,7 +237,7 @@ const styles = StyleSheet.create({
   },
   textBold: {
     marginTop: 50,
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     fontFamily: "geometria-bold",
     fontSize: 18,
     paddingHorizontal: 20,
@@ -249,7 +279,7 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-regular",
   },
   textstrong: {
- //   fontWeight: "bold",
+    //   fontWeight: "bold",
     fontFamily: "geometria-bold",
     paddingVertical: 20,
     fontSize: 18,
@@ -288,14 +318,14 @@ const styles = StyleSheet.create({
     display: "flex",
     fontSize: 18,
     //  color: "#fff",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
   title: {
     fontSize: 20,
     padding: 30,
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
   },
   text: {
     fontSize: 16,

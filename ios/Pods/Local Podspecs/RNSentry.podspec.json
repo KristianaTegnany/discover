@@ -16,12 +16,8 @@
   },
   "preserve_paths": "*.js",
   "dependencies": {
-    "React-Core": [
-
-    ],
-    "Sentry": [
-      "6.1.4"
-    ]
+    "React-Core": [],
+    "Sentry": ["6.1.4"]
   },
   "source_files": "ios/RNSentry.{h,m}",
   "public_header_files": "ios/RNSentry.h"

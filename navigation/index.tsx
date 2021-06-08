@@ -21,7 +21,7 @@ import { RootStackParamList } from "../types";
 import BottomTabNavigator from "./BottomTabNavigator";
 import paymentStripeScreen from "../screens/paymentStripeScreen";
 import { persoScreen } from "../screens/persoScreen";
-  
+
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({
@@ -31,14 +31,14 @@ export default function Navigation({
 }) {
   const config = {
     screens: {
-      successScreen: 'success',
-      custInfoScreen: 'custinfo'
-    }
-  }
+      successScreen: "success",
+      custInfoScreen: "custinfo",
+    },
+  };
   const linking = {
-    prefixes: ['https://discover.fr', 'discover://'],
-    config
-  }
+    prefixes: ["https://discover.fr", "discover://"],
+    config,
+  };
   return (
     <NavigationContainer
       linking={linking}
@@ -63,21 +63,24 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="GuideScreen"
-        options={{ headerTitle: "", headerTransparent: true,
-        headerBackTitleStyle: {
-          fontFamily: "geometria-bold",
-      
-        } }}
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          headerBackTitleStyle: {
+            fontFamily: "geometria-bold",
+          },
+        }}
         component={GuideScreen}
       />
       <Stack.Screen
         name="RestoScreen"
-        options={{ headerTitle: "", headerTransparent: true,
-        headerBackTitleStyle: {
-          fontFamily: "geometria-bold",
-       
-          
-        } }}
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          headerBackTitleStyle: {
+            fontFamily: "geometria-bold",
+          },
+        }}
         component={RestoScreen}
       />
       <Stack.Screen
@@ -87,50 +90,59 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="resaScreen"
-        options={{ headerTitle: "Réservation sur place",
-        headerBackTitle: 'Retour',
-        headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        },
-        headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        } }}
+        options={{
+          headerTitle: "Réservation sur place",
+          headerBackTitle: "Retour",
+          headerTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+          headerBackTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+        }}
         component={resaScreen}
       />
       <Stack.Screen
         name="DishScreen"
-        options={{ headerTitle: "😋" , 
-        headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        },
-        headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        }}}
+        options={{
+          headerTitle: "😋",
+          headerTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+          headerBackTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+        }}
         component={DishScreen}
       />
       <Stack.Screen
         name="basketScreen"
-        options={{ headerTitle: "Votre panier", 
-        headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        },
-        headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        } }}
+        options={{
+          headerTitle: "Votre panier",
+          headerTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+          headerBackTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+        }}
         component={basketScreen}
       />
       <Stack.Screen
         name="paymentScreen"
-        options={{ headerTitle: "Paiement", headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        } }}
+        options={{
+          headerTitle: "Paiement",
+          headerTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+        }}
         component={paymentScreen}
       />
       <Stack.Screen
@@ -140,33 +152,41 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="custInfoScreen"
-        options={{ headerTitle: "Vos infos",
-        headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        },
-        headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        } }}
+        options={{
+          headerTitle: "Vos infos",
+          headerTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+          headerBackTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+        }}
         component={custInfoScreen}
       />
       <Stack.Screen
         name="successScreen"
-        options={{ headerTitle: "", headerTransparent: true, 
-        headerLeft: ()=> null, // Note: using just `null` instead of a function should also work but could trigger a TS error
-      }}
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          headerLeft: () => null, // Note: using just `null` instead of a function should also work but could trigger a TS error
+        }}
         component={successScreen}
       />
       <Stack.Screen
         name="paymentStripeScreen"
-        options={{ headerTitle: "Paiement", headerTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        } , headerBackTitleStyle: {
-          fontFamily: "geometria-regular",
-          fontWeight: "200"
-        } }}
+        options={{
+          headerTitle: "Paiement",
+          headerTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+          headerBackTitleStyle: {
+            fontFamily: "geometria-regular",
+            fontWeight: "200",
+          },
+        }}
         component={paymentStripeScreen}
       />
       <Stack.Screen

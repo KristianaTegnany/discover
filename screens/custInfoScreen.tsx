@@ -21,11 +21,12 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import * as EmailValidator from "email-validator";
 import { FontAwesome5 } from "@expo/vector-icons";
-import RadioButton from '../components/Radio'
-import moment from 'moment-timezone'
-moment.tz.add("America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4");
-import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
-
+import RadioButton from "../components/Radio";
+import moment from "moment-timezone";
+moment.tz.add(
+  "America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4"
+);
+import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
 
 interface NavigationParams {
   restoId: string;
@@ -38,8 +39,8 @@ interface Props {
   restaurant: [];
 }
 
-const TAKEAWAY = 'TakeAway',
-      DELIVERY = 'Delivery'
+const TAKEAWAY = "TakeAway",
+  DELIVERY = "Delivery";
 
 export const custInfoScreen = ({ route, navigation }: Props) => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -50,11 +51,13 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [delifare, setDelifare] = useState(0);
-  const [intcustCityChoice, setIntcustCityChoice] = useState([{
-    city : "",
-    tar:0,
-    checked:false
-  }]);
+  const [intcustCityChoice, setIntcustCityChoice] = useState([
+    {
+      city: "",
+      tar: 0,
+      checked: false,
+    },
+  ]);
   const [phone, setPhone] = useState("");
   const [line1, setLine1] = useState();
   const [city, setCity] = useState();
@@ -70,7 +73,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const [intcust, setIntcust] = useState({
     id: "",
     apikeypp: "",
-    corporation:"",
+    corporation: "",
     paymentChoice: "",
     option_DeliveryByNoukarive: false,
     option_DeliveryByToutAlivrer: false,
@@ -89,14 +92,17 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     takeawaynightblock: "",
     deliverynightstart: "",
     deliverynoonblock: "",
-    deliverynightblock: ""
+    deliverynightblock: "",
   });
   const products = useSelector((state: ProductItem[]) => state);
 
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
-  const { bookingType, restoId, day, hour } = route.params
-  const date = moment.tz(day.substring(0,10) + ' ' + hour, 'America/Martinique')
+  const { bookingType, restoId, day, hour } = route.params;
+  const date = moment.tz(
+    day.substring(0, 10) + " " + hour,
+    "America/Martinique"
+  );
   function useThemeColor(
     props: { light?: string; dark?: string },
     colorName: keyof typeof Colors.light & keyof typeof Colors.dark
@@ -136,9 +142,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function onChangeTextPhone(phone: any) {
     setPhone(phone);
   }
-  
-
- 
 
   async function calculusTotalCashBasket() {
     let sumRaw = 0;
@@ -150,42 +153,62 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
   async function getReservation() {
     let params = {
-      date: moment.tz(day, 'America/Martinique').toDate(),
-      itid: intcust.id
-    }
-    const resas = await Parse.Cloud.run("getReservationsSafeByDate", params)
-    return await resas.filter((x:any) => x.attributes.status)
+      date: moment.tz(day, "America/Martinique").toDate(),
+      itid: intcust.id,
+    };
+    const resas = await Parse.Cloud.run("getReservationsSafeByDate", params);
+    return await resas.filter((x: any) => x.attributes.status);
   }
-  
+
   async function testOrderDaily_Stop() {
-    let isValid = true
-    if([TAKEAWAY, DELIVERY].includes(bookingType)){
-      if((bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === 0) || (bookingType === DELIVERY && intcust.orderDaily_StopDelivery === 0))
-        isValid = false
+    let isValid = true;
+    if ([TAKEAWAY, DELIVERY].includes(bookingType)) {
+      if (
+        (bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === 0) ||
+        (bookingType === DELIVERY && intcust.orderDaily_StopDelivery === 0)
+      )
+        isValid = false;
       else {
-        const resasClean = await getReservation()
-        if(resasClean.length > 0
-          && 
-          (bookingType === TAKEAWAY && intcust.orderDaily_StopTaway === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length)
-          ||
-          (bookingType === DELIVERY && intcust.orderDaily_StopDelivery === resasClean.filter((x:any) => x.attributes.engagModeResa === bookingType).length)
+        const resasClean = await getReservation();
+        if (
+          (resasClean.length > 0 &&
+            bookingType === TAKEAWAY &&
+            intcust.orderDaily_StopTaway ===
+              resasClean.filter(
+                (x: any) => x.attributes.engagModeResa === bookingType
+              ).length) ||
+          (bookingType === DELIVERY &&
+            intcust.orderDaily_StopDelivery ===
+              resasClean.filter(
+                (x: any) => x.attributes.engagModeResa === bookingType
+              ).length)
         )
-          isValid = false
+          isValid = false;
       }
     }
     return isValid;
   }
 
   async function testOrderCren_Stop() {
-    let isValid = true
-    if([TAKEAWAY, DELIVERY].includes(bookingType) && intcust.confirmModeOrderOptions_shiftinterval > 0){
-      const resasClean = await getReservation()
-      if(resasClean.length > 0 && ((bookingType === DELIVERY? intcust.orderCren_StopDelivery : intcust.orderCren_StopTaway) === resasClean.filter((x:any) => {
-        let isBetweenInterval = false
-        const h = parseInt(hour.substring(0, 2)),
+    let isValid = true;
+    if (
+      [TAKEAWAY, DELIVERY].includes(bookingType) &&
+      intcust.confirmModeOrderOptions_shiftinterval > 0
+    ) {
+      const resasClean = await getReservation();
+      if (
+        resasClean.length > 0 &&
+        (bookingType === DELIVERY
+          ? intcust.orderCren_StopDelivery
+          : intcust.orderCren_StopTaway) ===
+          resasClean.filter((x: any) => {
+            let isBetweenInterval = false;
+            const h = parseInt(hour.substring(0, 2)),
               m = parseInt(hour.substring(3)),
-              resaH = moment.tz(x.attributes.date, 'America/Martinique').hour(),
-              resaM = moment.tz(x.attributes.date, 'America/Martinique').minute(),
+              resaH = moment.tz(x.attributes.date, "America/Martinique").hour(),
+              resaM = moment
+                .tz(x.attributes.date, "America/Martinique")
+                .minute(),
               min =
                 m < intcust.confirmModeOrderOptions_shiftinterval ||
                 intcust.confirmModeOrderOptions_shiftinterval === 60
@@ -202,55 +225,86 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               x.attributes.engagModeResa === bookingType && isBetweenInterval
             );
           }).length
-      ))
+      )
         isValid = false;
     }
     return isValid;
   }
 
   async function testDelayCren_Stop() {
-    let isValid = true
-    const delay = bookingType === DELIVERY? intcust.delayorderDelivery : intcust.confirmModeOrderOptions_delayorder
-  
-    if([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0){
-      if(moment.tz(date,'America/Martinique').diff(moment.tz('America/Martinique'), 'minutes') < delay)
-        isValid = false
+    let isValid = true;
+    const delay =
+      bookingType === DELIVERY
+        ? intcust.delayorderDelivery
+        : intcust.confirmModeOrderOptions_delayorder;
+
+    if ([TAKEAWAY, DELIVERY].includes(bookingType) && delay > 0) {
+      if (
+        moment
+          .tz(date, "America/Martinique")
+          .diff(moment.tz("America/Martinique"), "minutes") < delay
+      )
+        isValid = false;
     }
-    return isValid
+    return isValid;
   }
 
   async function testNoonNight_Stop() {
-    let isValid = true
-    const stopYesterday = bookingType === DELIVERY? intcust.takeaway_StopYesterday : intcust.delivery_StopYesterday
-   if(date.isSame(moment.tz("America/Martinique"), "day") ){
-    if([TAKEAWAY, DELIVERY].includes(bookingType)) {
-      if(stopYesterday) {
-        isValid = date.diff(date.subtract(1, 'days').set({hour:0,minute:0,second:0,millisecond:0})) < 0
+    let isValid = true;
+    const stopYesterday =
+      bookingType === DELIVERY
+        ? intcust.takeaway_StopYesterday
+        : intcust.delivery_StopYesterday;
+    if (date.isSame(moment.tz("America/Martinique"), "day")) {
+      if ([TAKEAWAY, DELIVERY].includes(bookingType)) {
+        if (stopYesterday) {
+          isValid =
+            date.diff(
+              date
+                .subtract(1, "days")
+                .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+            ) < 0;
+        } else {
+          const nightblock =
+              bookingType === DELIVERY
+                ? intcust.deliverynightblock
+                : intcust.takeawaynightblock,
+            nightstart =
+              bookingType === DELIVERY
+                ? intcust.deliverynightstart
+                : intcust.takeawaynightstart,
+            noonblock =
+              bookingType === DELIVERY
+                ? intcust.deliverynoonblock
+                : intcust.takeawaynoonblock,
+            dateNoonblock = moment.tz(
+              day.substring(0, 10) + " " + noonblock,
+              "America/Martinique"
+            ),
+            dateNightstart = moment.tz(
+              day.substring(0, 10) + " " + nightstart,
+              "America/Martinique"
+            ),
+            dateNightblock = moment.tz(
+              day.substring(0, 10) + " " + nightblock,
+              "America/Martinique"
+            );
+
+          isValid =
+            moment.tz("America/Martinique").diff(dateNoonblock) < 0 ||
+            (moment.tz("America/Martinique").diff(dateNightstart) > 0 &&
+              moment.tz("America/Martinique").diff(dateNightblock) < 0);
+        }
       }
-      else {
-
-        const nightblock = bookingType === DELIVERY? intcust.deliverynightblock : intcust.takeawaynightblock,
-              nightstart = bookingType === DELIVERY? intcust.deliverynightstart : intcust.takeawaynightstart,
-              noonblock  = bookingType === DELIVERY? intcust.deliverynoonblock : intcust.takeawaynoonblock,
-
-              dateNoonblock = moment.tz(day.substring(0,10) + ' ' + noonblock, 'America/Martinique'),
-              dateNightstart = moment.tz(day.substring(0,10) + ' ' + nightstart, 'America/Martinique'),
-              dateNightblock = moment.tz(day.substring(0,10) + ' ' + nightblock, 'America/Martinique')
-          
-           
-
-        isValid = moment.tz("America/Martinique").diff(dateNoonblock) < 0 || (moment.tz("America/Martinique").diff(dateNightstart) > 0 && moment.tz("America/Martinique").diff(dateNightblock) < 0)
-      }
-    }}
-    else{
-      isValid=true
+    } else {
+      isValid = true;
     }
-    return isValid
+    return isValid;
   }
 
   async function testQuantity() {
-    let isValid = true
-    for(var product of products) {
+    let isValid = true;
+    for (var product of products) {
       var Menu = Parse.Object.extend("Menu");
       let menu = new Menu();
       menu.id = product.id;
@@ -258,24 +312,30 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       const params = {
         itid: restoId,
         menuid: product.id,
-        date: day
-      }
-      const consumed = await Parse.Cloud.run("checkStock", params)
+        date: day,
+      };
+      const consumed = await Parse.Cloud.run("checkStock", params);
       if (menu.attributes.provisionStockBase.length > 0) {
-        let provision = menu.attributes.provisionStockBase.filter((x:any) => moment.tz(x.date, 'America/Martinique').isSame(moment.tz(x.date, 'America/Martinique'), "day"));
-        isValid = provision[0].provision > consumed + 1
-        if(!isValid){
-          Alert.alert(`Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner au panier pour le modifier.`)
+        let provision = menu.attributes.provisionStockBase.filter((x: any) =>
+          moment
+            .tz(x.date, "America/Martinique")
+            .isSame(moment.tz(x.date, "America/Martinique"), "day")
+        );
+        isValid = provision[0].provision > consumed + 1;
+        if (!isValid) {
+          Alert.alert(
+            `Le stock est épuisé sur le produit ${product.name}. Vous pouvez retourner au panier pour le modifier.`
+          );
           navigation.navigate("basketScreen", {
             restoId: intcust.id,
             bookingType: bookingType,
-            day: day
-          })
-          break
+            day: day,
+          });
+          break;
         }
       }
     }
-    return isValid
+    return isValid;
   }
 
   async function goPay() {
@@ -291,58 +351,62 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
       blockGo == false
     ) {
       // Tester si le nombre de commande à emporter pour une intervalle de temps < orderCren_Stop
-      const testOC      = await testOrderCren_Stop()
-      let testOD        = true,
-          testDelayCren = true,
-          testNoonNight = true,
-          testQty       = true
+      const testOC = await testOrderCren_Stop();
+      let testOD = true,
+        testDelayCren = true,
+        testNoonNight = true,
+        testQty = true;
 
-      if(!testOC){
-        Alert.alert("La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire.")
+      if (!testOC) {
+        Alert.alert(
+          "La limite de commande a été atteinte sur ce créneau horaire sur ce restaurant. Vous pouvez commander pour un autre créneau horaire."
+        );
         navigation.navigate("RestoScreen", {
           restoId: intcust.id,
           bookingType: bookingType,
-          day: day
-        })
-      }
-      else {
+          day: day,
+        });
+      } else {
         // Tester si le nombre de commande à emporter < orderDaily_Stop
-        testOD = await testOrderDaily_Stop()
-        if(!testOD){
-          Alert.alert("La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour.")
+        testOD = await testOrderDaily_Stop();
+        if (!testOD) {
+          Alert.alert(
+            "La limite de commande a été atteinte pour aujourd'hui sur ce restaurant. Il n'a plus de disponibilité. Vous pouvez commander pour un autre jour."
+          );
           navigation.navigate("RestoScreen", {
             restoId: intcust.id,
             bookingType: bookingType,
-            day: 'null'
-          })
-        }
-        else {
-          testDelayCren = await testDelayCren_Stop()
-          if(!testDelayCren) {
-            Alert.alert("Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt.")
+            day: "null",
+          });
+        } else {
+          testDelayCren = await testDelayCren_Stop();
+          if (!testDelayCren) {
+            Alert.alert(
+              "Le créneau que vous avez sélectionné est maintenant trop proche pour permettre au restaurant d'être prêt."
+            );
             navigation.navigate("RestoScreen", {
               restoId: intcust.id,
               bookingType: bookingType,
-              day: 'null'
-            })
-          }
-          else {
-            testNoonNight = await testNoonNight_Stop()
-            if(!testNoonNight) {
-              Alert.alert("L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour.")
+              day: "null",
+            });
+          } else {
+            testNoonNight = await testNoonNight_Stop();
+            if (!testNoonNight) {
+              Alert.alert(
+                "L’heure limite de commande du service est désormais dépassée. Vous pouvez commander pour un autre service ou un autre jour."
+              );
 
               navigation.navigate("RestoScreen", {
-                restoId: intcust.id             
-              })
-            }
-            else {
-              testQty = await testQuantity()
+                restoId: intcust.id,
+              });
+            } else {
+              testQty = await testQuantity();
             }
           }
         }
       }
 
-      if(testOC && testOD && testDelayCren && testNoonNight && testQty) {
+      if (testOC && testOD && testDelayCren && testNoonNight && testQty) {
         let params = {
           email: email,
           itid: intcust.id,
@@ -358,11 +422,17 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         } else if (res.length > 0) {
           guestRaw.id = res[0].id;
         }
-    
+
         var Reservation = Parse.Object.extend("Reservation");
         let resaRaw = new Reservation();
-        resaRaw.set("date", moment.tz(day, 'America/Martinique').hours(route.params.hour.substring(0, 2))
-        .minute(route.params.hour.substring(3)).toDate());
+        resaRaw.set(
+          "date",
+          moment
+            .tz(day, "America/Martinique")
+            .hours(route.params.hour.substring(0, 2))
+            .minute(route.params.hour.substring(3))
+            .toDate()
+        );
         resaRaw.set("guest", guestRaw);
         let arrayGuest = [
           {
@@ -382,7 +452,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         resaRaw.set("order", true);
         resaRaw.set("notes", notecom);
         resaRaw.set("process", "appdisco");
-    
+
         if (bookingType == "TakeAway") {
           let params2 = {
             itid: intcust.id,
@@ -399,7 +469,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           ];
           resaRaw.set("seatingFlat", arraySeating);
         }
-    
+
         if (bookingType == "Delivery") {
           let params2 = {
             itid: intcust.id,
@@ -414,7 +484,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               capacity: res3[0].attributes.capacity,
             },
           ];
-    
+
           resaRaw.set("seatingFlat", arraySeating);
         }
         resaRaw.set("status", "En cours"); // en cours
@@ -426,7 +496,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           utm_source: Platform.Version,
           utm_content: "APP",
         });
-    
+
         await resaRaw.save();
         await setResa({
           id: resaRaw.id || "",
@@ -435,7 +505,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         });
 
         if (intcust.paymentChoice !== "stripeOptin") {
-          
           const params1 = {
             itid: intcust.id,
             winl: "window.location.host",
@@ -445,14 +514,17 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             customerlastname: lastname,
             customerphone: phone,
             type: "order",
-            amount: totalCashBasket +Number(delifare),
+            amount: totalCashBasket + Number(delifare),
             apikeypp: intcust.apikeypp,
             mode: bookingType,
             noukarive: intcust.option_DeliveryByNoukarive,
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
           };
-      
-          const response = await Parse.Cloud.run("getPayPlugPaymentUrlRN", params1);
+
+          const response = await Parse.Cloud.run(
+            "getPayPlugPaymentUrlRN",
+            params1
+          );
 
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
@@ -465,65 +537,65 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             amount: totalCashBasket + Number(delifare),
           });
         } else if (intcust.paymentChoice == "stripeOptin") {
-
-         
           let sumRaw = 0;
-    products.map((product) => {
-      sumRaw = sumRaw + product.quantity * product.amount;
-    });
+          products.map((product) => {
+            sumRaw = sumRaw + product.quantity * product.amount;
+          });
 
-    let params = {
-      stripeAccount : intcust.stripeAccId, 
-      amount: sumRaw + Number(delifare),
-      customeremail:email, 
-      name : firstname + lastname,
-      resaid :  resaRaw.id,
-      mode: bookingType,
-      paidType:'order',
-      noukarive: intcust.option_DeliveryByNoukarive,
-      toutalivrer:intcust.option_DeliveryByToutAlivrer
-    }
+          let params = {
+            stripeAccount: intcust.stripeAccId,
+            amount: sumRaw + Number(delifare),
+            customeremail: email,
+            name: firstname + lastname,
+            resaid: resaRaw.id,
+            mode: bookingType,
+            paidType: "order",
+            noukarive: intcust.option_DeliveryByNoukarive,
+            toutalivrer: intcust.option_DeliveryByToutAlivrer,
+          };
 
-    const { paymentIntent, ephemeralKey, customer }  = await Parse.Cloud.run("stripeCheckoutForRN", params)
+          const {
+            paymentIntent,
+            ephemeralKey,
+            customer,
+          } = await Parse.Cloud.run("stripeCheckoutForRN", params);
 
-          let ERR  = {}
-          
+          let ERR = {};
+
           ERR = await initPaymentSheet({
             merchantDisplayName: intcust.corporation,
             customerId: customer,
             customerEphemeralKeySecret: ephemeralKey,
             paymentIntentClientSecret: paymentIntent,
           });
-      
+
           if (!ERR) {
             setLoading(true);
           }
 
-          
-         let clientSecret = paymentIntent
+          let clientSecret = paymentIntent;
           const { error } = await presentPaymentSheet({
             clientSecret,
           });
-      
+
           if (error) {
-            if(error.code=="Canceled"){
-            Alert.alert('Paiement annulé');
-            }else{
+            if (error.code == "Canceled") {
+              Alert.alert("Paiement annulé");
+            } else {
               Alert.alert(`Error code: ${error.code}`, error.message);
             }
-          } else {  Alert.alert('Paiement réussi.');
+          } else {
+            Alert.alert("Paiement réussi.");
             navigation.navigate("successScreen", {
               bookingType: bookingType,
               resaId: resaRaw.id,
               day: day,
-              hour:hour,
+              hour: hour,
               amount: totalCashBasket + Number(delifare),
             });
           }
           setPaymentSheetEnabled(false);
           setLoading(false);
-       
-      
         }
       }
     } else if (!email || EmailValidator.validate(email) == false) {
@@ -539,7 +611,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     var Intcust = Parse.Object.extend("Intcust");
     let intcustRaw = new Intcust();
     intcustRaw.id = restoId;
-    setIntcustCityChoice(intcustRaw.attributes.citiesChoice2)
+    setIntcustCityChoice(intcustRaw.attributes.citiesChoice2);
     let intcustRawX = [
       {
         id: intcustRaw.id,
@@ -548,34 +620,37 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         option_DeliveryByNoukarive:
           intcustRaw.attributes.option_DeliveryByNoukarive || false,
         option_DeliveryByToutAlivrer:
-        intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
+          intcustRaw.attributes.option_DeliveryByToutAlivrer || false,
         stripeAccId: intcustRaw.attributes.stripeAccId || "",
         orderDaily_StopTaway: intcustRaw.attributes.orderDaily_StopTaway || 0,
         orderCren_StopTaway: intcustRaw.attributes.orderCren_StopTaway || 0,
         confirmModeOrderOptions_shiftinterval:
           intcustRaw.attributes.confirmModeOrderOptions_shiftinterval || 0,
-        orderDaily_StopDelivery: intcustRaw.attributes.orderDaily_StopDelivery || 0,
-        orderCren_StopDelivery: intcustRaw.attributes.orderCren_StopDelivery || 0,
-        confirmModeOrderOptions_delayorder: intcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
+        orderDaily_StopDelivery:
+          intcustRaw.attributes.orderDaily_StopDelivery || 0,
+        orderCren_StopDelivery:
+          intcustRaw.attributes.orderCren_StopDelivery || 0,
+        confirmModeOrderOptions_delayorder:
+          intcustRaw.attributes.confirmModeOrderOptions_delayorder || 0,
         delayorderDelivery: intcustRaw.attributes.delayorderDelivery || 0,
-        takeaway_StopYesterday: intcustRaw.attributes.takeaway_StopYesterday || false,
-        delivery_StopYesterday: intcustRaw.attributes.delivery_StopYesterday || false,
+        takeaway_StopYesterday:
+          intcustRaw.attributes.takeaway_StopYesterday || false,
+        delivery_StopYesterday:
+          intcustRaw.attributes.delivery_StopYesterday || false,
         takeawaynightstart: intcustRaw.attributes.takeawaynightstart || "",
         takeawaynoonblock: intcustRaw.attributes.takeawaynoonblock || "",
         takeawaynightblock: intcustRaw.attributes.takeawaynightblock || "",
         deliverynightstart: intcustRaw.attributes.deliverynightstart || "",
         deliverynoonblock: intcustRaw.attributes.deliverynoonblock || "",
         deliverynightblock: intcustRaw.attributes.deliverynightblock || "",
-        corporation : intcustRaw.attributes.corporation || '',
+        corporation: intcustRaw.attributes.corporation || "",
       },
     ];
     setIntcust(intcustRawX[0]);
     calculusTotalCashBasket();
-
   }, []);
 
   return (
-   
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.container2}>
@@ -637,7 +712,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             value={lastname}
           />
 
-          <Text style={styles.label}>Votre numéro de portable sans indicatif</Text>
+          <Text style={styles.label}>
+            Votre numéro de portable sans indicatif
+          </Text>
 
           <TextInput
             style={{
@@ -701,27 +778,47 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
                 value={zip}
               />
 
-              <Text style={styles.label}>Choisir une ville / zone de livraison</Text>
+              <Text style={styles.label}>
+                Choisir une ville / zone de livraison
+              </Text>
 
-             {intcustCityChoice &&
+              {intcustCityChoice &&
                 intcustCityChoice.map((city: any, index8: any) => (
-                  <View key={city.city +'view'} style={{ flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:30, marginTop:10}}>
-          <Text key={city.city +'text'} style={{fontFamily:'geometria-regular' }}>{city.city} {city.tar && city.tar > 0 && "+" + city.tar + "€"}</Text>
-          <RadioButton key={city.city +'radio'} onPress={() => {
-            setCity(city.city)
-            setDelifare(Number(city.tar))
-            if(city.checked==false || !city.checked){
-             city.checked=true;}
-             else{
-              city.checked=false;
-             }
-          
-          }} color="#ff5050" status={city.checked==true? 'checked' : 'unchecked'} value={city} style={{ marginRight:80 }}/>
-        </View>
-                  
+                  <View
+                    key={city.city + "view"}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginHorizontal: 30,
+                      marginTop: 10,
+                    }}
+                  >
+                    <Text
+                      key={city.city + "text"}
+                      style={{ fontFamily: "geometria-regular" }}
+                    >
+                      {city.city}{" "}
+                      {city.tar && city.tar > 0 && "+" + city.tar + "€"}
+                    </Text>
+                    <RadioButton
+                      key={city.city + "radio"}
+                      onPress={() => {
+                        setCity(city.city);
+                        setDelifare(Number(city.tar));
+                        if (city.checked == false || !city.checked) {
+                          city.checked = true;
+                        } else {
+                          city.checked = false;
+                        }
+                      }}
+                      color="#ff5050"
+                      status={city.checked == true ? "checked" : "unchecked"}
+                      value={city}
+                      style={{ marginRight: 80 }}
+                    />
+                  </View>
                 ))}
-
-          
             </View>
           )}
 
@@ -747,21 +844,16 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             value={notecom}
           />
 
-
-  
           <TouchableOpacity
             onPress={() => goPay()}
             style={styles.appButtonContainer}
           >
             <Text style={styles.appButtonText}>
               {" "}
-
               <Text style={styles.payText}>Valider et payer</Text>{" "}
             </Text>
           </TouchableOpacity>
-          {loading && 
-          <ActivityIndicator size="large" color="#F50F50" />
-          }
+          {loading && <ActivityIndicator size="large" color="#F50F50" />}
           {intcust && intcust.paymentChoice == "stripeOptin" && (
             <Text style={styles.appButtonText}>
               {" "}
@@ -852,7 +944,7 @@ const styles = StyleSheet.create({
     display: "flex",
     fontSize: 18,
     //  color: "#fff",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
@@ -875,14 +967,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-   // fontWeight: "bold",
+    // fontWeight: "bold",
   },
   textBold: {
     flex: 1,
     fontSize: 16,
     top: 0,
     fontFamily: "geometria-bold",
- //   fontWeight: "bold",
+    //   fontWeight: "bold",
     padding: 20,
   },
   textRaw: {

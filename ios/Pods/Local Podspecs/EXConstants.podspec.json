@@ -13,12 +13,8 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": [
-
-    ],
-    "UMConstantsInterface": [
-
-    ]
+    "UMCore": [],
+    "UMConstantsInterface": []
   },
   "source_files": "EXConstants/**/*.{h,m}"
 }

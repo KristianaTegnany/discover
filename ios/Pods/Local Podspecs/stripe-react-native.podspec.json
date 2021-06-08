@@ -14,11 +14,7 @@
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
   "dependencies": {
-    "React": [
-
-    ],
-    "Stripe": [
-      "~> 21.5.1"
-    ]
+    "React": [],
+    "Stripe": ["~> 21.5.1"]
   }
 }

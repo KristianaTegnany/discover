@@ -233,11 +233,11 @@ export const orderScreen = ({ route, navigation }: Props) => {
       <ScrollView style={styles.wrapperScroll}>
         <View>
           {!cats ||
-            !menus &&
-                <View key="123" style={styles.wrapindicator}>
-                  <ActivityIndicator size="large" color="#F50F50" />
-                </View>
-            }
+            (!menus && (
+              <View key="123" style={styles.wrapindicator}>
+                <ActivityIndicator size="large" color="#F50F50" />
+              </View>
+            ))}
           {cats &&
             menus &&
             cats.map((cat) => {
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
 
   textcattitle: {
     color: "#fff",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
   FlatList: {
@@ -347,13 +347,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     padding: 30,
- //   fontWeight: "bold",
+    //   fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
   text: {
     fontSize: 16,
     padding: 4,
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     fontFamily: "geometria-bold",
   },
   minitext: {
@@ -381,12 +381,9 @@ const styles = StyleSheet.create({
   },
 });
 
-orderScreen["navigationOptions"] =  (props: Props) => ({
+orderScreen["navigationOptions"] = (props: Props) => ({
   headerTitle:
     props.route.params?.bookingType === DELIVERY ? "Livraison" : "A emporter",
-   
 });
-
-
 
 export default orderScreen;

@@ -20,15 +20,9 @@
     "lib/ios/OCMock/**/*.*"
   ],
   "dependencies": {
-    "React-Core": [
-
-    ],
-    "React-RCTImage": [
-
-    ],
-    "React-RCTText": [
-
-    ]
+    "React-Core": [],
+    "React-RCTImage": [],
+    "React-RCTText": []
   },
   "frameworks": "UIKit",
   "subspecs": [
@@ -43,15 +37,9 @@
         "CLANG_CXX_LANGUAGE_STANDARD": "c++14"
       },
       "dependencies": {
-        "React-RCTFabric": [
-
-        ],
-        "React-Fabric": [
-
-        ],
-        "Folly/Fabric": [
-
-        ]
+        "React-RCTFabric": [],
+        "React-Fabric": [],
+        "Folly/Fabric": []
       }
     }
   ]

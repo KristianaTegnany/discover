@@ -11,7 +11,7 @@ import {
   BottomTabParamList,
   TablesParamList,
   GuidesParamList,
- // LoveParamList,
+  // LoveParamList,
   PersoParamList,
 } from "../types";
 //import loveScreen from "../screens/loveScreen";
@@ -25,7 +25,10 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="Tables"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint, labelStyle:{fontFamily:"geometria-regular"} }}
+      tabBarOptions={{
+        activeTintColor: Colors[colorScheme].tint,
+        labelStyle: { fontFamily: "geometria-regular" },
+      }}
     >
       {/* <BottomTab.Screen
         name="Discover"
@@ -36,7 +39,7 @@ export default function BottomTabNavigator() {
           
         }}
       /> */}
-      
+
       <BottomTab.Screen
         name="Tables"
         component={TablesNavigator}
@@ -46,7 +49,7 @@ export default function BottomTabNavigator() {
           ),
         }}
       />
-       {/* <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Evenements"
         component={LoveNavigator}
          options={{
