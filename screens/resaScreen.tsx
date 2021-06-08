@@ -109,7 +109,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       blockGo = true;
     }
     // controler le nombre de places dispo sur la journée
- 
+
     let starttime = moment(route.params.day)
       .clone()
       .hours(route.params.hour.substring(0, 2))
@@ -124,7 +124,6 @@ export const resaScreen = ({ route, navigation }: Props) => {
       "getReservationsSafeOnsiteByDateAndCren",
       params01
     );
-
 
     if (
       blockGo == false &&
@@ -151,7 +150,6 @@ export const resaScreen = ({ route, navigation }: Props) => {
       "getNumOfGuestsForDay",
       params3
     );
- 
 
     if (numOfGuestsForDay + nbcover > myintcust.onsite_maxguestbyday) {
       blockGo = true;
@@ -161,7 +159,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       navigation.navigate("RestoScreen", {
         bookingType: "Onsite",
         restoId: myintcust.id,
-        day: 'null',
+        day: "null",
         restoname: myintcust.corporation,
         nbcover: nbcover,
         name: lastname,
@@ -205,8 +203,14 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("numguest", nbcover);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date",  moment.tz(route.params.day, 'America/Martinique').hours(route.params.hour.substring(0, 2))
-            .minute(route.params.hour.substring(3)).toDate());
+            res.set(
+              "date",
+              moment
+                .tz(route.params.day, "America/Martinique")
+                .hours(route.params.hour.substring(0, 2))
+                .minute(route.params.hour.substring(3))
+                .toDate()
+            );
             res.set("notes", notecom);
             res.set("status", "Confirmé"); // en cours
             await res.save();
@@ -247,9 +251,15 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("notes", notecom);
             res.set("withapp", true);
             res.set("engagModeResa", "SurPlace");
-            res.set("date",  moment.tz(route.params.day, 'America/Martinique').hours(route.params.hour.substring(0, 2))
-            .minute(route.params.hour.substring(3)).toDate());           
-             res.set("process", "appdisco");
+            res.set(
+              "date",
+              moment
+                .tz(route.params.day, "America/Martinique")
+                .hours(route.params.hour.substring(0, 2))
+                .minute(route.params.hour.substring(3))
+                .toDate()
+            );
+            res.set("process", "appdisco");
             res.set("status", "Confirmé"); //
             await res.save();
             return res;
@@ -261,7 +271,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
               bookingType: "Onsite",
               resaId: res.id,
               restoname: myintcust.corporation,
-              day:route.params.day,
+              day: route.params.day,
               hour: route.params.hour,
               nbcover: nbcover,
               name: lastname,
@@ -293,7 +303,6 @@ export const resaScreen = ({ route, navigation }: Props) => {
       },
     ];
     setMyintcust(intcustRawX[0]);
-  
   }, []);
 
   return (
@@ -443,14 +452,14 @@ const styles = StyleSheet.create({
     display: "flex",
     fontSize: 18,
     //  color: "#fff",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
   title: {
     fontSize: 20,
     padding: 30,
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
   },
   text: {
     fontSize: 16,

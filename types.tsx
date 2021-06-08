@@ -24,8 +24,7 @@ export type BottomTabParamList = {
   Guides: undefined;
   Perso: undefined;
   Discover: undefined;
-  Evenements:undefined
-
+  Evenements: undefined;
 };
 
 export type TablesParamList = {
@@ -43,7 +42,6 @@ export type RestoParamList = {
 export type PersoParamList = {
   persoScreen: undefined;
 };
-
 
 export type OtherParamList = {
   RestoScreen: undefined;

@@ -117,28 +117,32 @@ export const basketScreen = ({ route, navigation }: Props) => {
         </ListItem.Content>
       </ListItem>
 
-      {route.params.bookingType=="Delivery" && [''].map(x => {
-   var Intcust = Parse.Object.extend("Intcust");
-   let myintcustRaw = new Intcust();
-   myintcustRaw.id = route.params.restoId;
- return  myintcustRaw.attributes.minOrderDelivery>0 && totalCashBasket < myintcustRaw.attributes.minOrderDelivery &&
-      <ListItem
-       key={x}
-        bottomDivider
-        containerStyle={{
-          backgroundColor: "green",
-          borderColor: "transparent",
-        }}
-      >
-       
-        <ListItem.Content>
-          <ListItem.Subtitle style={styles.headertext}>
-            Ce restaurant a un minimum de commande de {myintcustRaw.attributes.minOrderDelivery}€ en livraison. 
-          </ListItem.Subtitle>
-        </ListItem.Content>
-      </ListItem>
-        })
-        }
+      {route.params.bookingType == "Delivery" &&
+        [""].map((x) => {
+          var Intcust = Parse.Object.extend("Intcust");
+          let myintcustRaw = new Intcust();
+          myintcustRaw.id = route.params.restoId;
+          return (
+            myintcustRaw.attributes.minOrderDelivery > 0 &&
+            totalCashBasket < myintcustRaw.attributes.minOrderDelivery && (
+              <ListItem
+                key={x}
+                bottomDivider
+                containerStyle={{
+                  backgroundColor: "green",
+                  borderColor: "transparent",
+                }}
+              >
+                <ListItem.Content>
+                  <ListItem.Subtitle style={styles.headertext}>
+                    Ce restaurant a un minimum de commande de{" "}
+                    {myintcustRaw.attributes.minOrderDelivery}€ en livraison.
+                  </ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            )
+          );
+        })}
       <ScrollView>
         <View>
           {products
@@ -310,14 +314,14 @@ export const basketScreen = ({ route, navigation }: Props) => {
               day: route.params.day,
               hour: route.params.hour,
             });
-          }
-          else {
-            Alert.alert( `Ce restaurant a un minimum de commande en livraison : ${myintcustRaw.attributes.minOrderDelivery}€. Vous devez compléter votre commande.`)
+          } else {
+            Alert.alert(
+              `Ce restaurant a un minimum de commande en livraison : ${myintcustRaw.attributes.minOrderDelivery}€. Vous devez compléter votre commande.`
+            );
           }
         }}
         style={styles.appButtonContainer}
       >
-
         <Text style={styles.appButtonText}>Continuer</Text>
       </TouchableOpacity>
     </View>
@@ -356,7 +360,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-   // fontWeight: "bold",
+    // fontWeight: "bold",
     alignSelf: "center",
     //textTransform: "uppercase",
     fontFamily: "geometria-bold",
@@ -372,14 +376,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
   },
   textBold: {
     flex: 1,
     fontSize: 16,
     top: 0,
     fontFamily: "geometria-bold",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
 
     padding: 20,
   },

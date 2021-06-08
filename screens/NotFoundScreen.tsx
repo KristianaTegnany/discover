@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: "geometria-bold",
-//    fontWeight: "bold",
+    //    fontWeight: "bold",
   },
   link: {
     marginTop: 15,

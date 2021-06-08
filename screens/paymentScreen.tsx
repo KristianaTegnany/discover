@@ -19,9 +19,8 @@ interface Props {
 }
 
 export const paymentScreen = ({ route, navigation }: Props) => {
-
-  function checkUrlState(url:any) {
-    if (url.includes('tablediscover')) {
+  function checkUrlState(url: any) {
+    if (url.includes("tablediscover")) {
       // code to hide WebView
       navigation.navigate("successScreen", {
         bookingType: route.params.bookingType,
@@ -30,8 +29,8 @@ export const paymentScreen = ({ route, navigation }: Props) => {
         hour: route.params.hour,
         amount: route.params.amount,
       });
-    } 
-    if (url.includes('tablebig')) {
+    }
+    if (url.includes("tablebig")) {
       navigation.navigate("custInfoScreen", {
         bookingType: route.params.bookingType,
         resaId: route.params.resaId,
@@ -39,16 +38,15 @@ export const paymentScreen = ({ route, navigation }: Props) => {
         hour: route.params.hour,
         amount: route.params.amount,
       });
-    } 
-
-}
-  useEffect(() => {
-
-  }, []);
+    }
+  }
+  useEffect(() => {}, []);
 
   return (
-    <WebView source={{ uri: route.params.paylink }} style={{ marginTop: 0 }}
-    onNavigationStateChange={state => checkUrlState(state.url)}
+    <WebView
+      source={{ uri: route.params.paylink }}
+      style={{ marginTop: 0 }}
+      onNavigationStateChange={(state) => checkUrlState(state.url)}
     />
   );
 };
@@ -82,7 +80,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
     alignSelf: "center",
     //textTransform: "uppercase",
     fontFamily: "geometria-bold",
@@ -98,14 +96,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
   },
   textBold: {
     flex: 1,
     fontSize: 16,
     top: 0,
     fontFamily: "geometria-bold",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
 
     padding: 20,
   },

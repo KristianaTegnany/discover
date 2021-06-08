@@ -18,73 +18,64 @@ interface Props {
   restaurant: [];
 }
 
+export const GuidesScreen = ({ route, navigation }: Props) => {
+  const [guides, setGuidesList] = useState();
 
-  export const GuidesScreen = ({ route, navigation }: Props) => {
-
-    const [guides, setGuidesList] = useState();
-    
- 
   useEffect(() => {
     //  this.getLocationAsync();
     getGuides();
-  })
+  });
 
   async function getGuides() {
     await Parse.Cloud.run("getGuides")
       .then((response: any) => {
-
-        setGuidesList(response)
-      
+        setGuidesList(response);
       })
       .catch((error: any) => console.log(error));
   }
 
+  //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
-
- 
-    //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
-
-    return (
-      <View style={styles.container}>
-        <View style={styles.container2}>
-          {!guides && (
-              <View style={styles.wrapindicator}>
-                <ActivityIndicator size="large" color="#F50F50" />
-              </View>
-            )}
-          <FlatList
-            style={styles.FlatList}
-            data={guides}
-            renderItem={({ item }) => (
-              <TouchableWithoutFeedback
+  return (
+    <View style={styles.container}>
+      <View style={styles.container2}>
+        {!guides && (
+          <View style={styles.wrapindicator}>
+            <ActivityIndicator size="large" color="#F50F50" />
+          </View>
+        )}
+        <FlatList
+          style={styles.FlatList}
+          data={guides}
+          renderItem={({ item }) => (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.navigate("GuideScreen", {
+                  text: "Hello!",
+                  guideId: item.id,
+                });
+              }}
+            >
+              <GuideComponent
+                imgUrl={item.attributes.FrontPic._url}
                 onPress={() => {
                   navigation.navigate("GuideScreen", {
                     text: "Hello!",
                     guideId: item.id,
                   });
                 }}
-              >
-                <GuideComponent
-                  imgUrl={item.attributes.FrontPic._url}
-                  onPress={() => {
-                    navigation.navigate("GuideScreen", {
-                      text: "Hello!",
-                      guideId: item.id,
-                    });
-                  }}
-                  corponame={item.attributes.title}
-                  city={item.attributes.cityvenue}
-                  StyleK={item.attributes.style}
-                  style={styles.guideComponent}
-                ></GuideComponent>
-              </TouchableWithoutFeedback>
-            )}
-          />
-        </View>
+                corponame={item.attributes.title}
+                city={item.attributes.cityvenue}
+                StyleK={item.attributes.style}
+                style={styles.guideComponent}
+              ></GuideComponent>
+            </TouchableWithoutFeedback>
+          )}
+        />
       </View>
-    );
-  }
-
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -184,7 +175,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: "geometria-bold",
- //   fontWeight: "bold",
+    //   fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,

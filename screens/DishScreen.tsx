@@ -1,6 +1,12 @@
 import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
-import { ActivityIndicator, Alert, Image, Route, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Route,
+  StyleSheet,
+} from "react-native";
 import { ListItem } from "react-native-elements";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
@@ -230,11 +236,11 @@ export const DishScreen = ({ route, navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-      {!menu && 
+      {!menu && (
         <View key="123" style={styles.wrapindicator}>
-                  <ActivityIndicator size="large" color="#F50F50" />
-                </View>
-                }
+          <ActivityIndicator size="large" color="#F50F50" />
+        </View>
+      )}
       <ScrollView style={styles.scrollview}>
         {menu && menu.imageUrl && (
           <Image style={styles.image} source={{ uri: menu.imageUrl }} />
@@ -410,7 +416,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
                         <Text
                           style={{
                             fontSize: 16,
-                         //   fontWeight: "bold",
+                            //   fontWeight: "bold",
                             alignSelf: "center",
                             fontFamily: "geometria-bold",
                             color: textColor,
@@ -442,7 +448,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
                         <Text
                           style={{
                             fontSize: 16,
-                           // fontWeight: "bold",
+                            // fontWeight: "bold",
                             alignSelf: "center",
                             fontFamily: "geometria-bold",
                             color: textColor,
@@ -479,7 +485,7 @@ const styles = StyleSheet.create({
 
   appButtonTextCheckbox: {
     fontSize: 16,
- //   fontWeight: "bold",
+    //   fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
   },
@@ -505,7 +511,7 @@ const styles = StyleSheet.create({
   appButtonText: {
     fontSize: 18,
     color: "#fff",
-   // fontWeight: "bold",
+    // fontWeight: "bold",
     alignSelf: "center",
     fontFamily: "geometria-bold",
     textTransform: "uppercase",
@@ -517,7 +523,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     padding: 20,
     fontFamily: "geometria-bold",
-  //  fontWeight: "bold",
+    //  fontWeight: "bold",
   },
   text: {
     flex: 1,
