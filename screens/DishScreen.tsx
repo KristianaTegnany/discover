@@ -165,6 +165,14 @@ export const DishScreen = ({ route, navigation }: Props) => {
       setFormulaChoiced([...formulaChoiced]);
     }
   }
+
+  function getMenuTitle( menuid: any) {
+    let Menu= Parse.Object.extend("Menu");
+    let menu = new Menu();
+   menu.id = menuid;
+   return menu.attributes.title;
+  }
+
   async function addToBasket() {
     let Stop = false;
 
@@ -309,7 +317,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
                             fontFamily: "geometria-regular",
                           }}
                         >
-                          {menu.title}{" "}
+                         {getMenuTitle(menu.menuid)}{" "} 
                         </ListItem.Title>
 
                         {menu.tar > 0 && (
