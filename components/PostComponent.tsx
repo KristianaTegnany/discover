@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet, Image } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { Text, View } from "./Themed";
+import { Image } from 'react-native-elements'
 
 function PostComponent(props: any) {
   return (
@@ -23,7 +24,8 @@ function PostComponent(props: any) {
                     : 1,
               },
             ]}
-          ></Image>
+            PlaceholderContent={<ActivityIndicator color="black"/>}
+          />
         </View>
         <View style={styles.postHeader}>
           <Text
@@ -130,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostComponent;
+export default React.memo(PostComponent);

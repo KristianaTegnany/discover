@@ -71,7 +71,7 @@ type state = {
   isFiltre: boolean;
 };
 
-export default class TablesScreen extends React.Component<props, state> {
+export default class TablesScreen extends React.PureComponent<props, state> {
   restaurantListCast: any[] = [];
 
   constructor(props: any) {
@@ -572,34 +572,6 @@ export default class TablesScreen extends React.Component<props, state> {
             initialNumToRender={this.state.restaurantList.length}
             contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
             ListEmptyComponent={this.renderEmpty}
-            onScroll={(event) => {
-              const scrolling = event.nativeEvent.contentOffset.y;
-              if (scrolling > 100) {
-                Animated.timing(this.state.opacity, {
-                  toValue: 0,
-                  duration: 250,
-                  useNativeDriver: true,
-                }).start();
-                Animated.timing(this.state.scale, {
-                  toValue: 0,
-                  duration: 250,
-                  useNativeDriver: true,
-                }).start();
-                this.setState({ showCarousel: false });
-              } else {
-                Animated.timing(this.state.opacity, {
-                  toValue: 1,
-                  duration: 250,
-                  useNativeDriver: true,
-                }).start();
-                Animated.timing(this.state.scale, {
-                  toValue: 1,
-                  duration: 250,
-                  useNativeDriver: true,
-                }).start();
-                this.setState({ showCarousel: true });
-              }
-            }}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -619,7 +591,7 @@ export default class TablesScreen extends React.Component<props, state> {
                     resaOpen={item.attributes.EngagModeOnSite}
                     deliveryOpen={item.attributes.EngagModeDelivery}
                     takeawayOpen={item.attributes.EngagModeTakeAway}
-                  ></PostComponent>
+                  />
                 )}
               </TouchableWithoutFeedback>
             )}
