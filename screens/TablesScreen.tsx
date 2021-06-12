@@ -312,6 +312,51 @@ export default class TablesScreen extends React.PureComponent<props, state> {
     );
   };
 
+  RadioItem2 = (props: any) => {
+    const { checked, title } = props;
+    return (
+      <View
+        style={{
+          marginTop: 20,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "bold",
+            marginBottom: 10,
+          }}
+        >
+          {title}
+        </Text>
+        <RadioButton
+          onPress={() => {
+            let { countries } = this.state;
+            countries = countries.map((country: any, i: any) => {
+              country.cities = country.cities.map((city: any, j: any) => {
+                return {
+                  ...city,
+                  checked: !checked
+                }
+              });
+              return {
+                ...country,
+                checked: !checked
+              };
+            });
+            this.setState({ countries }, this.filtre);
+          }}
+          color="#F50F50"
+          status={checked ? "checked" : "unchecked"}
+          value={title}
+        />
+      </View>
+    )
+  }
+
   RadioItem = (props: any) => {
     const { index, children, checked, title } = props;
     return (
@@ -327,7 +372,7 @@ export default class TablesScreen extends React.PureComponent<props, state> {
           <Text
             style={{
               fontSize: 18,
-              fontFamily: children ? "geometria-bold" : "geometria-regular",
+              fontWeight: children ? "bold" : "normal",
               marginBottom: children ? 10 : 5,
             }}
           >
@@ -375,16 +420,18 @@ export default class TablesScreen extends React.PureComponent<props, state> {
 
   getSelectedPlace = () => {
     let place = "Toutes les régions";
-    this.state.countries.forEach((country: any) => {
-      if (country.checked) place = country.name;
-      else {
-        country.cities.forEach((city: any) => {
-          if (city.checked) place = city.name;
-        });
-      }
-    });
-    return place;
-  };
+    const { countries } = this.state
+    if(countries.filter((country:any) => country.checked).length !== countries.length)
+      countries.forEach((country: any) => {
+        if (country.checked) place = country.name;
+        else {
+          country.cities.forEach((city: any) => {
+            if (city.checked) place = city.name;
+          })
+        }
+      })
+    return place
+  }
 
   renderEmpty = () => {
     if (this.state.loading) return null;
@@ -458,6 +505,10 @@ export default class TablesScreen extends React.PureComponent<props, state> {
           >
             <ScrollView>
               <View style={{ flex: 1 }}>
+                <this.RadioItem2
+                  title="Toutes les régions"
+                  checked={this.state.countries.filter((country:any) => !country.checked).length === 0}
+                />
                 {this.state.countries.map((country: any, i: any) => (
                   <this.RadioItem
                     key={i}
