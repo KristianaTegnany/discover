@@ -154,7 +154,7 @@ export const orderScreen = ({ route, navigation }: Props) => {
         });
       }
     });
-    setTotalCashBasket(sumRaw);
+    setTotalCashBasket(Math.ceil(sumRaw));
   }
 
   async function calculusTotalQuantityBasket() {
