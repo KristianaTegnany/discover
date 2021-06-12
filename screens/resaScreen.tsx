@@ -311,6 +311,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
         <Text style={styles.label}>Nombre de couverts</Text>
 
         <NumericInput
+          minValue={0}
           textColor={textColor}
           containerStyle={{ marginLeft: 20, marginTop: 10 }}
           onChange={(value) => onChangeTextNbCouverts(value)}
