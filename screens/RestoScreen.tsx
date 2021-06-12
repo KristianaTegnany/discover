@@ -631,7 +631,6 @@ export const RestoScreen = ({ route, navigation }: Props) => {
   }, [bookingType]);
 
   useEffect(() => {
-    console.log("here", selectedDay)
     if (crenModalVisible && selectedDay) fetchHours();
   }, [selectedDay]);
 

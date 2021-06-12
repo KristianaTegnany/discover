@@ -384,6 +384,15 @@ const styles = StyleSheet.create({
 orderScreen["navigationOptions"] = (props: Props) => ({
   headerTitle:
     props.route.params?.bookingType === DELIVERY ? "Livraison" : "A emporter",
+  headerBackTitle: "Retour",
+  headerTitleStyle: {
+    fontFamily: "geometria-regular",
+    fontWeight: "200"
+  },
+  headerBackTitleStyle: {
+    fontFamily: "geometria-regular",
+    fontWeight: "200"
+  }
 });
 
 export default orderScreen;
