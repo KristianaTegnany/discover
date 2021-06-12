@@ -13,9 +13,12 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": [],
-    "UMFileSystemInterface": []
+    "UMCore": [
+
+    ],
+    "UMFileSystemInterface": [
+
+    ]
   },
-  "source_files": "EXFileSystem/**/*.h",
-  "vendored_frameworks": "EXFileSystem.xcframework"
+  "source_files": "EXFileSystem/**/*.{h,m}"
 }

@@ -13,8 +13,12 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": [],
-    "UMFontInterface": []
+    "UMCore": [
+
+    ],
+    "UMFontInterface": [
+
+    ]
   },
   "source_files": "EXFont/**/*.{h,m}"
 }

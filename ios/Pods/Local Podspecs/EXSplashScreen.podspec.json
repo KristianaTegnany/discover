@@ -13,9 +13,12 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": [],
-    "React-Core": []
+    "UMCore": [
+
+    ],
+    "React-Core": [
+
+    ]
   },
-  "source_files": "EXSplashScreen/**/*.h",
-  "vendored_frameworks": "EXSplashScreen.xcframework"
+  "source_files": "EXSplashScreen/**/*.{h,m}"
 }

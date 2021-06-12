@@ -8,14 +8,15 @@ export type RootStackParamList = {
   crenSelectScreen: undefined;
   hourSelectScreen: undefined;
   DishScreen: undefined;
-  basketScreen: undefined;
-  AppContextProvider: undefined;
-  termsScreen: undefined;
-  paymentScreen: undefined;
-  paymentStripeScreen: undefined;
-  persoScreen: undefined;
-  custInfoScreen: undefined;
-  successScreen: undefined;
+ basketScreen: undefined;
+ AppContextProvider: undefined;
+ termsScreen: undefined;
+ paymentScreen: undefined;
+ paymentStripeScreen: undefined;
+  persoScreen:undefined;
+ custInfoScreen: undefined;
+ successScreen: undefined;
+ eventsScreen:undefined
 };
 
 export type BottomTabParamList = {

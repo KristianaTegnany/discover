@@ -13,8 +13,12 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": [],
-    "UMPermissionsInterface": []
+    "UMCore": [
+
+    ],
+    "UMPermissionsInterface": [
+
+    ]
   },
   "source_files": "EXPermissions/**/*.{h,m}"
 }

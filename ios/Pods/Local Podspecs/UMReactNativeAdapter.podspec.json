@@ -13,10 +13,15 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "React-Core": [],
-    "UMCore": [],
-    "UMFontInterface": []
+    "React-Core": [
+
+    ],
+    "UMCore": [
+
+    ],
+    "UMFontInterface": [
+
+    ]
   },
-  "source_files": "UMReactNativeAdapter/**/*.h",
-  "vendored_frameworks": "UMReactNativeAdapter.xcframework"
+  "source_files": "UMReactNativeAdapter/**/*.{h,m}"
 }

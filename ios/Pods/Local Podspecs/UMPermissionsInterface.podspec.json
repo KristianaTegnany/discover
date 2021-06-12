@@ -13,7 +13,9 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": []
+    "UMCore": [
+
+    ]
   },
   "source_files": "UMPermissionsInterface/**/*.{h,m}"
 }

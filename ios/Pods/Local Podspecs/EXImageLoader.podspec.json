@@ -13,9 +13,15 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "React-Core": [],
-    "UMCore": [],
-    "UMImageLoaderInterface": []
+    "React-Core": [
+
+    ],
+    "UMCore": [
+
+    ],
+    "UMImageLoaderInterface": [
+
+    ]
   },
   "source_files": "EXImageLoader/**/*.{h,m}"
 }

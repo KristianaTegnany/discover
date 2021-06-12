@@ -59,9 +59,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     },
   ]);
   const [phone, setPhone] = useState("");
-  const [line1, setLine1] = useState();
-  const [city, setCity] = useState();
-  const [zip, setZip] = useState();
+  const [line1, setLine1] = useState('');
+  const [city, setCity] = useState('');
+  const [zip, setZip] = useState('');
   const [notecom, setNotecom] = useState();
   const [resa, setResa] = useState({
     id: "",
@@ -486,6 +486,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           ];
 
           resaRaw.set("seatingFlat", arraySeating);
+
+          let deliveryAdressRaw =[
+            {
+              "name": "adrress",
+              "full": line1 + zip + city,
+              "line1": line1,
+              "zip": zip,
+              "city": city,
+              "latitude": 0,
+              "longitude": 0,
+              "note": ""
+            }
+          ]
+          resaRaw.set("deliveryAdressFlat", deliveryAdressRaw);
         }
         resaRaw.set("status", "En cours"); // en cours
         resaRaw.set("engagModeResa", bookingType);

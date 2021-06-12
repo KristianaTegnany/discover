@@ -13,10 +13,11 @@
     "git": "https://github.com/expo/expo.git"
   },
   "dependencies": {
-    "UMCore": []
+    "UMCore": [
+
+    ]
   },
-  "source_files": "EXStructuredHeaders/**/*.h",
-  "vendored_frameworks": "EXStructuredHeaders.xcframework",
+  "source_files": "EXStructuredHeaders/**/*.{h,m}",
   "testspecs": [
     {
       "name": "Tests",

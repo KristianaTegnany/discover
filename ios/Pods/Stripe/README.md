@@ -12,19 +12,19 @@ Get started with our [📚 integration guides](https://stripe.com/docs/payments/
 
 > Updating to a newer version of the SDK? See our [migration guide](https://github.com/stripe/stripe-ios/blob/master/MIGRATING.md) and [changelog](https://github.com/stripe/stripe-ios/blob/master/CHANGELOG.md).
 
-# Table of contents
+Table of contents
+=================
 
 <!--ts-->
-
-- [Features](#features)
-- [Releases](#releases)
-- [Requirements](#requirements)
-- [Getting Started](#getting-started)
-  - [Integration](#integration)
-  - [Examples](#examples)
-- [Card scanning](#card-scanning-beta)
-- [Contributing](#contributing)
-- [Migrating](#migrating-from-older-versions)
+   * [Features](#features)
+   * [Releases](#releases)
+   * [Requirements](#requirements)
+   * [Getting Started](#getting-started)
+      * [Integration](#integration)
+      * [Examples](#examples)
+   * [Card scanning](#card-scanning-beta)
+   * [Contributing](#contributing)
+   * [Migrating](#migrating-from-older-versions)
 <!--te-->
 
 ## Features
@@ -37,7 +37,7 @@ Get started with our [📚 integration guides](https://stripe.com/docs/payments/
 
 **Stripe API**: We provide [low-level APIs](https://stripe.dev/stripe-ios/docs/Classes/STPAPIClient.html) that correspond to objects and methods in the Stripe API. You can build your own entirely custom UI on top of this layer, while still taking advantage of utilities like [STPCardValidator](https://stripe.dev/stripe-ios/docs/Classes/STPCardValidator.html) to validate your user’s input.
 
-**Native UI**: We provide native screens and elements to collect payment details. For example, [PaymentSheet](https://stripe.com/docs/payments/accept-a-payment?platform=ios) is a prebuilt UI that combines all the steps required to pay - collecting payment details, billing details, and confirming the payment - into a single sheet that displays on top of your app.
+**Native UI**: We provide native screens and elements to collect payment details. For example, [PaymentSheet](https://stripe.com/docs/payments/accept-a-payment?platform=ios) is a prebuilt UI that combines all the steps required to pay - collecting payment details, billing details, and confirming the payment  - into a single sheet that displays on top of your app.
 
 **Card scanning**: We support card scanning on iOS 13 and higher. See our [Card scanning](#card-scanning-beta) section.
 

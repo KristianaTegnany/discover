@@ -29,7 +29,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "buildNumber": "8",
+      "buildNumber": "11",
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,
       "bundleIdentifier": "com.satyamdorville.discover"
@@ -51,7 +51,7 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "versionCode": 16,
+      "versionCode": 17,
       "package": "com.satyamdorville.discover"
     },
     "web": {
