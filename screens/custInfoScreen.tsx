@@ -148,7 +148,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     products.map((product) => {
       sumRaw = sumRaw + product.quantity * product.amount;
     });
-    setTotalCashBasket(sumRaw);
+    setTotalCashBasket(sumRaw % 1 === 0? sumRaw : Math.round(sumRaw * 100) / 100);
   }
 
   async function getReservation() {

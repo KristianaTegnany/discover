@@ -81,7 +81,7 @@ export const basketScreen = ({ route, navigation }: Props) => {
         });
       }
     });
-    setTotalCashBasket(Math.ceil(sumRaw));
+    setTotalCashBasket(sumRaw % 1 === 0? sumRaw : Math.round(sumRaw * 100) / 100)
   }
   async function calculusTotalQuantityBasket() {
     let sumRaw = await sum(products, "quantity");
