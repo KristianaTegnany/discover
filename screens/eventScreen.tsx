@@ -1,13 +1,20 @@
+import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
+import {
+  ActivityIndicator,
+  Button,
+  Image,
+  Route,
+  StyleSheet,
+} from "react-native";
+import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
-import GuideComponent from "../components/GuideComponent";
-import { ActivityIndicator, FlatList, Route, StyleSheet } from "react-native";
-import _ from "lodash";
 import { Text, View } from "../components/Themed";
-import { NavigationScreenProp, NavigationState } from "react-navigation";
-
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { ScrollView } from "react-native-gesture-handler";
+import HTML from "react-native-render-html";
 import { useEffect, useState } from "react";
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
 interface NavigationParams {
   text: string;
 }
@@ -17,184 +24,149 @@ interface Props {
   route: Route;
   restaurant: [];
 }
+interface IEvent {
+  id: string;
+  imageUrl: any;
+  title: string;
+  content: string;
+}
 
+export const EventScreen = ({ route, navigation }: Props) => {
+  const [event, setEvent] = useState<IEvent>({
+    id: "",
+    imageUrl: "",
+    title: "",
+    content: "a ",
+  });
+  const backgroundColor = useThemeColor(
+    { light: "white", dark: "black" },
+    "background"
+  );
+  const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
+  const tagsStyles = {
+    p: { fontFamily: "geometria-regular", fontSize: 18, color: textColor },
+  };
+  const html = event.content || "a";
 
-  export const eventScreen = ({ route, navigation }: Props) => {
+  function useThemeColor(
+    props: { light?: string; dark?: string },
+    colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  ) {
+    const theme = useColorScheme();
+    const colorFromProps = props[theme];
 
-    const [events, setEventsList] = useState();
-    
- 
-  useEffect(() => {
-    //  this.getLocationAsync();
-    getEvents();
-  })
-
-  async function getEvents() {
-    await Parse.Cloud.run("getAllEventsActive")
-      .then((response: any) => {
-
-        setEventsList(response)
-      
-      })
-      .catch((error: any) => console.log(error));
+    if (colorFromProps) {
+      return colorFromProps;
+    } else {
+      return Colors[theme][colorName];
+    }
   }
 
+  useEffect(() => {
+    var Event = Parse.Object.extend("Event");
+    let eventRaw = new Event();
+    eventRaw.id = route.params.eventId;
 
+    setEvent({
+      id: eventRaw.id || "",
+      imageUrl: eventRaw.attributes.image._url || "",
+      content: eventRaw.attributes.content || " a",
+      title: eventRaw.attributes.title || "",
+    });
+  }, []);
 
- 
-    //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
+  return (
+    <View style={styles.container}>
+      <ScrollView style={styles.wrap}>
+        {!event.imageUrl ||
+          (event.imageUrl == "" && (
+            <View style={styles.wrapindicator}>
+              <ActivityIndicator size="large" color="#F50F50" />
+            </View>
+          ))}
+        <Image
+          source={{
+            uri: event.imageUrl || "d",
+          }}
+          style={styles.image}
+          resizeMode="cover"
+        ></Image>
+        <Text style={styles.title}>{event.title} </Text>
 
-    return (
-      <View style={styles.container}>
-        <View style={styles.container2}>
-          {!events && (
-              <View style={styles.wrapindicator}>
-                <ActivityIndicator size="large" color="#F50F50" />
-              </View>
-            )}
-          <FlatList
-            style={styles.FlatList}
-            data={events}
-            renderItem={({ item }) => (
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  navigation.navigate("GuideScreen", {
-                    text: "Hello!",
-                    guideId: item.id,
-                  });
-                }}
-              >
-                <GuideComponent
-                  imgUrl={item.attributes.FrontPic._url}
-                  onPress={() => {
-                    navigation.navigate("GuideScreen", {
-                      text: "Hello!",
-                      guideId: item.id,
-                    });
-                  }}
-                  corponame={item.attributes.title}
-                  city={item.attributes.cityvenue}
-                  StyleK={item.attributes.style}
-                  style={styles.guideComponent}
-                ></GuideComponent>
-              </TouchableWithoutFeedback>
-            )}
+        <View style={styles.wrapwebview}>
+          <HTML
+            source={{ html: html || " a" }}
+            tagsStyles={tagsStyles}
+            contentWidth={400}
           />
         </View>
-      </View>
-    );
-  }
-
+      </ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //width: '95%',
-
-    // alignItems: 'left',
-    //justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
-  },
-  container2: {
-    // flex: 1,
     width: "100%",
-
-    // alignItems: 'left',
-    //justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
   },
-  FlatList: {
-    marginTop: 20,
-
-    width: "100%",
-    marginLeft: 0,
-    paddingLeft: 0,
-    // justifyContent: "flex-start",
-    // justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
-  },
-  guideComponent: {
-    // height: 120,
-    //  alignSelf: "stretch",
-    //   backgroundColor: "rgba(255,255,255,1)"
-  },
-  wrapindicator: {
-    alignItems: "center",
-    height: "100%",
-    justifyContent: "center",
-  },
-  searchHeader: {
-    height: 40,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    borderRadius: 10,
-    width: "83%",
-    backgroundColor: "#fff",
-    marginTop: 0,
-    marginRight: "auto",
-
-    marginLeft: "auto",
-    paddingRight: 20,
-    marginBottom: 10,
-    alignSelf: "baseline",
-  },
-  searchIcon: {
-    color: "grey",
-    fontSize: 20,
-    marginLeft: 5,
-    marginRight: 1,
-  },
-  searchInput: {
-    width: 239,
-    height: 40,
-    color: "#000",
-    marginRight: 1,
-    marginLeft: 5,
-    fontSize: 14,
-    fontFamily: "geometria-regular",
-  },
-  postSection: {
+  wrap: {
     flex: 1,
-    //   marginTop: 23
   },
-  postSection_contentContainerStyle: {
-    height: 600,
-    justifyContent: "flex-start",
+  appButtonContainer: {
+    elevation: 8,
+    marginBottom: 4,
+    backgroundColor: "#009688",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
-  rect: {
-    top: 4,
-    //   left: 4,
-    width: 352,
-    height: 107,
-    position: "absolute",
-    backgroundColor: "#E6E6E6",
-    borderRadius: 25,
+  wrapwebview: {
+    flex: 1,
+    width: "90%",
+    // backgroundColor:"white",
+    marginLeft: 20,
   },
-  bigTitle: {
-    fontFamily: "geometria-regular",
-    height: 60,
-    width: "83%",
-    fontSize: 16,
-    marginTop: 20,
-    marginBottom: 0,
-    marginLeft: "auto",
-    marginRight: "auto",
+  webview: {
+    flex: 1,
+    width: "100%",
+    fontSize: 18,
+    color: "white",
+  },
+  appButtonText: {
+    fontSize: 18,
+    color: "#fff",
+    //  fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase",
   },
   title: {
     fontSize: 20,
+    marginLeft: 20,
+    marginTop: 20,
+    flexWrap: "wrap",
     fontFamily: "geometria-bold",
- //   fontWeight: "bold",
+    //  fontWeight: "bold",
+  },
+  text: {
+    fontSize: 16,
+    padding: 4,
   },
   separator: {
     marginVertical: 30,
     height: 1,
     width: "80%",
   },
-  item: {
-    // padding: 10,
-    fontSize: 18,
-    height: 44,
+  wrapindicator: {
+    alignItems: "center",
+    height: "100%",
+    justifyContent: "center",
+  },
+  image: {
+    flex: 1,
+    width: "100%",
+    height: 300,
   },
 });
-export default eventScreen;
+
+export default EventScreen;

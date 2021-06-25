@@ -66,22 +66,23 @@ interface Props {
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
-                  navigation.navigate("EventScreen", {
+                  navigation.navigate("eventScreen", {
                     text: "Hello!",
-                    guideId: item.id,
+                    eventId: item.id,
                   });
                 }}
               >
                 <EventComponent
                   imgUrl={item.attributes.image._url}
                   onPress={() => {
-                    navigation.navigate("EventScreen", {
+                    navigation.navigate("eventScreen", {
                       text: "Hello!",
-                      guideId: item.id,
+                      eventId: item.id,
                     });
                   }}
                   resto={item.attributes.intcust.attributes.corporation}
                   dateevent={item.attributes.date}
+                  city={item.attributes.intcust.attributes.cityvenue}
                   titleevent={item.attributes.title}
                  // style={styles.eventComponent}
                 ></EventComponent>

@@ -16,10 +16,10 @@ function PostComponent(props: any) {
         style={styles.image}
       >
         <View style={styles.postHeader}>
-        <Text style={styles.postDetails}>{props.resto || "nondef"} </Text>
+        <Text style={styles.postDetails}>{props.resto || "nondef"} - {props.city || "nondef"} </Text>
 
           <Text style={styles.postTitle}>{props.titleevent || "nondef"}</Text>
-          <Text style={styles.postDetails}>{moment(props.dateevent).format() || "nondef"} </Text>
+          <Text style={styles.postDetails}>{moment(props.dateevent).format("dddd DD MMM") || "nondef"} - {moment(props.dateevent).format("HH:mm") || "nondef"}</Text>
 
           {/* <Text style={styles.postDetails}>{props.corponame || "nondef"}</Text> */}
         </View>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   postHeader: {
     width: "100%",
    // flexDirection: "row",
- 
+
     position: 'absolute',
     bottom:0,  
     paddingLeft:20,
@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     borderBottomStartRadius:17,
    paddingVertical:20,
     backgroundColor: "#ff5050",
-    marginRight: 0,
     marginLeft: 0,
   },
   image: {
@@ -65,11 +64,14 @@ const styles = StyleSheet.create({
     //  justifyContent: 'center', //Centered vertically
     color: "white",
     flexWrap: "wrap",
+    marginRight:10,
+
   },
   postDetails: {
     fontSize: 15,
     fontFamily: "geometria-regular",
     color: "white",
+    marginRight:10,
 
   },
 });
