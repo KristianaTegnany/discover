@@ -1,7 +1,7 @@
 import * as React from "react";
 var Parse = require("parse/react-native");
-import EventComponent from "../components/EventComponent";
-import { ActivityIndicator, FlatList, Route, ScrollView, StyleSheet } from "react-native";
+import GuideComponent from "../components/GuideComponent";
+import { ActivityIndicator, FlatList, Route, StyleSheet } from "react-native";
 import _ from "lodash";
 import { Text, View } from "../components/Themed";
 import { NavigationScreenProp, NavigationState } from "react-navigation";
@@ -19,7 +19,7 @@ interface Props {
 }
 
 
-  export const eventsScreen = ({ route, navigation }: Props) => {
+  export const eventScreen = ({ route, navigation }: Props) => {
 
     const [events, setEventsList] = useState();
     
@@ -32,6 +32,7 @@ interface Props {
   async function getEvents() {
     await Parse.Cloud.run("getAllEventsActive")
       .then((response: any) => {
+
         setEventsList(response)
       
       })
@@ -44,54 +45,43 @@ interface Props {
     //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
     return (
-
       <View style={styles.container}>
         <View style={styles.container2}>
-
-          {!events ? (
+          {!events && (
               <View style={styles.wrapindicator}>
                 <ActivityIndicator size="large" color="#F50F50" />
               </View>
-            ):null}
-
-          <ScrollView>
-
-          <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
-            Découvrez des évènements qui vont vous régaler</Text>
-                     <View>
-
+            )}
           <FlatList
             style={styles.FlatList}
             data={events}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
-                  navigation.navigate("EventScreen", {
+                  navigation.navigate("GuideScreen", {
                     text: "Hello!",
                     guideId: item.id,
                   });
                 }}
               >
-                <EventComponent
-                  imgUrl={item.attributes.image._url}
+                <GuideComponent
+                  imgUrl={item.attributes.FrontPic._url}
                   onPress={() => {
-                    navigation.navigate("EventScreen", {
+                    navigation.navigate("GuideScreen", {
                       text: "Hello!",
                       guideId: item.id,
                     });
                   }}
-                  resto={item.attributes.intcust.attributes.corporation}
-                  dateevent={item.attributes.date}
-                  titleevent={item.attributes.title}
-                 // style={styles.eventComponent}
-                ></EventComponent>
+                  corponame={item.attributes.title}
+                  city={item.attributes.cityvenue}
+                  StyleK={item.attributes.style}
+                  style={styles.guideComponent}
+                ></GuideComponent>
               </TouchableWithoutFeedback>
             )}
-          />             
-          </View>
-          </ScrollView>
+          />
         </View>
-      </View> 
+      </View>
     );
   }
 
@@ -207,4 +197,4 @@ const styles = StyleSheet.create({
     height: 44,
   },
 });
-export default eventsScreen;
+export default eventScreen;

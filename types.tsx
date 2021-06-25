@@ -42,6 +42,9 @@ export type RestoParamList = {
 export type PersoParamList = {
   persoScreen: undefined;
 };
+export type EventsParamList = {
+  eventsScreen: undefined;
+};
 
 export type OtherParamList = {
   RestoScreen: undefined;
