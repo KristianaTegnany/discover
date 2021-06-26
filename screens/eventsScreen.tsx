@@ -100,34 +100,18 @@ interface Props {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //width: '95%',
-
-    // alignItems: 'left',
-    //justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
   },
   container2: {
-    // flex: 1,
     width: "100%",
-
-    // alignItems: 'left',
-    //justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
-  },
+},
   FlatList: {
     marginTop: 20,
 
     width: "100%",
     marginLeft: 0,
     paddingLeft: 0,
-    // justifyContent: "flex-start",
-    // justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
   },
   guideComponent: {
-    // height: 120,
-    //  alignSelf: "stretch",
-    //   backgroundColor: "rgba(255,255,255,1)"
   },
   wrapindicator: {
     alignItems: "center",
@@ -167,7 +151,6 @@ const styles = StyleSheet.create({
   },
   postSection: {
     flex: 1,
-    //   marginTop: 23
   },
   postSection_contentContainerStyle: {
     height: 600,
@@ -195,7 +178,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: "geometria-bold",
- //   fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
@@ -203,7 +185,6 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   item: {
-    // padding: 10,
     fontSize: 18,
     height: 44,
   },

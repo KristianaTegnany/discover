@@ -60,8 +60,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: "geometria-bold",
     marginTop: 5,
-  //  width: "90%",
-    //  justifyContent: 'center', //Centered vertically
     color: "white",
     flexWrap: "wrap",
     marginRight:10,
