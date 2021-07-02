@@ -11,6 +11,7 @@ import {
   Keyboard
 } from "react-native";
 import Modal from "react-native-modal";
+import { MaterialIcons } from "@expo/vector-icons";
 import moment from "moment";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
@@ -51,6 +52,8 @@ export const EventScreen = ({ route, navigation }: Props) => {
   const [lastname, setLastname] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+
+  const [isResaConfirmed, setIsResaConfirmed] = useState(false)
 
   const [keyboard, setKeyboard] = useState(0)
   const [offset, setOffset] = useState(0)
@@ -152,51 +155,73 @@ export const EventScreen = ({ route, navigation }: Props) => {
               })
             }}
           >
-            <Text>
-              Prénom(s)
-            </Text>
-            <TextInput
-              onFocus={() => setOffset(310)}
-              style={styles.textInput}
-              value={firstname}
-              onChangeText={text => setFirstname(text)}
-            />
-            <Text>
-              Nom de famille
-            </Text>
-            <TextInput
-              onFocus={() => setOffset(235)}
-              style={styles.textInput}
-              value={lastname}
-              onChangeText={text => setLastname(text)}
-            />
-            <Text>
-              Numéro de portable
-            </Text>
-            <TextInput
-              onFocus={() => setOffset(165)}
-              style={styles.textInput}
-              value={phone}
-              onChangeText={text => setPhone(text)}
-            />
-            <Text>
-              Adresse email
-            </Text>
-            <TextInput
-              onFocus={() => setOffset(90)}
-              style={styles.textInput}
-              value={email}
-              onChangeText={text => setEmail(text)}
-            />
+            {
+              !isResaConfirmed &&
+              <>
+                <Text>
+                  Prénom(s)
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(300)}
+                  style={styles.textInput}
+                  value={firstname}
+                  onChangeText={text => setFirstname(text)}
+                />
+                <Text>
+                  Nom de famille
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(225)}
+                  style={styles.textInput}
+                  value={lastname}
+                  onChangeText={text => setLastname(text)}
+                />
+                <Text>
+                  Numéro de portable
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(155)}
+                  style={styles.textInput}
+                  value={phone}
+                  onChangeText={text => setPhone(text)}
+                />
+                <Text>
+                  Adresse email
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(80)}
+                  style={styles.textInput}
+                  value={email}
+                  onChangeText={text => setEmail(text)}
+                />
+              </>
+            }
+            {
+              isResaConfirmed &&
+              <View style={{alignItems:'center', justifyContent: 'center'}}>
+                <MaterialIcons name="check-circle-outline" size={150} color='rgb(0, 209, 73)'/>
+                <Text style={{marginTop: 20, marginBottom: 10, fontWeight:'bold', fontSize: 18}}>Réservation confirmée</Text>
+                <Text style={{fontWeight:'bold', color: '#ff5050'}}>x34DFGT898</Text>
+                <Text style={{fontWeight:'bold', marginBottom: 10, color: '#ff5050'}}>Numéro de réservation</Text>
+                <Text>Notez-le et conservez-le</Text>
+              </View>
+            }
           </View>
         <TouchableOpacity
           onPress={() => {
-            setCrenModalVisible(false)
+            if(isResaConfirmed){
+              navigation.navigate('TablesScreen')
+              setCrenModalVisible(false)
+            }
+            else {
+              // TO DO
+              setIsResaConfirmed(true)
+            }
           }}
           style={styles.appButtonContainer}
-          disabled={!firstname || !lastname || !phone || !email}
+          disabled={!isResaConfirmed && (!firstname || !lastname || !phone || !email)}
         >
-          <Text style={styles.appButtonText}>Confirmer</Text>
+          <Text style={styles.appButtonText}>{isResaConfirmed?'Revenir à l\'accueil' : 'Confirmer'}</Text>
         </TouchableOpacity>
       </Modal>
       <ScrollView style={styles.wrap}>
