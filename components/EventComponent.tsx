@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
   },
   postHeader: {
     width: "100%",
+    opacity:0.95,
    // flexDirection: "row",
-
     position: 'absolute',
     bottom:0,  
     paddingLeft:20,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 300,
+    height: 400,
     borderRadius: 17,
     padding: 20,
     marginHorizontal: 20,

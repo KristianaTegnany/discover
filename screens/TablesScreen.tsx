@@ -586,7 +586,8 @@ export default class TablesScreen extends React.PureComponent<props, state> {
             marginBottom: 20,
             alignSelf: "center",
             flexDirection: "row",
-            width: "85%",
+            marginLeft:40,
+          //  width: "100%",
           }}
         >
           <this.FilterButton
