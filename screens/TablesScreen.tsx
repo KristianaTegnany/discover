@@ -136,7 +136,7 @@ export default class TablesScreen extends React.PureComponent<props, state> {
     this.setState({ loading: true });
     await Parse.Cloud.run("getIntcustsDiscover")
       .then((response: any) => {
-        const activeRestos = response.filter((resto:any) => resto.attributes.EngagModeOnSite && resto.attributes.EngagModeDelivery && resto.attributes.EngagModeTakeAway)
+        const activeRestos = response.filter((resto:any) => resto.attributes.EngagModeOnSite || resto.attributes.EngagModeDelivery || resto.attributes.EngagModeTakeAway)
         , nonactiveRestos = response.filter((resto:any) => !(resto.attributes.EngagModeOnSite || resto.attributes.EngagModeDelivery || resto.attributes.EngagModeTakeAway))
         
         this.setState({
