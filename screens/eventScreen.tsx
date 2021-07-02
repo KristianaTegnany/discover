@@ -2,14 +2,16 @@ import { NavigationState } from "@react-navigation/native";
 import * as React from "react";
 import {
   ActivityIndicator,
-  Button,
   Image,
   Platform,
   Route,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
+  Keyboard
 } from "react-native";
 import Modal from "react-native-modal";
+import { MaterialIcons } from "@expo/vector-icons";
 import moment from "moment";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
@@ -19,6 +21,7 @@ import HTML from "react-native-render-html";
 import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
+
 interface NavigationParams {
   text: string;
 }
@@ -43,7 +46,18 @@ interface IEvent {
 export const EventScreen = ({ route, navigation }: Props) => {
   const [html, setHtml] = useState()
   const [event, setEvent] = useState<IEvent>();
+  
   const [crenModalVisible, setCrenModalVisible] = useState(false);
+  const [firstname, setFirstname] = useState('')
+  const [lastname, setLastname] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+
+  const [isResaConfirmed, setIsResaConfirmed] = useState(false)
+
+  const [keyboard, setKeyboard] = useState(0)
+  const [offset, setOffset] = useState(0)
+  
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
     "background"
@@ -86,8 +100,130 @@ export const EventScreen = ({ route, navigation }: Props) => {
     });
   }, []);
 
+  useEffect(() => {
+    const k1 = Keyboard.addListener('keyboardDidShow', e => {
+      setKeyboard(e.endCoordinates.height)
+    })
+    const k2 = Keyboard.addListener('keyboardDidHide', () => { setKeyboard(0); setOffset(0)})
+    return() => {
+      k1.remove()
+      k2.remove()
+    }
+  }, [])
+
+  const reset = () => {
+    setFirstname('')
+    setLastname('')
+    setPhone('')
+    setEmail('')
+  }
+
   return (
     <View style={styles.container}>
+      <Modal
+        isVisible={crenModalVisible}
+        onModalHide={reset}
+        onSwipeComplete={(e) => setCrenModalVisible(false)}
+        onBackButtonPress={() => setCrenModalVisible(false)}
+        onBackdropPress={() => setCrenModalVisible(false)}
+        style={{
+          padding: 0,
+          margin: 0,
+          ...(Platform.OS !== "android" && {
+            zIndex: 10,
+          }),
+          backgroundColor:'white',
+          position:'absolute',
+          bottom: offset > 0 && keyboard > 0 ? keyboard - offset : 0,
+          width:'100%',
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+          height: 500
+        }}
+      >
+          <Text style={[styles.title, { marginBottom: 0 }]}>{event?.title} </Text>
+          <Text style={styles.subtitle2}>{event?.restaurant}</Text>
+          
+          <View
+            style={{
+              backgroundColor:'white',
+              padding: 20,
+              borderRadius: 10,
+              elevation: 10,
+              ...(Platform.OS !== "android" && {
+                zIndex: 100,
+              })
+            }}
+          >
+            {
+              !isResaConfirmed &&
+              <>
+                <Text>
+                  Prénom(s)
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(300)}
+                  style={styles.textInput}
+                  value={firstname}
+                  onChangeText={text => setFirstname(text)}
+                />
+                <Text>
+                  Nom de famille
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(225)}
+                  style={styles.textInput}
+                  value={lastname}
+                  onChangeText={text => setLastname(text)}
+                />
+                <Text>
+                  Numéro de portable
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(155)}
+                  style={styles.textInput}
+                  value={phone}
+                  onChangeText={text => setPhone(text)}
+                />
+                <Text>
+                  Adresse email
+                </Text>
+                <TextInput
+                  onFocus={() => setOffset(80)}
+                  style={styles.textInput}
+                  value={email}
+                  onChangeText={text => setEmail(text)}
+                />
+              </>
+            }
+            {
+              isResaConfirmed &&
+              <View style={{alignItems:'center', justifyContent: 'center'}}>
+                <MaterialIcons name="check-circle-outline" size={150} color='rgb(0, 209, 73)'/>
+                <Text style={{marginTop: 20, marginBottom: 10, fontWeight:'bold', fontSize: 18}}>Réservation confirmée</Text>
+                <Text style={{fontWeight:'bold', color: '#ff5050'}}>x34DFGT898</Text>
+                <Text style={{fontWeight:'bold', marginBottom: 10, color: '#ff5050'}}>Numéro de réservation</Text>
+                <Text>Notez-le et conservez-le</Text>
+              </View>
+            }
+          </View>
+        <TouchableOpacity
+          onPress={() => {
+            if(isResaConfirmed){
+              navigation.navigate('TablesScreen')
+              setCrenModalVisible(false)
+            }
+            else {
+              // TO DO
+              setIsResaConfirmed(true)
+            }
+          }}
+          style={styles.appButtonContainer}
+          disabled={!isResaConfirmed && (!firstname || !lastname || !phone || !email)}
+        >
+          <Text style={styles.appButtonText}>{isResaConfirmed?'Revenir à l\'accueil' : 'Confirmer'}</Text>
+        </TouchableOpacity>
+      </Modal>
       <ScrollView style={styles.wrap}>
         {!event?.imageUrl ||
           (event.imageUrl == "" && (
@@ -149,7 +285,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    marginHorizontal:10,
+    marginHorizontal:20,
     fontFamily:'geometria-regular',
   },
   wrapwebview: {
@@ -212,6 +348,36 @@ fontFamily:"geometria-bold",
     width: "100%",
     height: 300,
   },
+  btnContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    borderRadius: 25,
+    color: "white",
+    backgroundColor: "#ff5050",
+  },
+  btn: {
+    height: 50,
+    width: 50,
+    color: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  arrow: {
+    transform: [
+      {
+        rotate: "180deg",
+      },
+    ],
+  },
+  textInput: {
+    padding: 10,
+    marginTop: 5,
+    marginBottom: 10,
+    borderRadius: 5,
+    borderColor: 'grey',
+    borderWidth: 1
+  }
 });
 
 export default EventScreen;
