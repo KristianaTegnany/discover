@@ -22,6 +22,7 @@ import BottomTabNavigator from "./BottomTabNavigator";
 import paymentStripeScreen from "../screens/paymentStripeScreen";
 import { persoScreen } from "../screens/persoScreen";
 import eventsScreen from "../screens/eventsScreen";
+import eventScreen from "../screens/eventScreen";
   
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
@@ -81,6 +82,15 @@ function RootNavigator() {
       
         } }}
         component={eventsScreen}
+      />
+       <Stack.Screen
+        name="eventScreen"
+        options={{ headerTitle: "", headerTransparent: true,
+        headerBackTitleStyle: {
+          fontFamily: "geometria-bold",
+      
+        } }}
+        component={eventScreen}
       />
       <Stack.Screen
         name="RestoScreen"

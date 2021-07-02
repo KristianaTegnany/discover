@@ -1,7 +1,7 @@
 import * as React from "react";
 var Parse = require("parse/react-native");
-import GuideComponent from "../components/GuideComponent";
-import { ActivityIndicator, FlatList, Route, StyleSheet } from "react-native";
+import EventComponent from "../components/EventComponent";
+import { ActivityIndicator, FlatList, Route, ScrollView, StyleSheet } from "react-native";
 import _ from "lodash";
 import { Text, View } from "../components/Themed";
 import { NavigationScreenProp, NavigationState } from "react-navigation";
@@ -21,19 +21,18 @@ interface Props {
 
   export const eventsScreen = ({ route, navigation }: Props) => {
 
-    const [guides, setGuidesList] = useState();
+    const [events, setEventsList] = useState();
     
  
   useEffect(() => {
     //  this.getLocationAsync();
-    getGuides();
+    getEvents();
   })
 
-  async function getGuides() {
-    await Parse.Cloud.run("getGuides")
+  async function getEvents() {
+    await Parse.Cloud.run("getAllEventsActive")
       .then((response: any) => {
-
-        setGuidesList(response)
+        setEventsList(response)
       
       })
       .catch((error: any) => console.log(error));
@@ -45,43 +44,55 @@ interface Props {
     //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
     return (
+
       <View style={styles.container}>
         <View style={styles.container2}>
-          {!guides && (
+
+          {!events ? (
               <View style={styles.wrapindicator}>
                 <ActivityIndicator size="large" color="#F50F50" />
               </View>
-            )}
+            ):null}
+
+          <ScrollView>
+
+          <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
+            Découvrez des évènements qui vont vous régaler</Text>
+                     <View>
+
           <FlatList
             style={styles.FlatList}
-            data={guides}
+            data={events}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
                 onPress={() => {
-                  navigation.navigate("GuideScreen", {
+                  navigation.navigate("eventScreen", {
                     text: "Hello!",
-                    guideId: item.id,
+                    eventId: item.id,
                   });
                 }}
               >
-                <GuideComponent
-                  imgUrl={item.attributes.FrontPic._url}
+                <EventComponent
+                  imgUrl={item.attributes.image._url}
                   onPress={() => {
-                    navigation.navigate("GuideScreen", {
+                    navigation.navigate("eventScreen", {
                       text: "Hello!",
-                      guideId: item.id,
+                      eventId: item.id,
                     });
                   }}
-                  corponame={item.attributes.title}
-                  city={item.attributes.cityvenue}
-                  StyleK={item.attributes.style}
-                  style={styles.guideComponent}
-                ></GuideComponent>
+                  resto={item.attributes.intcust.attributes.corporation}
+                  dateevent={item.attributes.date}
+                  city={item.attributes.intcust.attributes.cityvenue}
+                  titleevent={item.attributes.title}
+                 // style={styles.eventComponent}
+                ></EventComponent>
               </TouchableWithoutFeedback>
             )}
-          />
+          />             
+          </View>
+          </ScrollView>
         </View>
-      </View>
+      </View> 
     );
   }
 
@@ -89,34 +100,18 @@ interface Props {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //width: '95%',
-
-    // alignItems: 'left',
-    //justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
   },
   container2: {
-    // flex: 1,
     width: "100%",
-
-    // alignItems: 'left',
-    //justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
-  },
+},
   FlatList: {
     marginTop: 20,
 
     width: "100%",
     marginLeft: 0,
     paddingLeft: 0,
-    // justifyContent: "flex-start",
-    // justifyContent: 'center',
-    //  backgroundColor: "rgba(255,255,255,1)"
   },
   guideComponent: {
-    // height: 120,
-    //  alignSelf: "stretch",
-    //   backgroundColor: "rgba(255,255,255,1)"
   },
   wrapindicator: {
     alignItems: "center",
@@ -156,7 +151,6 @@ const styles = StyleSheet.create({
   },
   postSection: {
     flex: 1,
-    //   marginTop: 23
   },
   postSection_contentContainerStyle: {
     height: 600,
@@ -184,7 +178,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: "geometria-bold",
- //   fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
@@ -192,7 +185,6 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   item: {
-    // padding: 10,
     fontSize: 18,
     height: 44,
   },

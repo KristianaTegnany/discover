@@ -16,7 +16,8 @@ export type RootStackParamList = {
   persoScreen:undefined;
  custInfoScreen: undefined;
  successScreen: undefined;
- eventsScreen:undefined
+ eventsScreen:undefined;
+ eventScreen:undefined
 };
 
 export type BottomTabParamList = {
@@ -41,6 +42,9 @@ export type RestoParamList = {
 
 export type PersoParamList = {
   persoScreen: undefined;
+};
+export type EventsParamList = {
+  eventsScreen: undefined;
 };
 
 export type OtherParamList = {

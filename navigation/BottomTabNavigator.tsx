@@ -13,9 +13,12 @@ import {
   GuidesParamList,
   // LoveParamList,
   PersoParamList,
+  EventsParamList,
+
 } from "../types";
 //import loveScreen from "../screens/loveScreen";
 import { persoScreen } from "../screens/persoScreen";
+import eventsScreen from "../screens/eventsScreen";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -49,13 +52,13 @@ export default function BottomTabNavigator() {
           ),
         }}
       />
-      {/* <BottomTab.Screen
+       <BottomTab.Screen
         name="Evenements"
-        component={LoveNavigator}
+        component={EventsNavigator}
          options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
         }}
-      /> */}
+      /> 
       <BottomTab.Screen
         name="Guides"
         component={GuidesNavigator}
@@ -155,5 +158,23 @@ function PersoNavigator() {
         options={{ headerTitle: "Perso" }}
       />
     </PersoStack.Navigator>
+  );
+}
+
+const EventsStack = createStackNavigator<EventsParamList>();
+
+function EventsNavigator() {
+  return (
+    <EventsStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <EventsStack.Screen
+        name="eventsScreen"
+        component={eventsScreen}
+        options={{ headerTitle: "Perso" }}
+      />
+    </EventsStack.Navigator>
   );
 }

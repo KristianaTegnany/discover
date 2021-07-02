@@ -339,6 +339,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }
 
   async function goPay() {
+    console.log(city)
     let blockGo = false;
     setLoading(true);
 
@@ -626,6 +627,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     let intcustRaw = new Intcust();
     intcustRaw.id = restoId;
     setIntcustCityChoice(intcustRaw.attributes.citiesChoice2);
+    setCity(intcustRaw.attributes.citiesChoice2[0].city);
+    setDelifare(intcustRaw.attributes.citiesChoice2[0].tar);
+
     let intcustRawX = [
       {
         id: intcustRaw.id,
