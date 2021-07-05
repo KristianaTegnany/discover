@@ -21,6 +21,7 @@ import HTML from "react-native-render-html";
 import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
+import NumericInput from "react-native-numeric-input";
 
 interface NavigationParams {
   text: string;
@@ -40,18 +41,23 @@ interface IEvent {
   time:string;
   restaurant :string;
   price : number;
-  infoline:string
+  infoline:string,
+  freeconfirm:boolean,
+  itid:string
 }
 
 export const EventScreen = ({ route, navigation }: Props) => {
   const [html, setHtml] = useState()
   const [event, setEvent] = useState<IEvent>();
+  const [resaid, setResaId] = useState(null)
+
   
   const [crenModalVisible, setCrenModalVisible] = useState(false);
   const [firstname, setFirstname] = useState('')
   const [lastname, setLastname] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [numcover, setNumcover] = useState(0)
 
   const [isResaConfirmed, setIsResaConfirmed] = useState(false)
 
@@ -96,6 +102,8 @@ export const EventScreen = ({ route, navigation }: Props) => {
       restaurant: eventRaw.attributes.intcust.attributes.corporation || "",
       price: eventRaw.attributes.price || "",
       infoline: eventRaw.attributes.infoline || "",
+      freeconfirm:  eventRaw.attributes.freeconfirm || true,
+      itid:  eventRaw.attributes.intcust.id || true,
 
     });
   }, []);
@@ -132,7 +140,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           ...(Platform.OS !== "android" && {
             zIndex: 10,
           }),
-          backgroundColor:'white',
+          backgroundColor:backgroundColor,
           position:'absolute',
           bottom: offset > 0 && keyboard > 0 ? keyboard - offset : 0,
           width:'100%',
@@ -141,12 +149,10 @@ export const EventScreen = ({ route, navigation }: Props) => {
           height: 500
         }}
       >
-          <Text style={[styles.title, { marginBottom: 0 }]}>{event?.title} </Text>
-          <Text style={styles.subtitle2}>{event?.restaurant}</Text>
           
           <View
             style={{
-              backgroundColor:'white',
+              backgroundColor:backgroundColor,
               padding: 20,
               borderRadius: 10,
               elevation: 10,
@@ -158,41 +164,51 @@ export const EventScreen = ({ route, navigation }: Props) => {
             {
               !isResaConfirmed &&
               <>
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Prénom(s)
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(300)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={firstname}
                   onChangeText={text => setFirstname(text)}
                 />
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Nom de famille
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(225)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={lastname}
                   onChangeText={text => setLastname(text)}
                 />
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Numéro de portable
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(155)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={phone}
                   onChangeText={text => setPhone(text)}
                 />
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Adresse email
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(80)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={email}
                   onChangeText={text => setEmail(text)}
+                />
+                  <Text style={{fontFamily:'geometria-regular'}}>
+                  Nombre de places
+                </Text>
+                        <NumericInput
+                  minValue={0}
+                  textColor={textColor}
+                  containerStyle={{ marginLeft: 20, marginTop: 10 }}
+                  onChange={(value) => setNumcover(value)}
+                  
                 />
               </>
             }
@@ -201,21 +217,78 @@ export const EventScreen = ({ route, navigation }: Props) => {
               <View style={{alignItems:'center', justifyContent: 'center'}}>
                 <MaterialIcons name="check-circle-outline" size={150} color='rgb(0, 209, 73)'/>
                 <Text style={{marginTop: 20, marginBottom: 10, fontWeight:'bold', fontSize: 18}}>Réservation confirmée</Text>
-                <Text style={{fontWeight:'bold', color: '#ff5050'}}>x34DFGT898</Text>
                 <Text style={{fontWeight:'bold', marginBottom: 10, color: '#ff5050'}}>Numéro de réservation</Text>
+                <Text style={{fontWeight:'bold', color: '#ff5050'}}>{resaid}</Text>
                 <Text>Notez-le et conservez-le</Text>
               </View>
             }
           </View>
         <TouchableOpacity
-          onPress={() => {
+          onPress={async () => {
             if(isResaConfirmed){
               navigation.navigate('TablesScreen')
               setCrenModalVisible(false)
             }
             else {
               // TO DO
+              // payant ou gratuit 
+              if(event?.freeconfirm==true){
+              // si gratuit create resa
+              var Reservation = Parse.Object.extend("Reservation")
+             let reservationRaw = new Reservation()
+             var Event = Parse.Object.extend("Event")
+             let eventRaw = new Event()
+             eventRaw.id = route.params.eventId
+             var Intcust = Parse.Object.extend("Intcust")
+             let IntcustRaw = new Intcust()
+             IntcustRaw.id = event.itid
+             reservationRaw.set("event",eventRaw) 
+             reservationRaw.set("intcust",IntcustRaw) 
+             reservationRaw.set("OnWaitingList",false) 
+             reservationRaw.set("engagModeResa","Event") 
+             await reservationRaw.save()
+              
+              let params = {
+                myresid: reservationRaw.id,
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                phone: phone,
+                itid: event.itid,
+                note : "",
+                agreed : true,
+                numguest:numcover
+              };
+            console.log(params)
+              const res = await Parse.Cloud.run("editRes4FreeDisco", params);
+              console.log(res.id)
+
+              setResaId(res.id)
+
               setIsResaConfirmed(true)
+              const params40 = {
+                itid: event.itid,
+              };
+              const employeesOfIntcust = await Parse.Cloud.run("getEmployees", params40);
+                  employeesOfIntcust.map(async (user:any) => {
+        const params50 = {
+          employeeId: user.id,
+        };
+        const installationsOfEmployee = await Parse.Cloud.run("getInstallationsOfEmployees", params50);
+                          installationsOfEmployee.map( (installation:any) => {
+                            const params10 = {
+                              token: installation.attributes.deviceToken,
+                              title: 'Vous avez une nouvelle réservation sur TABLE',
+                              body: 'Au nom de ' + firstname+' '+ lastname +  ', '+numcover+   ' couverts pour votre évènement ' + event.title + '. Faites chauffer les casseroles !',
+                            };
+                            Parse.Cloud.run("sendPush", params10);
+                          })
+                    })
+
+              }else {
+              // si payant go to payment payplug ou stripe 
+
+              }
             }
           }}
           style={styles.appButtonContainer}

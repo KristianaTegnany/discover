@@ -1,7 +1,7 @@
 import * as React from "react";
 var Parse = require("parse/react-native");
 import EventComponent from "../components/EventComponent";
-import { ActivityIndicator, FlatList, Route, ScrollView, StyleSheet } from "react-native";
+import { ActivityIndicator, FlatList, Route, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import _ from "lodash";
 import { Text, View } from "../components/Themed";
 import { NavigationScreenProp, NavigationState } from "react-navigation";
@@ -44,9 +44,10 @@ interface Props {
     //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
     return (
+<SafeAreaView style={{flex: 1}}>
+<ScrollView>
 
-      <View style={styles.container}>
-        <View style={styles.container2}>
+   
 
           {!events ? (
               <View style={styles.wrapindicator}>
@@ -54,7 +55,6 @@ interface Props {
               </View>
             ):null}
 
-          <ScrollView>
 
           <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
             Découvrez des évènements qui vont vous régaler</Text>
@@ -91,8 +91,10 @@ interface Props {
           />             
           </View>
           </ScrollView>
-        </View>
-      </View> 
+
+      </SafeAreaView>
+
+
     );
   }
 
