@@ -259,12 +259,9 @@ export const EventScreen = ({ route, navigation }: Props) => {
                 agreed : true,
                 numguest:numcover
               };
-            console.log(params)
               const res = await Parse.Cloud.run("editRes4FreeDisco", params);
-              console.log(res.id)
 
               setResaId(res.id)
-
               setIsResaConfirmed(true)
               const params40 = {
                 itid: event.itid,
@@ -284,7 +281,6 @@ export const EventScreen = ({ route, navigation }: Props) => {
                             Parse.Cloud.run("sendPush", params10);
                           })
                     })
-
               }else {
               // si payant go to payment payplug ou stripe 
 
