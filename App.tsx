@@ -102,8 +102,11 @@ export default function App() {
 }
 
 async function registerForPushNotificationsAsync() {
+  console.log(1)
   let token;
   if (Constants.isDevice) {
+    console.log(2)
+
     const {
       status: existingStatus,
     } = await Notifications.getPermissionsAsync();
@@ -112,17 +115,21 @@ async function registerForPushNotificationsAsync() {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
+
     if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
+      alert("Pour bénéficier de l'expérience TABLE au maximum, autorisez les notifications dans vos paramètres.");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
+
     let installationId;
     if (Platform.OS === "android") {
       installationId = Application.androidId;
     }
     if (Platform.OS === "ios") {
+
       let result = await SecureStore.getItemAsync("installationid");
+
       if (result) {
         //   console.log("🔐 Here's your value 🔐 \n" + result);
         installationId = result;
@@ -136,12 +143,15 @@ async function registerForPushNotificationsAsync() {
       await SecureStore.setItemAsync(key, value);
     }
     //   console.log(token);
+    console.log(8)
+
     let params = {
       token: token,
       installationId: installationId,
-      userId: (await Parse.User.currentAsync()).id || 'notYet',
+      userId: 'notYet',  // Quand y'aura le compte user faudra relier le user a l'installation
     };
     const res = await Parse.Cloud.run("createInstallationGuest", params);
+
   } else {
     alert("Must use physical device for Push Notifications");
   }
