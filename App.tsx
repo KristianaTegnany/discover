@@ -25,7 +25,7 @@ Sentry.Native;
 Sentry.Browser;
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = `https://pptableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
+Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
 Sentry.init({
   dsn:
     "https://8a30ffe4a08647e889bb528cf8a3b14a@o724568.ingest.sentry.io/5782293",

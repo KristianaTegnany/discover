@@ -672,6 +672,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
               source={{ uri: myintcust.overviewpicUrl }}
             />
           )}
+          <View  style={{borderRadius:20, marginTop:-20, paddingTop:10}}>
           <Text style={styles.title}>{myintcust.corporation} </Text>
           <Text style={styles.textSub2}>{myintcust.style} </Text>
           <Text style={styles.textMoli}>📍{myintcust.adressvenue} </Text>
@@ -696,11 +697,9 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           {(myintcust.EngagModeTakeAway == true ||
             myintcust.EngagModeDelivery == true) && (
             <View>
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+           
 
-              <Text style={styles.textMoli}>
+              <Text style={{fontFamily:"geometria-regular", marginHorizontal:30, marginVertical:20,  padding:20, backgroundColor:"#efefef"}}>
                 ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
                 {myintcust.contactphone}
               </Text>
@@ -709,28 +708,37 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
           {myintcust.EngagModeOnSite == true && (
             <View>
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
-
-              <Text style={styles.textSub}>Réservation sur place </Text>
+             
+             <ListItem
+                        containerStyle={{
+                          backgroundColor: "#F4F5F5",
+                          //   borderColor: "#ff5050",
+                          marginVertical:10,
+                        }}
+                      >
+                        <ListItem.Content>
+                          <ListItem.Title style={[styles.textcattitle]}>
+                          Réservation sur place
+                          </ListItem.Title>
+                        </ListItem.Content>
+                      </ListItem>
 
               {businessHours &&
                 businessHours.length !== 0 &&
                 businessHours.map((bh) => (
                   <Text
-                    style={styles.textMoli}
+                    style={styles.textPiti}
                     key={bh.daysOfWeek + bh.startTime}
                   >
                     {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
                   </Text>
                 ))}
-              <Text style={styles.textMoli}>
-                Fin de commande le midi : {myintcust.onsitenoonblock}{" "}
+              <Text style={styles.textPiti}>
+                Fin de commande : 
               </Text>
               {myintcust.noNightTakeAway !== true && (
-                <Text style={styles.textMoli}>
-                  Fin de commande le soir : {myintcust.onsitenightblock}{" "}
+                <Text style={styles.textPiti}>
+                 🕛  Midi : {myintcust.onsitenoonblock}{" "} 🕛 Soir : {myintcust.onsitenightblock}{" "}
                 </Text>
               )}
             </View>
@@ -738,11 +746,21 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
           {myintcust.EngagModeTakeAway == true && (
             <View>
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+            
 
-              <Text style={styles.textSub}>Commande à emporter </Text>
+<ListItem
+                        containerStyle={{
+                          backgroundColor: "#F4F5F5",
+                          //   borderColor: "#ff5050",
+                          marginVertical:10,
+                        }}
+                      >
+                        <ListItem.Content>
+                          <ListItem.Title style={[styles.textcattitle]}>
+                         Commande à emporter
+                          </ListItem.Title>
+                        </ListItem.Content>
+                      </ListItem>
               {businessHoursTakeAway &&
                 businessHoursTakeAway.length !== 0 &&
                 businessHoursTakeAway.map((bh2: any) => (
@@ -753,16 +771,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                     {bh2.daysOfWeek} {bh2.startTime}-{bh2.endTime}
                   </Text>
                 ))}
-              <Text style={styles.textMoli}>
-                🕛 Fin de commande le midi : {myintcust.takeawaynoonblock}{" "}
+              <Text style={styles.textPiti}>
+                Fin de commande :
               </Text>
               {myintcust.noNightTakeAway !== true && (
-                <Text style={styles.textMoli}>
-                  🕡 Fin de commande le soir : {myintcust.takeawaynightblock}{" "}
+                <Text style={styles.textPiti}>
+                 🕛 Midi : {myintcust.takeawaynoonblock}{" "}  🕛 Soir : {myintcust.takeawaynightblock}{" "}
                 </Text>
               )}
               {myintcust.confirmModeOrderOptions_delayorder > 0 && (
-                <Text style={styles.textMoli}>
+                <Text style={styles.textPiti}>
                   Délai entre la commande et la récupération :{" "}
                   {myintcust.confirmModeOrderOptions_delayorder} minutes
                 </Text>
@@ -772,10 +790,21 @@ export const RestoScreen = ({ route, navigation }: Props) => {
 
           {myintcust.EngagModeDelivery == true && (
             <View>
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
-              <Text style={styles.textSub}>Commande en livraison </Text>
+             
+              
+<ListItem
+                        containerStyle={{
+                          backgroundColor: "#F4F5F5",
+                          //   borderColor: "#ff5050",
+                          marginVertical:10,
+                        }}
+                      >
+                        <ListItem.Content>
+                          <ListItem.Title style={[styles.textcattitle]}>
+                         Commande en livraison
+                          </ListItem.Title>
+                        </ListItem.Content>
+                      </ListItem>
               {businessHoursDelivery &&
                 businessHoursDelivery.length !== 0 &&
                 businessHoursDelivery.map((bh: any) => (
@@ -786,16 +815,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                     {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
                   </Text>
                 ))}
-              <Text style={styles.textMoli}>
-                🕛 Fin de commande le midi : {myintcust.deliverynoonblock}{" "}
+              <Text style={styles.textPiti}>
+                 Fin de commande :
               </Text>
               {myintcust.noNightDelivery !== true && (
-                <Text style={styles.textMoli}>
-                  🕡 Fin de commande le soir : {myintcust.deliverynightblock}{" "}
+                <Text style={styles.textPiti}>
+                  🕡 Midi : {myintcust.deliverynoonblock}{" "} 🕛 Soir : {myintcust.deliverynightblock}{" "}
                 </Text>
               )}
               {myintcust.delayorderDelivery > 0 && (
-                <Text style={styles.textMoli}>
+                <Text style={styles.textPiti}>
                   Délai entre la commande et la livraison :{" "}
                   {myintcust.delayorderDelivery} minutes
                 </Text>
@@ -808,38 +837,48 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                   </Text>
                 </View>
               )}
-              <Divider
-                style={{ backgroundColor: "grey", marginVertical: 20 }}
-              />
+            
+             <View style={{backgroundColor:"#efefef", margin : 20, flexDirection:"row"}}>
+               <View style={{backgroundColor:"efefef", padding:20, borderRightColor:"#dfdfdf", borderRightWidth:1}}>
 
-              <Text style={styles.textSub}>Zone de livraison</Text>
+               <Ionicons
+                name="bicycle-outline"
+                size={25}
+                color="black"
+               // style={styles.arrow}
+              />
+              <Text style={{fontFamily:"geometria-regular", alignSelf:"baseline"}}>Zones</Text>
+               </View>
+               <View style={{backgroundColor:"efefef", padding : 7}}>
+
               {myintcust.citiesChoice &&
                 myintcust.citiesChoice.length > 0 &&
                 myintcust.citiesChoice.map((city: any) => (
-                  <Text key={city.city} style={styles.textMoli}>
+                  <Text key={city.city} style={styles.textPiti}>
                     {city.city || " "} : {city.tar || 0}€
                   </Text>
                 ))}
+                </View>
+                </View>
             </View>
           )}
 
           <View>
-            <Divider style={{ backgroundColor: "grey", marginVertical: 20 }} />
 
-            <View>
-              <Text key="1" style={styles.title}>
-                La Carte
-              </Text>
-              {(myintcust.EngagModeDelivery == true ||
-                myintcust.EngagModeTakeAway == true) && (
-                <View>
-                  <Text style={styles.textMoli}>
-                    Pour commander, choisissez votre mode.
-                  </Text>
-                  <Text style={styles.textMoli}></Text>
-                </View>
-              )}
-            </View>
+         
+            <ListItem
+                        bottomDivider
+                        containerStyle={{
+                          backgroundColor: "grey",
+                          //   borderColor: "#ff5050",
+                        }}
+                      >
+                        <ListItem.Content>
+                          <ListItem.Title style={styles.textcattitle}>
+                         La Carte
+                          </ListItem.Title>
+                        </ListItem.Content>
+                      </ListItem>
 
             {!cats ||
               (!menus &&
@@ -891,8 +930,8 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                                     style={{
                                       marginTop: 5,
                                       color: textColor,
-                                      fontSize: 20,
-                                      fontFamily: "geometria-bold",
+                                      fontSize: 18,
+                                      fontFamily: "geometria-regular",
                                     }}
                                   >
                                     {menu.title}{" "}
@@ -926,19 +965,30 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 }
               })}
           </View>
+          </View>
         </ScrollView>
       </View>
-      <View style={{ flex: 0, marginTop: 10 }}>
+      <View style={{ flex: 0,paddingTop: 10 , flexDirection:"row"}}>
         {myintcust && myintcust.EngagModeOnSite && (
-          <TouchableOpacity
-            onPress={() => {
-              setBookingType("OnSite");
-              setCrenModalVisible(true);
-            }}
-            style={styles.appButtonContainer}
-          >
-            <Text style={styles.appButtonText}>Réservez sur place</Text>
-          </TouchableOpacity>
+           <TouchableOpacity
+           onPress={() => {
+             setBookingType("OnSite");
+             setCrenModalVisible(true);
+           }}
+           style={{  
+             marginBottom: 10,
+            backgroundColor: "#ff5050",
+            borderColor:'#ff5050',
+            borderWidth:1,
+            borderRadius: 10,
+            flex:1,
+            marginHorizontal:7,
+            paddingVertical: 13,
+            paddingHorizontal: 14,}}
+         >
+           <Text style={{color:"white", fontFamily:"geometria-bold", textAlign:"center", textAlignVertical:"center", fontSize:12}}>Réservation Sur place</Text>
+         </TouchableOpacity>
+         
         )}
         {myintcust && myintcust.EngagModeTakeAway && (
           <TouchableOpacity
@@ -968,9 +1018,18 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 setCrenModalVisible(true);
               }
             }}
-            style={styles.appButtonContainer}
+            style={{  
+              marginBottom: 10,
+            backgroundColor: "#ff5050",
+            // borderColor:'#ff5050',
+            // borderWidth:1,
+             borderRadius: 10,
+            flex:1,
+             marginHorizontal:7,
+             paddingVertical: 13,
+             paddingHorizontal: 14,}}
           >
-            <Text style={styles.appButtonText}>Commandez à emporter</Text>
+            <Text style={{color:"white", fontFamily:"geometria-bold", textAlign:"center", textAlignVertical:"center",fontSize:12}}>Commande à emporter</Text>
           </TouchableOpacity>
         )}
         {myintcust && myintcust.EngagModeDelivery && (
@@ -1001,9 +1060,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 setCrenModalVisible(true);
               }
             }}
-            style={styles.appButtonContainer}
+            style={{  
+              marginBottom: 10,
+             backgroundColor: "#ff5050",
+             borderRadius: 10,
+             flex:1,
+             marginHorizontal:7,
+             paddingVertical: 13,
+             paddingHorizontal: 14,}}
           >
-            <Text style={styles.appButtonText}>Commandez en livraison</Text>
+            <Text style={{color:"white", textAlign:"center", fontFamily:"geometria-bold", textAlignVertical:"center", fontSize:12}}>Commande en livraison</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -1053,7 +1119,7 @@ const styles = StyleSheet.create({
     //  flex:1,
     alignItems: "center",
     justifyContent: "center",
-    fontSize: 30,
+    fontSize: 23,
     padding: 20,
     paddingBottom: 10,
     fontFamily: "geometria-bold",
@@ -1085,7 +1151,7 @@ const styles = StyleSheet.create({
   textcattitle: {
     // fontWeight: "bold",
     //  backgroundColor: "#fzfzfz",
-    fontFamily: "geometria-regular",
+    fontFamily: "geometria-bold",
   },
 
   textSub: {
@@ -1101,6 +1167,7 @@ const styles = StyleSheet.create({
     fontFamily: "geometria-bold",
     paddingLeft: 20,
     paddingBottom: 10,
+    
   },
   textPiti: {
     flex: 1,

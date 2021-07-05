@@ -6,7 +6,7 @@ import _ from "lodash";
 import { Text, View } from "../components/Themed";
 import { NavigationScreenProp, NavigationState } from "react-navigation";
 
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { ScrollView, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
 interface NavigationParams {
   text: string;
@@ -37,13 +37,15 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
   //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.container2}>
+    <ScrollView style={{backgroundColor:'white'}}>
         {!guides && (
           <View style={styles.wrapindicator}>
             <ActivityIndicator size="large" color="#F50F50" />
           </View>
         )}
+
+<Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
+            Découvrez des évènements qui vont vous régaler</Text>
         <FlatList
           style={styles.FlatList}
           data={guides}
@@ -72,8 +74,7 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
             </TouchableWithoutFeedback>
           )}
         />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 400,
+    height: 500,
     borderRadius: 17,
     padding: 20,
     marginHorizontal: 20,

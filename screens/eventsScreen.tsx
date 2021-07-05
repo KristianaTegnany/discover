@@ -56,10 +56,10 @@ interface Props {
             ):null}
 
 
-          <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
-            Découvrez des évènements qui vont vous régaler</Text>
+          
                      <View>
-
+                     <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
+            Découvrez des évènements qui vont vous régaler</Text>
           <FlatList
             style={styles.FlatList}
             data={events}
