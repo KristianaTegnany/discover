@@ -699,7 +699,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
             <View>
            
 
-              <Text style={{fontFamily:"geometria-regular", marginHorizontal:30, marginVertical:20,  padding:20, backgroundColor:"#efefef"}}>
+              <Text style={{fontFamily:"geometria-regular", color:"black", marginHorizontal:30, marginVertical:20,  padding:20, backgroundColor:"#efefef"}}>
                 ☎️ Au delà de l'heure limite, merci de téléphoner :{" "}
                 {myintcust.contactphone}
               </Text>
@@ -847,14 +847,14 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                 color="black"
                // style={styles.arrow}
               />
-              <Text style={{fontFamily:"geometria-regular", alignSelf:"baseline"}}>Zones</Text>
+              <Text style={{fontFamily:"geometria-regular", color:"black",alignSelf:"baseline"}}>Zones</Text>
                </View>
                <View style={{backgroundColor:"efefef", padding : 7}}>
 
               {myintcust.citiesChoice &&
                 myintcust.citiesChoice.length > 0 &&
                 myintcust.citiesChoice.map((city: any) => (
-                  <Text key={city.city} style={styles.textPiti}>
+                  <Text key={city.city} style={{color:"black",fontFamily:"geometria-regular"}}>
                     {city.city || " "} : {city.tar || 0}€
                   </Text>
                 ))}
@@ -874,7 +874,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                         }}
                       >
                         <ListItem.Content>
-                          <ListItem.Title style={styles.textcattitle}>
+                          <ListItem.Title style={{fontFamily:"geometria-bold", color:"white"}}>
                          La Carte
                           </ListItem.Title>
                         </ListItem.Content>
@@ -1088,7 +1088,7 @@ const styles = StyleSheet.create({
     height: 100,
   },
   image: {
-    height: 400,
+    height: 300,
     resizeMode: "cover",
   },
   appButtonContainer: {

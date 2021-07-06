@@ -8,7 +8,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Keyboard
+  Keyboard,
+  Alert
 } from "react-native";
 import Modal from "react-native-modal";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -22,6 +23,7 @@ import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import NumericInput from "react-native-numeric-input";
+import { initPaymentSheet, presentPaymentSheet } from "@stripe/stripe-react-native";
 
 interface NavigationParams {
   text: string;
@@ -58,7 +60,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [numcover, setNumcover] = useState(0)
-
+  const [loading, setLoading] = useState(false);
   const [isResaConfirmed, setIsResaConfirmed] = useState(false)
 
   const [keyboard, setKeyboard] = useState(0)
@@ -94,7 +96,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
      setHtml(eventRaw.attributes.description)
     setEvent({
       id: eventRaw.id || "",
-      imageUrl: eventRaw.attributes.image._url || "",
+      imageUrl: eventRaw?.attributes.image?._url || "",
       content: eventRaw.attributes.description || " a",
       title: eventRaw.attributes.title || "",
       date: moment(eventRaw.attributes.date).format("dddd DD MMM") || "",
@@ -102,7 +104,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
       restaurant: eventRaw.attributes.intcust.attributes.corporation || "",
       price: eventRaw.attributes.price || "",
       infoline: eventRaw.attributes.infoline || "",
-      freeconfirm:  eventRaw.attributes.freeconfirm || true,
+      freeconfirm:  eventRaw.attributes.freeconfirm || null,
       itid:  eventRaw.attributes.intcust.id || true,
 
     });
@@ -232,21 +234,48 @@ export const EventScreen = ({ route, navigation }: Props) => {
             else {
               // TO DO
               // payant ou gratuit 
+              var Reservation = Parse.Object.extend("Reservation")
+              let reservationRaw = new Reservation()
+              var Event = Parse.Object.extend("Event")
+              let eventRaw = new Event()
+              eventRaw.id = route.params.eventId
+              var Intcust = Parse.Object.extend("Intcust")
+              let IntcustRaw = new Intcust()
+              IntcustRaw.id = event?.itid
+              let params = {
+                email: email,
+                itid: IntcustRaw.id,
+              };
+              const res = await Parse.Cloud.run("getGuest", params);
+              var Guest = Parse.Object.extend("Guest");
+              let guestRaw = new Guest();
+              if (res.length == 0) {
+                guestRaw.set("firstname", firstname);
+                guestRaw.set("lastname", lastname);
+                guestRaw.set("email", email);
+                await guestRaw.save();
+              } else if (res.length > 0) {
+                guestRaw.id = res[0].id;
+              }
+              let arrayGuest = [
+                {
+                  firstname: firstname,
+                  lastname: lastname,
+                  mobilephone: phone,
+                  email: email,
+                },
+              ];
+              reservationRaw.set("guest", guestRaw) 
+              reservationRaw.set("guestFlat", arrayGuest) 
+              reservationRaw.set("event",eventRaw) 
+              reservationRaw.set("intcust",IntcustRaw) 
+              reservationRaw.set("OnWaitingList",false) 
+              reservationRaw.set("engagModeResa","Event") 
+              await reservationRaw.save()
               if(event?.freeconfirm==true){
               // si gratuit create resa
-              var Reservation = Parse.Object.extend("Reservation")
-             let reservationRaw = new Reservation()
-             var Event = Parse.Object.extend("Event")
-             let eventRaw = new Event()
-             eventRaw.id = route.params.eventId
-             var Intcust = Parse.Object.extend("Intcust")
-             let IntcustRaw = new Intcust()
-             IntcustRaw.id = event.itid
-             reservationRaw.set("event",eventRaw) 
-             reservationRaw.set("intcust",IntcustRaw) 
-             reservationRaw.set("OnWaitingList",false) 
-             reservationRaw.set("engagModeResa","Event") 
-             await reservationRaw.save()
+          
+           
               
               let params = {
                 myresid: reservationRaw.id,
@@ -283,7 +312,94 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     })
               }else {
               // si payant go to payment payplug ou stripe 
+              if (IntcustRaw.paymentChoice !== "stripeOptin") {
+                const params1 = {
+                  itid: IntcustRaw.id,
+                  winl: "www.tablebig.com",
+                  resaid: reservationRaw.id,
+                  customeremail: email,
+                  customerfirstname: firstname,
+                  customerlastname: lastname,
+                  customerphone: phone,
+                  type: "order",
+                  amount: (event?.price || 0) * numcover ,
+                  apikeypp: IntcustRaw.attributes.apikeypp,
+                  mode: 'Event',
+                  noukarive:false,
+                  toutalivrer:false
 
+                  
+                };
+      console.log(params1)
+                const response = await Parse.Cloud.run(
+                  "getPayPlugPaymentUrlRN",
+                  params1
+                );
+                setCrenModalVisible(false)
+
+                // navigate and options payLink
+                navigation.navigate("paymentScreen", {
+                  restoId: IntcustRaw.id,
+                  paylink: response,
+                  bookingType: "Event",
+                  resaId: reservationRaw.id,
+                  amount: event?.price,
+                });
+              } else if (IntcustRaw.paymentChoice == "stripeOptin") {
+      
+                let params = {
+                  stripeAccount: IntcustRaw.stripeAccId,
+                  amount:(event?.price || 0) * numcover ,
+                  customeremail: email,
+                  name: firstname + lastname,
+                  resaid: reservationRaw.id,
+                  mode: "Event",
+                  paidType: "order",
+                  noukarive:false,
+                  toutalivrer:false
+                };
+      
+                const {
+                  paymentIntent,
+                  ephemeralKey,
+                  customer,
+                } = await Parse.Cloud.run("stripeCheckoutForRN", params);
+      
+                let ERR = {};
+      
+                ERR = await initPaymentSheet({
+                  merchantDisplayName: IntcustRaw.corporation,
+                  customerId: customer,
+                  customerEphemeralKeySecret: ephemeralKey,
+                  paymentIntentClientSecret: paymentIntent,
+                });
+      
+                if (!ERR) {
+                  setLoading(true);
+                }
+      
+                let clientSecret = paymentIntent;
+                const { error } = await presentPaymentSheet({
+                  clientSecret,
+                });
+      
+                if (error) {
+                  if (error.code == "Canceled") {
+                    Alert.alert("Paiement annulé");
+                  } else {
+                    Alert.alert(`Error code: ${error.code}`, error.message);
+                  }
+                } else {
+                  Alert.alert("Paiement réussi.");
+                  navigation.navigate("successScreen", {
+                    bookingType: 'Event',
+                    resaId: reservationRaw.id,
+                    amount: event?.price,
+                  });
+                }
+                setPaymentSheetEnabled(false);
+                setLoading(false);
+              }
               }
             }
           }}
@@ -302,7 +418,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           ))}
         <Image
           source={{
-            uri: event?.imageUrl || "d",
+            uri: event?.imageUrl || "https://storage.googleapis.com/tablereports/dc8122fc87e947474c7afbae6c1258b0_diner.jpeg",
           }}
           style={styles.image}
           resizeMode="cover"
@@ -450,3 +566,7 @@ fontFamily:"geometria-bold",
 });
 
 export default EventScreen;
+function setPaymentSheetEnabled(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+

@@ -22,7 +22,8 @@ interface Props {
   export const eventsScreen = ({ route, navigation }: Props) => {
 
     const [events, setEventsList] = useState();
-    
+    const [size, setSize] = useState(0);
+
  
   useEffect(() => {
     //  this.getLocationAsync();
@@ -33,6 +34,7 @@ interface Props {
     await Parse.Cloud.run("getAllEventsActive")
       .then((response: any) => {
         setEventsList(response)
+        setSize(response.length)
       
       })
       .catch((error: any) => console.log(error));
@@ -60,6 +62,12 @@ interface Props {
                      <View>
                      <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
             Découvrez des évènements qui vont vous régaler</Text>
+            {size==0 &&
+                  <Text style={{fontFamily:'geometria-bold', fontSize:10,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
+                  De nouveaux évènements arrivent bientôt ;-)</Text>
+              } 
+
+            {size>0 && 
           <FlatList
             style={styles.FlatList}
             data={events}
@@ -73,7 +81,7 @@ interface Props {
                 }}
               >
                 <EventComponent
-                  imgUrl={item.attributes.image._url}
+                  imgUrl={item?.attributes.image?._url || ''}
                   onPress={() => {
                     navigation.navigate("eventScreen", {
                       text: "Hello!",
@@ -88,7 +96,7 @@ interface Props {
                 ></EventComponent>
               </TouchableWithoutFeedback>
             )}
-          />             
+          />  }           
           </View>
           </ScrollView>
 

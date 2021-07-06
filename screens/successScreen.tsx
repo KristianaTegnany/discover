@@ -67,6 +67,15 @@ export const successScreen = ({ route, navigation }: Props) => {
             </Text>
           </View>
         )}
+         {(route.params.bookingType == "Event") && (
+          <View>
+            <Text style={styles.textBold}>Récapitulatif de commande</Text>
+            <Text style={styles.text}>{route.params.amount}€ </Text>
+            <Text style={styles.text}>
+              Votre numéro de commande : {route.params.resaId}
+            </Text>
+          </View>
+        )}
         <Divider style={{ backgroundColor: "#ff50f50", marginVertical: 20 }} />
         <Text style={styles.text}>
           Notez bien votre numéro de réservation, il vous sert de confirmation.
