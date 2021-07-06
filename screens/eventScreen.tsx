@@ -8,7 +8,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Keyboard
+  Keyboard,
+  Alert
 } from "react-native";
 import Modal from "react-native-modal";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,6 +22,9 @@ import HTML from "react-native-render-html";
 import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
+import NumericInput from "react-native-numeric-input";
+import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
+import * as EmailValidator from "email-validator";
 
 interface NavigationParams {
   text: string;
@@ -40,20 +44,27 @@ interface IEvent {
   time:string;
   restaurant :string;
   price : number;
-  infoline:string
+  infoline:string,
+  freeconfirm:boolean,
+  itid:string,
+  seatleft:number
 }
 
 export const EventScreen = ({ route, navigation }: Props) => {
   const [html, setHtml] = useState()
   const [event, setEvent] = useState<IEvent>();
-  
+  const [resaid, setResaId] = useState(null)
+  const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [crenModalVisible, setCrenModalVisible] = useState(false);
   const [firstname, setFirstname] = useState('')
   const [lastname, setLastname] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
-
+  const [numcover, setNumcover] = useState(1)
+  const [loading, setLoading] = useState(false);
   const [isResaConfirmed, setIsResaConfirmed] = useState(false)
+  const [paymentchoice, setPaychoice] = useState(null);
 
   const [keyboard, setKeyboard] = useState(0)
   const [offset, setOffset] = useState(0)
@@ -80,15 +91,14 @@ export const EventScreen = ({ route, navigation }: Props) => {
       return Colors[theme][colorName];
     }
   }
-
-  useEffect(() => {
-    var Event = Parse.Object.extend("Event");
+async function prepareFetch(){
+  var Event = Parse.Object.extend("Event");
     let eventRaw = new Event();
     eventRaw.id = route.params.eventId;
      setHtml(eventRaw.attributes.description)
     setEvent({
       id: eventRaw.id || "",
-      imageUrl: eventRaw.attributes.image._url || "",
+      imageUrl: eventRaw?.attributes.image?._url || "",
       content: eventRaw.attributes.description || " a",
       title: eventRaw.attributes.title || "",
       date: moment(eventRaw.attributes.date).format("dddd DD MMM") || "",
@@ -96,8 +106,18 @@ export const EventScreen = ({ route, navigation }: Props) => {
       restaurant: eventRaw.attributes.intcust.attributes.corporation || "",
       price: eventRaw.attributes.price || "",
       infoline: eventRaw.attributes.infoline || "",
-
+      freeconfirm:  eventRaw.attributes.freeconfirm || null,
+      seatleft:eventRaw.attributes.seatleft || 0,
+      itid:  eventRaw.attributes.intcust.id || true,
     });
+    var Intcust = Parse.Object.extend("Intcust")
+    let IntcustRaw = new Intcust()
+    IntcustRaw.id = eventRaw.attributes.intcust.id
+    await IntcustRaw.fetch()
+    setPaychoice(IntcustRaw.attributes.paymentChoice)
+}
+  useEffect(() => {
+    prepareFetch()
   }, []);
 
   useEffect(() => {
@@ -132,21 +152,19 @@ export const EventScreen = ({ route, navigation }: Props) => {
           ...(Platform.OS !== "android" && {
             zIndex: 10,
           }),
-          backgroundColor:'white',
+          backgroundColor:backgroundColor,
           position:'absolute',
           bottom: offset > 0 && keyboard > 0 ? keyboard - offset : 0,
           width:'100%',
           borderTopRightRadius: 10,
           borderTopLeftRadius: 10,
-          height: 500
+          height: 530
         }}
       >
-          <Text style={[styles.title, { marginBottom: 0 }]}>{event?.title} </Text>
-          <Text style={styles.subtitle2}>{event?.restaurant}</Text>
           
           <View
             style={{
-              backgroundColor:'white',
+              backgroundColor:backgroundColor,
               padding: 20,
               borderRadius: 10,
               elevation: 10,
@@ -155,45 +173,61 @@ export const EventScreen = ({ route, navigation }: Props) => {
               })
             }}
           >
+         
             {
-              !isResaConfirmed &&
+              !isResaConfirmed && 
               <>
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Prénom(s)
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(300)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={firstname}
                   onChangeText={text => setFirstname(text)}
                 />
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Nom de famille
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(225)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={lastname}
                   onChangeText={text => setLastname(text)}
                 />
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Numéro de portable
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(155)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={phone}
                   onChangeText={text => setPhone(text)}
                 />
-                <Text>
+                <Text style={{fontFamily:'geometria-regular'}}>
                   Adresse email
                 </Text>
                 <TextInput
                   onFocus={() => setOffset(80)}
-                  style={styles.textInput}
+                  style={[styles.textInput,{color:textColor, fontFamily:"geometria-regular"}]}
                   value={email}
                   onChangeText={text => setEmail(text)}
                 />
+                  <Text style={{fontFamily:'geometria-regular'}}>
+                  Nombre de places
+                </Text>
+                        <NumericInput
+                  onLimitReached={(isMax,msg) => Alert.alert("Vous avez atteint la limite de places restantes.")}
+                  value={numcover}
+                  textColor={textColor}
+                  minValue={1}
+                  maxValue={event?.seatleft}
+                  containerStyle={{ marginLeft: 20, marginTop: 10 }}
+                  onChange={(value) => setNumcover(value)}
+                />
+                <Text style={{fontFamily:'geometria-regular', marginTop:20}}>
+                Vous allez être redirigé vers la page de paiement {paymentchoice == "stripeOptin" ? "Stripe" :"Payplug" } pour régler : {numcover * (event?.price || 0)}€TTC
+                </Text>
               </>
             }
             {
@@ -201,21 +235,194 @@ export const EventScreen = ({ route, navigation }: Props) => {
               <View style={{alignItems:'center', justifyContent: 'center'}}>
                 <MaterialIcons name="check-circle-outline" size={150} color='rgb(0, 209, 73)'/>
                 <Text style={{marginTop: 20, marginBottom: 10, fontWeight:'bold', fontSize: 18}}>Réservation confirmée</Text>
-                <Text style={{fontWeight:'bold', color: '#ff5050'}}>x34DFGT898</Text>
                 <Text style={{fontWeight:'bold', marginBottom: 10, color: '#ff5050'}}>Numéro de réservation</Text>
+                <Text style={{fontWeight:'bold', color: '#ff5050'}}>{resaid}</Text>
                 <Text>Notez-le et conservez-le</Text>
               </View>
             }
           </View>
         <TouchableOpacity
-          onPress={() => {
+          onPress={async () => {
+            if (EmailValidator.validate(email) == false) {
+              Alert.alert("Vérifiez le format de votre adresse email.")
+            }
+
             if(isResaConfirmed){
               navigation.navigate('TablesScreen')
               setCrenModalVisible(false)
             }
-            else {
+            else if (!isResaConfirmed && EmailValidator.validate(email) == true) {
               // TO DO
+              // payant ou gratuit 
+              var Reservation = Parse.Object.extend("Reservation")
+              let reservationRaw = new Reservation()
+              var Event = Parse.Object.extend("Event")
+              let eventRaw = new Event()
+              eventRaw.id = route.params.eventId
+              var Intcust = Parse.Object.extend("Intcust")
+              let IntcustRaw = new Intcust()
+              IntcustRaw.id = event?.itid
+              let params = {
+                email: email,
+                itid: IntcustRaw.id,
+              };
+              const res = await Parse.Cloud.run("getGuest", params);
+              var Guest = Parse.Object.extend("Guest");
+              let guestRaw = new Guest();
+              if (res.length == 0) {
+                guestRaw.set("firstname", firstname);
+                guestRaw.set("lastname", lastname);
+                guestRaw.set("email", email);
+                await guestRaw.save();
+              } else if (res.length > 0) {
+                guestRaw.id = res[0].id;
+              }
+              let arrayGuest = [
+                {
+                  firstname: firstname,
+                  lastname: lastname,
+                  mobilephone: phone,
+                  email: email,
+                },
+              ];
+              reservationRaw.set("guest", guestRaw) 
+              reservationRaw.set("guestFlat", arrayGuest) 
+              reservationRaw.set("event",eventRaw) 
+              reservationRaw.set("intcust",IntcustRaw) 
+              reservationRaw.set("OnWaitingList",false) 
+              reservationRaw.set("engagModeResa","Event") 
+              await reservationRaw.save()
+              if(event?.freeconfirm==true){
+              // si gratuit create resa
+          
+           
+              
+              let params = {
+                myresid: reservationRaw.id,
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                phone: phone,
+                itid: event.itid,
+                note : "",
+                agreed : true,
+                numguest:numcover
+              };
+              const res = await Parse.Cloud.run("editRes4FreeDisco", params);
+
+              setResaId(res.id)
               setIsResaConfirmed(true)
+              const params40 = {
+                itid: event.itid,
+              };
+              const employeesOfIntcust = await Parse.Cloud.run("getEmployees", params40);
+                  employeesOfIntcust.map(async (user:any) => {
+        const params50 = {
+          employeeId: user.id,
+        };
+        const installationsOfEmployee = await Parse.Cloud.run("getInstallationsOfEmployees", params50);
+                          installationsOfEmployee.map( (installation:any) => {
+                            const params10 = {
+                              token: installation.attributes.deviceToken,
+                              title: 'Vous avez une nouvelle réservation sur TABLE',
+                              body: 'Au nom de ' + firstname+' '+ lastname +  ', '+numcover+   ' couverts pour votre évènement ' + event.title + '. Faites chauffer les casseroles !',
+                            };
+                            Parse.Cloud.run("sendPush", params10);
+                          })
+                    })
+              }else {
+              // si payant go to payment payplug ou stripe 
+              if (IntcustRaw.attributes.paymentChoice !== "stripeOptin") {
+                const params1 = {
+                  itid: IntcustRaw.id,
+                  winl: "www.tablebig.com",
+                  resaid: reservationRaw.id,
+                  customeremail: email,
+                  customerfirstname: firstname,
+                  customerlastname: lastname,
+                  customerphone: phone,
+                  type: "order",
+                  amount: (event?.price || 0) * numcover ,
+                  apikeypp: IntcustRaw.attributes.apikeypp,
+                  mode: 'Event',
+                  noukarive:false,
+                  toutalivrer:false
+
+                  
+                };
+                const response = await Parse.Cloud.run(
+                  "getPayPlugPaymentUrlRN",
+                  params1
+                );
+                setCrenModalVisible(false)
+
+                // navigate and options payLink
+                navigation.navigate("paymentScreen", {
+                  restoId: IntcustRaw.id,
+                  paylink: response,
+                  bookingType: "Event",
+                  resaId: reservationRaw.id,
+                  amount: event?.price,
+                });
+              } else if (IntcustRaw.attributes.paymentChoice == "stripeOptin") {
+
+                let params = {
+                  stripeAccount: IntcustRaw.attributes.stripeAccId,
+                  amount:(event?.price || 0) * numcover ,
+                  customeremail: email,
+                  name: firstname + lastname,
+                  resaid: reservationRaw.id,
+                  mode: "Event",
+                  paidType: "order",
+                  noukarive:false,
+                  toutalivrer:false
+                };
+      
+            
+                const {
+                  paymentIntent,
+                  ephemeralKey,
+                  customer,
+                } = await Parse.Cloud.run("stripeCheckoutForRN", params);
+  
+
+                let ERR = {};
+                setCrenModalVisible(false)
+
+                ERR = await initPaymentSheet({
+                  merchantDisplayName: IntcustRaw.attributes.corporation,
+                  customerId: customer,
+                  customerEphemeralKeySecret: ephemeralKey,
+                  paymentIntentClientSecret: paymentIntent,
+                });
+      
+                if (!ERR) {
+                  setLoading(true);
+                }
+      
+                let clientSecret = paymentIntent;
+                const { error } = await presentPaymentSheet({
+                  clientSecret,
+                });
+      
+                if (error) {
+                  if (error.code == "Canceled") {
+                    Alert.alert("Paiement annulé");
+                  } else {
+                    Alert.alert(`Error code: ${error.code}`, error.message);
+                  }
+                } else {
+                  Alert.alert("Paiement réussi.");
+                  navigation.navigate("successScreen", {
+                    bookingType: 'Event',
+                    resaId: reservationRaw.id,
+                    amount: event?.price,
+                  });
+                }
+                setPaymentSheetEnabled(false);
+                setLoading(false);
+              }
+              }
             }
           }}
           style={styles.appButtonContainer}
@@ -233,7 +440,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           ))}
         <Image
           source={{
-            uri: event?.imageUrl || "d",
+            uri: event?.imageUrl || "https://storage.googleapis.com/tablereports/dc8122fc87e947474c7afbae6c1258b0_diner.jpeg",
           }}
           style={styles.image}
           resizeMode="cover"
@@ -253,9 +460,13 @@ export const EventScreen = ({ route, navigation }: Props) => {
           />
         </View>
 
+        <Text style={styles.subtitle2}>Nombre places restantes : {event?.seatleft}</Text>
 
         </View>
       </ScrollView>
+      {(event?.seatleft ||0)==0 &&
+            <Text style={{fontFamily:"geometria-regular" , margin:20, alignSelf:"center", fontSize:15,  color:"red"}}>Complet ! Plus de places disponibles</Text>}
+     {(event?.seatleft ||0)>0 &&
       <TouchableOpacity
             onPress={() => {
                 setCrenModalVisible(true);
@@ -264,7 +475,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           >
             <Text style={styles.appButtonText}>Réservez</Text>
           </TouchableOpacity>
-
+}
           </View>
 
   );
@@ -381,3 +592,4 @@ fontFamily:"geometria-bold",
 });
 
 export default EventScreen;
+

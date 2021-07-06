@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { Component } from "react";
 import { StyleSheet, Image, Dimensions, ImageBackground } from "react-native";
 import { Text, View } from "./Themed";
@@ -14,6 +15,8 @@ function PostComponent(props: any) {
       >
         <View style={styles.postHeader}>
           <Text style={styles.postTitle}>{props.corponame || "nondef"} </Text>
+          <Text style={{fontFamily:"geometria-regular"}}>{props.categ || "nondef"} -Publié le {moment(props.date).format("DD/MM/YYYY")} </Text>
+
           {/* <Text style={styles.postDetails}>{props.corponame || "nondef"}</Text> */}
         </View>
       </ImageBackground>
@@ -30,25 +33,27 @@ const styles = StyleSheet.create({
   },
   postHeader: {
     width: "100%",
-    height: "100%",
-    // flexDirection: "row",
-    // alignSelf: "center",
-    //justifyContent: "space-between",
-    backgroundColor: "transparent",
-    marginRight: 0,
+    opacity:0.95,
+   // flexDirection: "row",
+    position: 'absolute',
+    bottom:0,  
+    paddingLeft:20,
+    borderBottomEndRadius:17,
+    borderBottomStartRadius:17,
+   paddingVertical:20,
+    backgroundColor: "#ff5050",
     marginLeft: 0,
-    justifyContent: "flex-end",
   },
   image: {
     width: "100%",
-    height: 500,
+    height: 360,
     borderRadius: 17,
     padding: 20,
     marginHorizontal: 20,
   },
 
   postTitle: {
-    fontSize: 23,
+    fontSize: 18,
     fontFamily: "geometria-bold",
     marginTop: 5,
     width: "90%",

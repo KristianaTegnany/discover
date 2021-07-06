@@ -10,7 +10,7 @@ function PostComponent(props: any) {
     <View style={[styles.container, props.style]}>
       <ImageBackground
         source={{
-          uri: props.imgUrl ||'',
+          uri: props.imgUrl ||'https://storage.googleapis.com/tablereports/dc8122fc87e947474c7afbae6c1258b0_diner.jpeg',
         }}
         imageStyle={{ borderRadius: 17 }}
         style={styles.image}
@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
   },
   postHeader: {
     width: "100%",
+    opacity:0.95,
    // flexDirection: "row",
-
     position: 'absolute',
     bottom:0,  
     paddingLeft:20,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 300,
+    height: 380,
     borderRadius: 17,
     padding: 20,
     marginHorizontal: 20,

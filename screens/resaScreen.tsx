@@ -214,6 +214,24 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("notes", notecom);
             res.set("status", "Confirmé"); // en cours
             await res.save();
+            const params40 = {
+              itid: it.id,
+            };
+            const employeesOfIntcust = await Parse.Cloud.run("getEmployees", params40);
+                employeesOfIntcust.map(async (user:any) => {
+      const params50 = {
+        employeeId: user.id,
+      };
+      const installationsOfEmployee = await Parse.Cloud.run("getInstallationsOfEmployees", params50);
+                        installationsOfEmployee.map( (installation:any) => {
+                          const params10 = {
+                            token: installation.attributes.deviceToken,
+                            title: 'Vous avez une nouvelle réservation sur TABLE',
+                            body: 'Au nom de ' + firstname+' '+ lastname +  ', '+nbcover+   ' couverts pour le ' + moment.tz(res.get("date"), 'America/Martinique').format("D/MM/YYYY") + '. Faites chauffer les casseroles !',
+                          };
+                          Parse.Cloud.run("sendPush", params10);
+                        })
+                  })
             return res;
           } else {
             result.set("firstname", firstname);
@@ -262,6 +280,24 @@ export const resaScreen = ({ route, navigation }: Props) => {
             res.set("process", "appdisco");
             res.set("status", "Confirmé"); //
             await res.save();
+            const params40 = {
+              itid: it.id,
+            };
+            const employeesOfIntcust = await Parse.Cloud.run("getEmployees", params40);
+                employeesOfIntcust.map(async (user:any) => {
+      const params50 = {
+        employeeId: user.id,
+      };
+      const installationsOfEmployee = await Parse.Cloud.run("getInstallationsOfEmployees", params50);
+                        installationsOfEmployee.map( (installation:any) => {
+                          const params10 = {
+                            token: installation.attributes.deviceToken,
+                            title: 'Vous avez une nouvelle réservation sur TABLE',
+                            body: 'Au nom de ' + firstname+' '+ lastname +  ', '+nbcover+   ' couverts pour le ' + moment.tz(res.get("date"), 'America/Martinique').format("D/MM/YYYY") + '. Faites chauffer les casseroles !',
+                          };
+                          Parse.Cloud.run("sendPush", params10);
+                        })
+                  })
             return res;
           }
         })

@@ -537,11 +537,13 @@ export default class TablesScreen extends React.PureComponent<props, state> {
             </ScrollView>
           </View>
         </Modal>
+
         <View
           style={{
             marginTop: 60,
-            alignSelf: "center",
-            width: "85%",
+            alignSelf: "baseline",
+           // width: "85%",
+           marginLeft:20,
             flexDirection: "row",
             alignItems: "center",
           }}
@@ -549,27 +551,9 @@ export default class TablesScreen extends React.PureComponent<props, state> {
           <Text style={{ marginRight: 10, fontSize: 16 }}>
             {this.getSelectedPlace()}
           </Text>
-          <Button
-            onPress={() => this.setState({ isPlaceModal: true })}
-            title="Changer"
-            titleStyle={{ fontSize: 14, fontFamily: "geometria-bold" }}
-            buttonStyle={{
-              paddingHorizontal: 10,
-              marginRight: 30,
-              height: 35,
-              borderRadius: 5,
-              borderColor: "transparent",
-              backgroundColor: "#ff5050",
-            }}
-          />
-          {/* <Ionicons name={"options"} color={this.state.isFiltre? '#F50F50' : 'grey'} size={25} onPress={() => {
-              this.setState({isFiltre: !this.state.isFiltre})
-              if(!this.state.isFiltre)
-                this.filtre()
-              else
-                this.setState({restaurantList: this.state.restaurantListOrigin})}
-            }
-          /> */}
+         
+           <Ionicons name={"create-outline"} color={this.state.isFiltre? 'grey' : 'grey'} size={20} 
+            onPress={() => this.setState({ isPlaceModal: true })}/> 
         </View>
 
         <View style={styles.searchHeader}>
@@ -586,14 +570,16 @@ export default class TablesScreen extends React.PureComponent<props, state> {
         </View>
         <View
           style={{
-            marginBottom: 20,
+            marginVertical: 20,
             alignSelf: "center",
             flexDirection: "row",
-            width: "85%",
+           paddingHorizontal:20,
+       //     backgroundColor:"grey",
+            width: "100%",
           }}
         >
           <this.FilterButton
-            style={{ fontFamily: "geometria-regular", border: "grey" }}
+            style={{ fontFamily: "geometria-regular", border: "grey",  }}
             title="Réservation"
             mode="OnSite"
           />
@@ -683,13 +669,14 @@ const styles = StyleSheet.create({
   },
   filterButtonItem: {
     paddingVertical: 5,
-    marginRight: 20,
+    marginRight: 10,
     paddingHorizontal: 10,
     borderRadius: 10,
     fontFamily: "geometria-regular",
   },
   FlatList: {
     width: "100%",
+    paddingTop:10,
     paddingRight: 20,
     paddingLeft: 20,
     // justifyContent: "flex-start",
@@ -702,13 +689,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     borderRadius: 10,
-    width: "85%",
+     width: "87%",
     marginTop: 10,
-    marginRight: "auto",
+    marginHorizontal:20,
+   // marginRight: "auto",
     backgroundColor: "#f4f4f4",
     color: "black",
-    marginLeft: "auto",
-    marginBottom: 10,
+   // marginLeft: "auto",
+    marginBottom: 0,
     alignSelf: "baseline",
   },
   searchIcon: {

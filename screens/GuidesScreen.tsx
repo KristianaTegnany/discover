@@ -5,8 +5,9 @@ import { ActivityIndicator, FlatList, Route, StyleSheet } from "react-native";
 import _ from "lodash";
 import { Text, View } from "../components/Themed";
 import { NavigationScreenProp, NavigationState } from "react-navigation";
-
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+import { ScrollView, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
 interface NavigationParams {
   text: string;
@@ -20,7 +21,25 @@ interface Props {
 
 export const GuidesScreen = ({ route, navigation }: Props) => {
   const [guides, setGuidesList] = useState();
+  const backgroundColor = useThemeColor(
+    { light: "white", dark: "black" },
+    "background"
+  );
+  const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
 
+  function useThemeColor(
+    props: { light?: string; dark?: string },
+    colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  ) {
+    const theme = useColorScheme();
+    const colorFromProps = props[theme];
+
+    if (colorFromProps) {
+      return colorFromProps;
+    } else {
+      return Colors[theme][colorName];
+    }
+  }
   useEffect(() => {
     //  this.getLocationAsync();
     getGuides();
@@ -37,13 +56,15 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
   //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.container2}>
+    <ScrollView style={{backgroundColor:backgroundColor}}>
         {!guides && (
           <View style={styles.wrapindicator}>
             <ActivityIndicator size="large" color="#F50F50" />
           </View>
         )}
+
+<Text style={{fontFamily:'geometria-bold', color:textColor, fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
+            Découvrez les hommes et les femmes en cuisine</Text>
         <FlatList
           style={styles.FlatList}
           data={guides}
@@ -65,6 +86,9 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
                   });
                 }}
                 corponame={item.attributes.title}
+                categ={item.attributes.category || ""}
+                date={item.attributes.createdAt || ""}
+
                 city={item.attributes.cityvenue}
                 StyleK={item.attributes.style}
                 style={styles.guideComponent}
@@ -72,8 +96,7 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
             </TouchableWithoutFeedback>
           )}
         />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
