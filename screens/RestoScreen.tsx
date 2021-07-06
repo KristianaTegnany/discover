@@ -622,17 +622,17 @@ export const RestoScreen = ({ route, navigation }: Props) => {
     fetchCatsAndMenus();
   }, []);
 
-  useEffect(() => {
-    if (day === "null" || day !== undefined) setCrenModalVisible(true);
-  }, [route.params]);
+   useEffect(() => {
+     if (day === "null" || day !== undefined) setCrenModalVisible(true);
+   }, [route.params]);
 
   useEffect(() => {
     fetchDays();
   }, [bookingType]);
 
-  useEffect(() => {
-    if (crenModalVisible && selectedDay) fetchHours();
-  }, [selectedDay]);
+   useEffect(() => {
+     if (crenModalVisible && selectedDay) fetchHours();
+   }, [selectedDay]);
 
   return (
     <View

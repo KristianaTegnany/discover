@@ -23,7 +23,8 @@ import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import NumericInput from "react-native-numeric-input";
-import { initPaymentSheet, presentPaymentSheet } from "@stripe/stripe-react-native";
+import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
+import * as EmailValidator from "email-validator";
 
 interface NavigationParams {
   text: string;
@@ -52,16 +53,17 @@ export const EventScreen = ({ route, navigation }: Props) => {
   const [html, setHtml] = useState()
   const [event, setEvent] = useState<IEvent>();
   const [resaid, setResaId] = useState(null)
-
-  
+  const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [crenModalVisible, setCrenModalVisible] = useState(false);
   const [firstname, setFirstname] = useState('')
   const [lastname, setLastname] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
-  const [numcover, setNumcover] = useState(0)
+  const [numcover, setNumcover] = useState(1)
   const [loading, setLoading] = useState(false);
   const [isResaConfirmed, setIsResaConfirmed] = useState(false)
+  const [paymentchoice, setPaychoice] = useState(null);
 
   const [keyboard, setKeyboard] = useState(0)
   const [offset, setOffset] = useState(0)
@@ -88,9 +90,8 @@ export const EventScreen = ({ route, navigation }: Props) => {
       return Colors[theme][colorName];
     }
   }
-
-  useEffect(() => {
-    var Event = Parse.Object.extend("Event");
+async function prepareFetch(){
+  var Event = Parse.Object.extend("Event");
     let eventRaw = new Event();
     eventRaw.id = route.params.eventId;
      setHtml(eventRaw.attributes.description)
@@ -106,8 +107,15 @@ export const EventScreen = ({ route, navigation }: Props) => {
       infoline: eventRaw.attributes.infoline || "",
       freeconfirm:  eventRaw.attributes.freeconfirm || null,
       itid:  eventRaw.attributes.intcust.id || true,
-
     });
+    var Intcust = Parse.Object.extend("Intcust")
+    let IntcustRaw = new Intcust()
+    IntcustRaw.id = eventRaw.attributes.intcust.id
+    await IntcustRaw.fetch()
+    setPaychoice(IntcustRaw.attributes.paymentChoice)
+}
+  useEffect(() => {
+    prepareFetch()
   }, []);
 
   useEffect(() => {
@@ -148,7 +156,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           width:'100%',
           borderTopRightRadius: 10,
           borderTopLeftRadius: 10,
-          height: 500
+          height: 530
         }}
       >
           
@@ -206,12 +214,15 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   Nombre de places
                 </Text>
                         <NumericInput
-                  minValue={0}
+                  minValue={1}
+                  value={numcover}
                   textColor={textColor}
                   containerStyle={{ marginLeft: 20, marginTop: 10 }}
                   onChange={(value) => setNumcover(value)}
-                  
                 />
+                <Text style={{fontFamily:'geometria-regular', marginTop:20}}>
+                Vous allez être redirigé vers la page de paiement {paymentchoice == "stripeOptin" ? "Stripe" :"Payplug" } pour régler : {numcover * (event?.price || 0)}€TTC
+                </Text>
               </>
             }
             {
@@ -227,11 +238,15 @@ export const EventScreen = ({ route, navigation }: Props) => {
           </View>
         <TouchableOpacity
           onPress={async () => {
+            if (EmailValidator.validate(email) == false) {
+              Alert.alert("Vérifiez le format de votre adresse email.")
+            }
+
             if(isResaConfirmed){
               navigation.navigate('TablesScreen')
               setCrenModalVisible(false)
             }
-            else {
+            else if (!isResaConfirmed && EmailValidator.validate(email) == true) {
               // TO DO
               // payant ou gratuit 
               var Reservation = Parse.Object.extend("Reservation")
@@ -312,7 +327,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     })
               }else {
               // si payant go to payment payplug ou stripe 
-              if (IntcustRaw.paymentChoice !== "stripeOptin") {
+              if (IntcustRaw.attributes.paymentChoice !== "stripeOptin") {
                 const params1 = {
                   itid: IntcustRaw.id,
                   winl: "www.tablebig.com",
@@ -330,7 +345,6 @@ export const EventScreen = ({ route, navigation }: Props) => {
 
                   
                 };
-      console.log(params1)
                 const response = await Parse.Cloud.run(
                   "getPayPlugPaymentUrlRN",
                   params1
@@ -345,10 +359,10 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   resaId: reservationRaw.id,
                   amount: event?.price,
                 });
-              } else if (IntcustRaw.paymentChoice == "stripeOptin") {
-      
+              } else if (IntcustRaw.attributes.paymentChoice == "stripeOptin") {
+
                 let params = {
-                  stripeAccount: IntcustRaw.stripeAccId,
+                  stripeAccount: IntcustRaw.attributes.stripeAccId,
                   amount:(event?.price || 0) * numcover ,
                   customeremail: email,
                   name: firstname + lastname,
@@ -359,16 +373,19 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   toutalivrer:false
                 };
       
+            
                 const {
                   paymentIntent,
                   ephemeralKey,
                   customer,
                 } = await Parse.Cloud.run("stripeCheckoutForRN", params);
-      
+  
+
                 let ERR = {};
-      
+                setCrenModalVisible(false)
+
                 ERR = await initPaymentSheet({
-                  merchantDisplayName: IntcustRaw.corporation,
+                  merchantDisplayName: IntcustRaw.attributes.corporation,
                   customerId: customer,
                   customerEphemeralKeySecret: ephemeralKey,
                   paymentIntentClientSecret: paymentIntent,
@@ -566,7 +583,4 @@ fontFamily:"geometria-bold",
 });
 
 export default EventScreen;
-function setPaymentSheetEnabled(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
 
