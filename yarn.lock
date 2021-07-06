@@ -7790,10 +7790,10 @@ react-native-crypto-js@1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-crypto-js/-/react-native-crypto-js-1.0.0.tgz#e677e022e147f41b35614416c92d655f87e2450a"
   integrity sha512-FNbLuG/HAdapQoybeZSoes1PWdOj0w242gb+e1R0hicf3Gyj/Mf8M9NaED2AnXVOX01b2FXomwUiw1xP1K+8sA==
 
-react-native-dropdown-picker@^5.1.19:
-  version "5.1.19"
-  resolved "https://registry.yarnpkg.com/react-native-dropdown-picker/-/react-native-dropdown-picker-5.1.19.tgz#591a70b3031f7b013eafb934cebb10d8e8558a44"
-  integrity sha512-OAraXBiq3uaelzQefXvPDtuCfAwD4HEtq9h39a9dVcudtsi7yNyTe2zP/V9wdFVRodcMUVI5woNIcrDeg4pCWw==
+react-native-dropdown-picker@^5.1.21:
+  version "5.1.21"
+  resolved "https://registry.yarnpkg.com/react-native-dropdown-picker/-/react-native-dropdown-picker-5.1.21.tgz#f5bf602ef900d1c37cf2602206932cd1962ce75c"
+  integrity sha512-PmRyQD0JkhNdA2eZuc3I7C1+WX6XLq+erI/hCvzYM1E+oGflI59mBBSBq2o0IDzzdTYeLQecj4yEEIHQRHloTw==
   dependencies:
     react-native-gesture-handler "*"
 
