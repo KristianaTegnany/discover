@@ -217,9 +217,11 @@ async function prepareFetch(){
                   Nombre de places
                 </Text>
                         <NumericInput
-                  minValue={1}
+                  onLimitReached={(isMax,msg) => Alert.alert("Vous avez atteint la limite de places restantes.")}
                   value={numcover}
                   textColor={textColor}
+                  minValue={1}
+                  maxValue={event?.seatleft}
                   containerStyle={{ marginLeft: 20, marginTop: 10 }}
                   onChange={(value) => setNumcover(value)}
                 />
