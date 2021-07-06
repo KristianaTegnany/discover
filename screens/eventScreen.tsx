@@ -46,7 +46,8 @@ interface IEvent {
   price : number;
   infoline:string,
   freeconfirm:boolean,
-  itid:string
+  itid:string,
+  seatleft:number
 }
 
 export const EventScreen = ({ route, navigation }: Props) => {
@@ -106,6 +107,7 @@ async function prepareFetch(){
       price: eventRaw.attributes.price || "",
       infoline: eventRaw.attributes.infoline || "",
       freeconfirm:  eventRaw.attributes.freeconfirm || null,
+      seatleft:eventRaw.attributes.seatleft || 0,
       itid:  eventRaw.attributes.intcust.id || true,
     });
     var Intcust = Parse.Object.extend("Intcust")
@@ -171,8 +173,9 @@ async function prepareFetch(){
               })
             }}
           >
+         
             {
-              !isResaConfirmed &&
+              !isResaConfirmed && 
               <>
                 <Text style={{fontFamily:'geometria-regular'}}>
                   Prénom(s)
@@ -455,9 +458,13 @@ async function prepareFetch(){
           />
         </View>
 
+        <Text style={styles.subtitle2}>Nombre places restantes : {event?.seatleft}</Text>
 
         </View>
       </ScrollView>
+      {(event?.seatleft ||0)==0 &&
+            <Text style={{fontFamily:"geometria-regular" , margin:20, alignSelf:"center", fontSize:15,  color:"red"}}>Complet ! Plus de places disponibles</Text>}
+     {(event?.seatleft ||0)>0 &&
       <TouchableOpacity
             onPress={() => {
                 setCrenModalVisible(true);
@@ -466,7 +473,7 @@ async function prepareFetch(){
           >
             <Text style={styles.appButtonText}>Réservez</Text>
           </TouchableOpacity>
-
+}
           </View>
 
   );
