@@ -10,7 +10,7 @@ import { AppearanceProvider } from "react-native-appearance";
 import { withAppContextProvider } from "./components/GlobalContext"; // add this
 import { AppRegistry, Platform } from "react-native";
 import { expo as appName } from "./app.json";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import { store } from "./store";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { stripeAccIdResto } from "./screens/RestoScreen";
@@ -19,13 +19,13 @@ import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
-import { Subscription } from '@unimodules/core';
+//import { Subscription } from '@unimodules/core';
 
 Sentry.Native;
 Sentry.Browser;
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = `https://pptableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
+Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; //`https://pptableserver.osc-fr1.scalingo.io/parse`;
 Sentry.init({
   dsn:
     "https://8a30ffe4a08647e889bb528cf8a3b14a@o724568.ingest.sentry.io/5782293",
@@ -45,30 +45,30 @@ export default function App() {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const [fontsLoaded, setFontLoaded] = useState(false);
-  let _onReceivedListener:  Subscription;
-  let _onResponseReceivedListener :  Subscription;
+  //let _onReceivedListener:  Subscription;
+  //let _onResponseReceivedListener :  Subscription;
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token:any) => setExpoPushToken(token));
+    // registerForPushNotificationsAsync().then((token:any) => setExpoPushToken(token));
 
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    _onReceivedListener = Notifications.addNotificationReceivedListener((notificationcall:any) => {
-      setNotification(notificationcall);
-    });
+    // // This listener is fired whenever a notification is received while the app is foregrounded
+    // _onReceivedListener = Notifications.addNotificationReceivedListener((notificationcall:any) => {
+    //   setNotification(notificationcall);
+    // });
 
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    _onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
+    // // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    // _onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(response => {
+    //   console.log(response);
+    // });
 
     loadResourcesAsync();
 
-    return () => {
-      Notifications.removeNotificationSubscription(
-        _onReceivedListener
-      );
-      Notifications.removeNotificationSubscription(_onResponseReceivedListener);
-    };
+    // return () => {
+    //   Notifications.removeNotificationSubscription(
+    //     _onReceivedListener
+    //   );
+    //   Notifications.removeNotificationSubscription(_onResponseReceivedListener);
+    // };
   }, []);
 
   if (!isLoadingComplete && fontsLoaded!==true) {
