@@ -801,9 +801,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               </Text>
 
               {intcustCityChoice &&
-                intcustCityChoice.map((city: any, index8: any) => (
+                intcustCityChoice.map((item: any, index8: any) => (
                   <View
-                    key={city.city + "view"}
+                    key={item.city + "view"}
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
@@ -813,25 +813,20 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
                     }}
                   >
                     <Text
-                      key={city.city + "text"}
+                      key={item.city + "text"}
                       style={{ fontFamily: "geometria-regular" }}
                     >
-                      {city.city}{" "}
-                      {city.tar && city.tar > 0 && "+" + city.tar + "€"}
+                      {item.city}{" "}
+                      {item.tar && item.tar > 0 && "+" + item.tar + "€"}
                     </Text>
                     <RadioButton
-                      key={city.city + "radio"}
+                      key={item.city + "radio"}
                       onPress={() => {
-                        setCity(city.city);
-                        setDelifare(Number(city.tar));
-                        if (city.checked == false || !city.checked) {
-                          city.checked = true;
-                        } else {
-                          city.checked = false;
-                        }
+                        setCity(item.city);
+                        setDelifare(Number(item.tar));
                       }}
                       color="#ff5050"
-                      status={city.checked == true ? "checked" : "unchecked"}
+                      status={city === item.city? "checked" : "unchecked"}
                       value={city}
                       style={{ marginRight: 80 }}
                     />
