@@ -128,7 +128,6 @@ export default class TablesScreen extends React.PureComponent<props, state> {
   }
 
   async componentDidMount() {
-    //  this.getLocationAsync();
     this.getIntcusts();
   }
 

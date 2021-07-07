@@ -41,9 +41,8 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
     }
   }
   useEffect(() => {
-    //  this.getLocationAsync();
     getGuides();
-  });
+  },[]);
 
   async function getGuides() {
     await Parse.Cloud.run("getGuides")

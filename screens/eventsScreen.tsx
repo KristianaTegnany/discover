@@ -26,9 +26,8 @@ interface Props {
 
  
   useEffect(() => {
-    //  this.getLocationAsync();
     getEvents();
-  })
+  },[])
 
   async function getEvents() {
     await Parse.Cloud.run("getAllEventsActive")

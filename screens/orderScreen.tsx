@@ -248,8 +248,8 @@ export const orderScreen = ({ route, navigation }: Props) => {
                       key={cat.title}
                       bottomDivider
                       containerStyle={{
-                        backgroundColor: "#ff5050",
-                        borderColor: "#ff5050",
+                        backgroundColor: "#F4F5F5",
+                        borderColor: "grey",
                       }}
                     >
                       <ListItem.Content>
@@ -280,19 +280,14 @@ export const orderScreen = ({ route, navigation }: Props) => {
                                 });
                               }}
                             >
-                              {menu && menu.imageUrl !== "" && (
-                                <Avatar
-                                  rounded
-                                  source={{ uri: menu.imageUrl || " " }}
-                                />
-                              )}
+                            
 
                               <ListItem.Content>
                                 <ListItem.Title
                                   style={{
                                     marginTop: 5,
                                     color: textColor,
-                                    fontSize: 20,
+                                    fontSize: 15,
                                     fontFamily: "geometria-bold",
                                   }}
                                 >
@@ -309,7 +304,13 @@ export const orderScreen = ({ route, navigation }: Props) => {
                                 >
                                   {menu.price} €
                                 </ListItem.Subtitle>
+                                
                               </ListItem.Content>
+                              {menu && menu.imageUrl !== "" && (
+                                <Avatar
+                                  source={{ uri: menu.imageUrl || " " }}
+                                />
+                              )}
                               <ListItem.Chevron />
                             </ListItem>
                           </View>
@@ -332,9 +333,9 @@ const styles = StyleSheet.create({
   },
 
   textcattitle: {
-    color: "#fff",
+ //   color: "#fff",
     //  fontWeight: "bold",
-    fontFamily: "geometria-bold",
+    fontFamily: "geometria-regular",
   },
   FlatList: {
     width: "100%",
