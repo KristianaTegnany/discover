@@ -21,6 +21,8 @@ interface Props {
 
 export const GuidesScreen = ({ route, navigation }: Props) => {
   const [guides, setGuidesList] = useState();
+  const [show, setShow] = useState(false)
+
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
     "background"
@@ -48,6 +50,7 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
     await Parse.Cloud.run("getGuides")
       .then((response: any) => {
         setGuidesList(response);
+        setShow(true)
       })
       .catch((error: any) => console.log(error));
   }
@@ -55,13 +58,25 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
   //  const colors =useThemeColor({ light: 'lightColors', dark: 'darkColors' }, 'text');
 
   return (
-    <ScrollView style={{backgroundColor:backgroundColor}}>
-        {!guides && (
-          <View style={styles.wrapindicator}>
-            <ActivityIndicator size="large" color="#F50F50" />
-          </View>
-        )}
-
+    <View>
+      {show==false &&
+          <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color="grey" />
+        </View>
+        }
+    {show==true && 
+    <ScrollView style={{backgroundColor:backgroundColor}}> 
 <Text style={{fontFamily:'geometria-bold', color:textColor, fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
             Découvrez les hommes et les femmes en cuisine</Text>
         <FlatList
@@ -96,7 +111,9 @@ export const GuidesScreen = ({ route, navigation }: Props) => {
           )}
         />
     </ScrollView>
-  );
+              }
+              </View>
+    );
 };
 
 const styles = StyleSheet.create({

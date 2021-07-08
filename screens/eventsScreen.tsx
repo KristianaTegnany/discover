@@ -23,6 +23,7 @@ interface Props {
 
     const [events, setEventsList] = useState();
     const [size, setSize] = useState(0);
+    const [show, setShow] = useState(false);
 
  
   useEffect(() => {
@@ -34,7 +35,7 @@ interface Props {
       .then((response: any) => {
         setEventsList(response)
         setSize(response.length)
-      
+      setShow(true)
       })
       .catch((error: any) => console.log(error));
   }
@@ -46,21 +47,34 @@ interface Props {
 
     return (
 <SafeAreaView style={{flex: 1}}>
+{show==false &&
+          <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color="grey" />
+        </View>
+        }
+        {show ==true && 
 <ScrollView>
 
    
 
-          {!events ? (
-              <View style={styles.wrapindicator}>
-                <ActivityIndicator size="large" color="#F50F50" />
-              </View>
-            ):null}
+  
 
 
           
                      <View>
                      <Text style={{fontFamily:'geometria-bold', fontSize:25,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
-            Découvrez des évènements qui vont vous régaler</Text>
+            Découvrez des évènements qui vont vous régaler </Text>
             {size==0 &&
                   <Text style={{fontFamily:'geometria-bold', fontSize:10,paddingTop:50, marginHorizontal:20,lineHeight: 25}}>
                   De nouveaux évènements arrivent bientôt ;-)</Text>
@@ -98,7 +112,7 @@ interface Props {
           />  }           
           </View>
           </ScrollView>
-
+  }
       </SafeAreaView>
 
 

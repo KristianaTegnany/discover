@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import * as Font from "expo-font";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
@@ -15,11 +15,10 @@ import { store } from "./store";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { stripeAccIdResto } from "./screens/RestoScreen";
 import * as Sentry from "sentry-expo";
-import * as SecureStore from "expo-secure-store";
-import Constants from "expo-constants";
-import * as Notifications from "expo-notifications";
-import * as Application from "expo-application";
-import { Subscription } from '@unimodules/core';
+//import * as SecureStore from "expo-secure-store";
+//import Constants from "expo-constants";
+//import * as Notifications from "expo-notifications";
+//import * as Application from "expo-application";
 
 Sentry.Native;
 Sentry.Browser;
@@ -34,44 +33,16 @@ Sentry.init({
 });
 
 export default function App() {
+  console.log(1)
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [
     stripeAccIdRestoValue,
     setstripeAccIdRestoValue,
   ] = stripeAccIdResto.use();
-  const notificationListener = useRef();
-  const responseListener = useRef();
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const [fontsLoaded, setFontLoaded] = useState(false);
-  let _onReceivedListener:  Subscription;
-  let _onResponseReceivedListener :  Subscription;
+ // loadResourcesAsync();
 
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token:any) => setExpoPushToken(token));
-
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    _onReceivedListener = Notifications.addNotificationReceivedListener((notificationcall:any) => {
-      setNotification(notificationcall);
-    });
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    _onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
-
-    loadResourcesAsync();
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        _onReceivedListener
-      );
-      Notifications.removeNotificationSubscription(_onResponseReceivedListener);
-    };
-  }, []);
-
-  if (!isLoadingComplete && fontsLoaded!==true) {
+  if (!isLoadingComplete) {
     return null;
   } else {
     return (
@@ -79,7 +50,6 @@ export default function App() {
         <StripeProvider
           stripeAccountId={stripeAccIdRestoValue}
           publishableKey="pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg"
-          //"pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl"
         >
           <AppearanceProvider>
             <Navigation colorScheme={colorScheme} />
@@ -97,75 +67,64 @@ export default function App() {
         "geometria-bold": require("./assets/fonts/GeometriaBold.ttf"),
       }),
     ]);
-    setFontLoaded(true);
     return 1;
   }
 }
 
-async function registerForPushNotificationsAsync() {
-  console.log(1)
-  let token;
-  if (Constants.isDevice) {
-    console.log(2)
+// async function registerForPushNotificationsAsync() {
+//   let token;
+//   if (Constants.isDevice) {
+//     const {
+//       status: existingStatus,
+//     } = await Notifications.getPermissionsAsync();
+//     let finalStatus = existingStatus;
+//     if (existingStatus !== "granted") {
+//       const { status } = await Notifications.requestPermissionsAsync();
+//       finalStatus = status;
+//     }
+//     if (finalStatus !== "granted") {
+//       alert("Failed to get push token for push notification!");
+//       return;
+//     }
+//     token = (await Notifications.getExpoPushTokenAsync()).data;
+//     let installationId;
+//     if (Platform.OS === "android") {
+//       installationId = Application.androidId;
+//     }
+//     if (Platform.OS === "ios") {
+//       let result = await SecureStore.getItemAsync("installationid");
+//       if (result) {
+//         //   console.log("🔐 Here's your value 🔐 \n" + result);
+//         installationId = result;
+//       } else {
+//         console.log("No values stored under that key.");
+//         save("installationid", Math.random().toString(36).substr(2, 20));
+//       }
+//     }
 
-    const {
-      status: existingStatus,
-    } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
+//     async function save(key:any, value:any) {
+//       await SecureStore.setItemAsync(key, value);
+//     }
+//     //   console.log(token);
+//     let params = {
+//       token: token,
+//       installationId: installationId,
+//       userId: (await Parse.User.currentAsync()).id,
+//     };
+//     const res = await Parse.Cloud.run("createInstallationGuest", params);
+//   } else {
+//     alert("Must use physical device for Push Notifications");
+//   }
 
-    if (finalStatus !== "granted") {
-      alert("Pour bénéficier de l'expérience TABLE au maximum, autorisez les notifications dans vos paramètres.");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+//   if (Platform.OS === "android") {
+//     Notifications.setNotificationChannelAsync("default", {
+//       name: "default",
+//       importance: Notifications.AndroidImportance.MAX,
+//       vibrationPattern: [0, 250, 250, 250],
+//       lightColor: "#FF231F7C",
+//     });
+//   }
 
-    let installationId;
-    if (Platform.OS === "android") {
-      installationId = Application.androidId;
-    }
-    if (Platform.OS === "ios") {
-
-      let result = await SecureStore.getItemAsync("installationid");
-
-      if (result) {
-        //   console.log("🔐 Here's your value 🔐 \n" + result);
-        installationId = result;
-      } else {
-        console.log("No values stored under that key.");
-        save("installationid", Math.random().toString(36).substr(2, 20));
-      }
-    }
-
-    async function save(key:any, value:any) {
-      await SecureStore.setItemAsync(key, value);
-    }
-    //   console.log(token);
-    console.log(8)
-
-    let params = {
-      token: token,
-      installationId: installationId,
-      userId: 'notYet',  // Quand y'aura le compte user faudra relier le user a l'installation
-    };
-    const res = await Parse.Cloud.run("createInstallationGuest", params);
-
-  } else {
-    alert("Must use physical device for Push Notifications");
-  }
-
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
-
-  return token;
-}
+//   return token;
+// }
 AppRegistry.registerComponent(appName.name, () => withAppContextProvider(App));

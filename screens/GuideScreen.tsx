@@ -5,6 +5,7 @@ import {
   Button,
   Image,
   Route,
+  SafeAreaView,
   StyleSheet,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
@@ -38,6 +39,7 @@ export const GuideScreen = ({ route, navigation }: Props) => {
     title: "",
     content: "a ",
   });
+  const [show, setShow] = useState(false)
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
     "background"
@@ -62,7 +64,8 @@ export const GuideScreen = ({ route, navigation }: Props) => {
     }
   }
 
-  useEffect(() => {
+
+  async function getGuide() {
     var Guide = Parse.Object.extend("Guide");
     let guideRaw = new Guide();
     guideRaw.id = route.params.guideId;
@@ -73,17 +76,35 @@ export const GuideScreen = ({ route, navigation }: Props) => {
       content: guideRaw.attributes.content || " a",
       title: guideRaw.attributes.title || "",
     });
+    setShow(true)
+  }
+
+
+  useEffect(() => {
+    getGuide()
   }, []);
 
   return (
-    <View style={styles.container}>
+<SafeAreaView style={{flex: 1}}>
+ {show==false &&
+          <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color="grey" />
+        </View>
+        }
+      {show==true && 
       <ScrollView style={styles.wrap}>
-        {!guide.imageUrl ||
-          (guide.imageUrl == "" && (
-            <View style={styles.wrapindicator}>
-              <ActivityIndicator size="large" color="#F50F50" />
-            </View>
-          ))}
+     
         <Image
           source={{
             uri: guide.imageUrl || "d",
@@ -101,7 +122,8 @@ export const GuideScreen = ({ route, navigation }: Props) => {
           />
         </View>
       </ScrollView>
-    </View>
+}
+    </SafeAreaView>
   );
 };
 
