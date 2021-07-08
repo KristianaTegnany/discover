@@ -60,6 +60,7 @@
     "react-native-stripe-checkout-webview": "0.0.13",
     "react-native-tab-view": "^3.0.1",
     "react-native-ui-lib": "^5.22.0",
+    "react-native-unimodules": "~0.13.3",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
     "react-native-webview": "^11.2.3",
@@ -67,8 +68,7 @@
     "react-redux": "^7.2.3",
     "react-ridge-state": "^4.2.1",
     "redux": "^4.0.5",
-    "sentry-expo": "^3.1.0",
-    "react-native-unimodules": "~0.13.3"
+    "sentry-expo": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
