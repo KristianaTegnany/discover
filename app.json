@@ -2,7 +2,7 @@
   "expo": {
     "name": "Table Discover",
     "slug": "discover",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "discover",
@@ -29,7 +29,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "buildNumber": "11",
+      "buildNumber": "12",
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,
       "bundleIdentifier": "com.satyamdorville.discover"
@@ -51,7 +51,7 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "versionCode": 17,
+      "versionCode": 18,
       "package": "com.satyamdorville.discover"
     },
     "web": {
