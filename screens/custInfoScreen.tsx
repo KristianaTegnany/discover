@@ -339,7 +339,6 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   }
 
   async function goPay() {
-    console.log(city)
     let blockGo = false;
     setLoading(true);
 

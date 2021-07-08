@@ -60,16 +60,16 @@ export default function App() {
     );
   }
 
-  async function loadResourcesAsync() {
-    await Promise.all([
-      Font.loadAsync({
-        "geometria-regular": require("./assets/fonts/GeometriaLight.otf"),
-        "geometria-bold": require("./assets/fonts/GeometriaBold.ttf"),
-      }),
-    ]);
-    return 1;
-  }
-}
+//   async function loadResourcesAsync() {
+//     await Promise.all([
+//       Font.loadAsync({
+//         "geometria-regular": require("./assets/fonts/GeometriaLight.otf"),
+//         "geometria-bold": require("./assets/fonts/GeometriaBold.ttf"),
+//       }),
+//     ]);
+//     return 1;
+//   }
+// }
 
 // async function registerForPushNotificationsAsync() {
 //   let token;
@@ -126,5 +126,6 @@ export default function App() {
 //   }
 
 //   return token;
-// }
+// 
+}
 AppRegistry.registerComponent(appName.name, () => withAppContextProvider(App));

@@ -70,7 +70,6 @@ export const persoScreen = ({ route, navigation }: Props) => {
   }
 
   async function savePerso() {
-    console.log("Sauvegardé.");
   }
 
   async function toggleMenu(context: any) {}
