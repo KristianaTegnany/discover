@@ -23,7 +23,8 @@
 
     ]
   },
-  "source_files": "EXUpdates/**/*.{h,m}",
+  "source_files": "EXUpdates/**/*.h",
+  "vendored_frameworks": "EXUpdates.xcframework",
   "testspecs": [
     {
       "name": "Tests",

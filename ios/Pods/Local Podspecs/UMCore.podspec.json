@@ -1,6 +1,6 @@
 {
   "name": "UMCore",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "summary": "Universal modules core",
   "description": "Universal modules core",
   "license": "MIT",
@@ -12,5 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMCore/**/*.{h,m}"
+  "source_files": "UMCore/**/*.h",
+  "vendored_frameworks": "UMCore.xcframework"
 }

@@ -33,7 +33,6 @@ Sentry.init({
 });
 
 export default function App() {
-  console.log(1)
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [

@@ -1,6 +1,6 @@
 {
   "name": "UMReactNativeAdapter",
-  "version": "6.2.2",
+  "version": "6.3.2",
   "summary": "The adapter to use universal modules with the React Native bridge",
   "description": "The adapter to use universal modules with the React Native bridge",
   "license": "MIT",
@@ -19,9 +19,10 @@
     "UMCore": [
 
     ],
-    "UMFontInterface": [
+    "ExpoModulesCore": [
 
     ]
   },
-  "source_files": "UMReactNativeAdapter/**/*.{h,m}"
+  "source_files": "UMReactNativeAdapter/**/*.h",
+  "vendored_frameworks": "UMReactNativeAdapter.xcframework"
 }

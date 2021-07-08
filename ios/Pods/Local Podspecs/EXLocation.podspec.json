@@ -23,5 +23,6 @@
 
     ]
   },
-  "source_files": "EXLocation/**/*.{h,m}"
+  "source_files": "EXLocation/**/*.h",
+  "vendored_frameworks": "EXLocation.xcframework"
 }
