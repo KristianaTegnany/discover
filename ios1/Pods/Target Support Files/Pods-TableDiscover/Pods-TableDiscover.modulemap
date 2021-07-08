@@ -1,0 +1,6 @@
+module Pods_TableDiscover {
+  umbrella header "Pods-TableDiscover-umbrella.h"
+
+  export *
+  module * { export * }
+}
