@@ -17,9 +17,9 @@
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.1.0</string>
+    <string>2.0.0</string>
     <key>CFBundleVersion</key>
-    <string>11</string>
+    <string>12</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
@@ -48,6 +48,12 @@
     </array>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>UIUserInterfaceStyle</key>
     <string>Automatic</string>
     <key>CFBundleURLTypes</key>
@@ -64,8 +70,5 @@
     <true/>
     <key>CFBundleDisplayName</key>
     <string>Table Discover</string>
-  <key>NSCameraUsageDescription</key>
-    <string>Stripe utilise cette fonction pour la détection et la reconnaissance par photo des cartes bancaires</string>
-    
   </dict>
 </plist>

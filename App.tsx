@@ -39,7 +39,7 @@ export default function App() {
     stripeAccIdRestoValue,
     setstripeAccIdRestoValue,
   ] = stripeAccIdResto.use();
- // loadResourcesAsync();
+  loadResourcesAsync();
 
   if (!isLoadingComplete) {
     return null;
@@ -125,5 +125,6 @@ export default function App() {
 //   }
 
 //   return token;
-// }
+// 
+
 AppRegistry.registerComponent(appName.name, () => withAppContextProvider(App));

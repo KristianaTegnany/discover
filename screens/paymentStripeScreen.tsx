@@ -26,7 +26,6 @@ export const paymentStripeScreen = ({ route, navigation }: Props) => {
           '<center><h1  style="margin-top:120px;">Chargement</h1></center>',
       }}
       onSuccess={() => {
-        console.log(`Stripe checkout session succeeded. session id: .`);
         navigation.navigate("successScreen", {
           bookingType: route.params.bookingType,
           resaId: route.params.resaId,
@@ -36,7 +35,6 @@ export const paymentStripeScreen = ({ route, navigation }: Props) => {
         });
       }}
       onCancel={() => {
-        console.log(`Stripe checkout session cancelled.`);
         navigation.navigate("custInfoScreen", {
           bookingType: route.params.bookingType,
           resaId: route.params.resaId,
