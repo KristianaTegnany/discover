@@ -2,20 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
-<<<<<<< HEAD
-    <key>EXUpdatesCheckOnLaunch</key>
-    <string>ALWAYS</string>
-    <key>EXUpdatesEnabled</key>
-    <true/>
-    <key>EXUpdatesLaunchWaitMs</key>
-    <integer>0</integer>
-    <key>EXUpdatesReleaseChannel</key>
-    <string>default</string>
-    <key>EXUpdatesSDKVersion</key>
-    <string>41.0.0</string>
-    <key>EXUpdatesURL</key>
-    <string>https://exp.host/@kristiana/discover</string>
-=======
     <key>EXUpdatesSDKVersion</key>
     <string>41.0.0</string>
     <key>EXUpdatesURL</key>
@@ -26,6 +12,5 @@
     <string>ALWAYS</string>
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>0</integer>
->>>>>>> 412ab0ca40a0c4dcea0d6c9d0356cce8a3324551
   </dict>
 </plist>
