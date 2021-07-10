@@ -179,7 +179,7 @@ export default class TablesScreen extends React.PureComponent<props, state> {
   }
 
   strToNormalize = (str:any) => {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replaceAll("'",'').replaceAll('"','')
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/'/g, '').replace(/"/g, '')
   }
 
   filtre = () => {
@@ -202,7 +202,7 @@ export default class TablesScreen extends React.PureComponent<props, state> {
                   ? menus.filter((menu) => menu.selected).length === 1
                   : false,
                 place = selectedPlace !== "toutes les régions";
-              const condByValue = this.strToNormalize(resto.attributes.corporation)
+              const condByValue = searchValue && resto.attributes.corporation && this.strToNormalize(resto.attributes.corporation)
                   .toLowerCase()
                   .includes(this.strToNormalize(searchValue).toLowerCase()),
                 condByMode = resto.attributes[`EngagMode${selectedMode}`],
