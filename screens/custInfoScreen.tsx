@@ -905,7 +905,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             </Text>
           </TouchableOpacity>
           {loading && <ActivityIndicator size="large" color="#F50F50" />}
-          {intcust && intcust.paymentChoice !== "stripeOptin" && (
+          {intcust && intcust.paymentChoice == "stripeOptin" && (
             <View style={styles.appButtonTextContainer}>
               <Text style={styles.appButtonText}>Avec{' '}</Text>
               <FontAwesome5
@@ -915,7 +915,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               />
             </View>
           )}
-          {intcust && intcust.paymentChoice == "stripeOptin" && (
+          {intcust && intcust.paymentChoice !== "stripeOptin" && (
             <View style={styles.appButtonTextContainer}>
               <Text style={styles.appButtonText}>Avec{' '}</Text>
               <Image

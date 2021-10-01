@@ -1,4 +1,4 @@
-rootProject.name = 'Table Discover'
+rootProject.name = 'discoverapp'
 
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 includeUnimodulesProjects()

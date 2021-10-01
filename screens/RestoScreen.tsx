@@ -181,7 +181,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
       price: menu.attributes.price,
       title: menu.attributes.title,
       category: menu.attributes.category,
-      minPricevar: menu.attributes.pricevars?.length > 0 ? Math.min(...menu.attributes.pricevars.map((pricevar:any) => Math.min(parseFloat(pricevar.pricevardelivery || Number.POSITIVE_INFINITY), parseFloat(pricevar.pricevartakeaway || Number.POSITIVE_INFINITY), parseFloat(pricevar.pricevaronsite || Number.POSITIVE_INFINITY)))) : 0,
+      minPricevar: menu.attributes.pricevars?.length > 0 ? menu.attributes.pricevars?.length === 1? 0 : Math.min(...menu.attributes.pricevars.map((pricevar:any) => Math.min(parseFloat(pricevar.pricevardelivery || Number.POSITIVE_INFINITY), parseFloat(pricevar.pricevartakeaway || Number.POSITIVE_INFINITY), parseFloat(pricevar.pricevaronsite || Number.POSITIVE_INFINITY)))) : 0,
       order: menu.attributes.order,
       imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
     }));
@@ -518,6 +518,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
         </Text>
 
         <DropDownPicker
+          disabled={loading}
           open={openDate}
           value={selectedDay}
           items={daystobook}
@@ -548,6 +549,7 @@ export const RestoScreen = ({ route, navigation }: Props) => {
           Sélectionnez l'heure
         </Text>
         <DropDownPicker
+          disabled={loading}
           open={openHour}
           value={selectedHour}
           items={hourstobook}

@@ -127,7 +127,7 @@ export const orderScreen = ({ route, navigation }: Props) => {
         price: menu.attributes.price,
         title: menu.attributes.title,
         category: menu.attributes.category,
-        minPricevar: menu.attributes.pricevars?.length > 0 ? Math.min(...menu.attributes.pricevars.map((pricevar:any) => parseFloat((bookingType === DELIVERY ? pricevar.pricevardelivery : bookingType === TAKEAWAY ? pricevar.pricevartakeaway : pricevar.pricevaronsite) || Number.POSITIVE_INFINITY))) : 0,
+        minPricevar: menu.attributes.pricevars?.length > 0 ? menu.attributes.pricevars?.length === 1? 0 : Math.min(...menu.attributes.pricevars.map((pricevar:any) => parseFloat((bookingType === DELIVERY ? pricevar.pricevardelivery : bookingType === TAKEAWAY ? pricevar.pricevartakeaway : pricevar.pricevaronsite) || Number.POSITIVE_INFINITY))) : 0,
         order: menu.attributes.order,
         imageUrl: (menu.attributes.image && menu.attributes.image._url) || "",
       }));
