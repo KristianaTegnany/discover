@@ -1,0 +1,148 @@
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import * as React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+import TablesScreen from "../screens/TablesScreen";
+import GuidesScreen from "../screens/GuidesScreen";
+import {
+  BottomTabParamList,
+  TablesParamList,
+  GuidesParamList,
+  PersoParamList,
+  EventsParamList
+} from "../types";
+import { persoScreen } from "../screens/persoScreen";
+import eventsScreen from "../screens/eventsScreen";
+
+const BottomTab = createBottomTabNavigator<BottomTabParamList>();
+
+export default function BottomTabNavigator() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <BottomTab.Navigator
+      initialRouteName="Tables"
+      tabBarOptions={{
+        activeTintColor: Colors[colorScheme].tint,
+        labelStyle: { fontFamily: "geometria-regular" },
+      }}
+    >
+      <BottomTab.Screen
+        name="Tables"
+        component={TablesNavigator}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="restaurant" color={color} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="Evenements"
+        component={EventsNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Guides"
+        component={GuidesNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="reader" color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
+        name="Perso"
+        component={PersoNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="people" color={color} />,
+        }}
+      />
+    </BottomTab.Navigator>
+  );
+}
+
+// You can explore the built-in icon families and icons on the web at:
+// https://icons.expo.fyi/
+function TabBarIcon(props: {
+  name: React.ComponentProps<typeof Ionicons>["name"];
+  color: string;
+}) {
+  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
+}
+
+// Each tab has its own navigation stack, you can read more about this pattern here:
+// https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
+const TablesStack = createStackNavigator<TablesParamList>();
+
+function TablesNavigator() {
+  return (
+    <TablesStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <TablesStack.Screen
+        name="TablesScreen"
+        component={TablesScreen}
+        options={{ headerTitle: "Restaurants" }}
+      />
+    </TablesStack.Navigator>
+  );
+}
+
+const GuidesStack = createStackNavigator<GuidesParamList>();
+
+function GuidesNavigator() {
+  return (
+    <GuidesStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <GuidesStack.Screen
+        name="GuidesScreen"
+        component={GuidesScreen}
+        options={{ headerTitle: "Guides" }}
+      />
+    </GuidesStack.Navigator>
+  );
+}
+
+const PersoStack = createStackNavigator<PersoParamList>();
+
+function PersoNavigator() {
+  return (
+    <PersoStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <PersoStack.Screen
+        name="persoScreen"
+        component={persoScreen}
+        options={{ headerTitle: "Perso" }}
+      />
+    </PersoStack.Navigator>
+  );
+}
+
+const EventsStack = createStackNavigator<EventsParamList>();
+
+function EventsNavigator() {
+  return (
+    <EventsStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <EventsStack.Screen
+        name="eventsScreen"
+        component={eventsScreen}
+        options={{ headerTitle: "Perso" }}
+      />
+    </EventsStack.Navigator>
+  );
+}
