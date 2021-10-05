@@ -135,8 +135,8 @@ android {
         applicationId 'com.satyamdorville.discover'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 225
-        versionName "2.2.5"
+        versionCode 226
+        versionName "2.2.6"
     }
     splits {
         abi {
