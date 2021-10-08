@@ -8,8 +8,6 @@ interface ICart {
 function AppContextProvider(props: any) {
   const [cart, setCart] = useState<ICart[]>();
 
-  useEffect(() => { });
-
   async function addToCart(item: { id: any }, qty: any) {
     let found = "";
     if (found.length == 0) {

@@ -13,8 +13,7 @@ interface Props {
 }
 
 export const paymentStripeScreen = ({ route, navigation }: Props) => {
-  useEffect(() => {}, []);
-
+  
   return (
     <StripeCheckout
       stripePublicKey={route.params.STRIPE_PUBLIC_KEY}

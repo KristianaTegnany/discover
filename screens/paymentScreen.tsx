@@ -39,7 +39,6 @@ export const paymentScreen = ({ route, navigation }: Props) => {
       });
     }
   }
-  useEffect(() => { }, []);
 
   return (
     <WebView
