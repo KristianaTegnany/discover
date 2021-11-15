@@ -180,14 +180,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
     }
   }
 
-  function getMenuTitle(menuid: any) {
-    let Menu = Parse.Object.extend("Menu");
-    let menu = new Menu();
-    menu.id = menuid;
-    menu.fetch();
-    return menu.attributes.title;
-  }
-
   async function addToBasket() {
     if (menu?.pricevarcheck && selectedVarIndex === -1) {
       Alert.alert('Veuillez choisir la variation souhaitée')
@@ -358,7 +350,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
                             fontFamily: "geometria-regular",
                           }}
                         >
-                          {getMenuTitle(menu.menuid)}{" "}
+                          {menu.title}{" "}
                         </ListItem.Title>
 
                         {menu.tar > 0 && (

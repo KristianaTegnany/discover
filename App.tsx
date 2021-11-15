@@ -8,28 +8,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 var Parse = require("parse/react-native");
 import { AppearanceProvider } from "react-native-appearance";
 import { withAppContextProvider } from "./components/GlobalContext"; // add this
-import { Platform } from "react-native";
+import { Alert, BackHandler, Linking, Platform } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import { stripeAccIdResto } from "./screens/RestoScreen";
-import * as Sentry from "sentry-expo";
 import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
+// @ts-ignore
+import VersionCheck from 'react-native-version-check';
 
-Sentry.Native;
-Sentry.Browser;
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
 Parse.serverURL = `https://prodtableserver.osc-fr1.scalingo.io/parse`; // `https://pptableserver.osc-fr1.scalingo.io/parse`;
-Sentry.init({
-  dsn:
-    "https://8a30ffe4a08647e889bb528cf8a3b14a@o724568.ingest.sentry.io/5782293",
-  enableInExpoDevelopment: true,
-  debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
-});
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -55,8 +48,32 @@ const App = () => {
   let responseListener: any;
   responseListener = useRef();
 
-  useEffect(() => {
+  const checkForUpdate = async () => {
+    try {
+      let updateNeeded = await VersionCheck.needUpdate();
+      if (updateNeeded && updateNeeded.isNeeded) {
+        Alert.alert(
+          'Mise à jour', 
+          'Il y a une nouvelle mise à jour. Vous devriez mettre à jour votre application pour continuer son utilisation.',
+          [
+            {
+              text: 'Mettre à jour',
+              onPress: () => {
+                BackHandler.exitApp();
+                Linking.openURL(updateNeeded.storeUrl)
+              }
+            }
+          ],
+          { cancelable: false }
+        )
+      }
+    } catch(error) {
+      console.log(error)
+    }
+  }
 
+  useEffect(() => {
+    checkForUpdate()
     registerForPushNotificationsAsync().then(token => {});
 
     // This listener is fired whenever a notification is received while the app is foregrounded

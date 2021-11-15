@@ -1,6 +1,6 @@
 import { NavigationState } from "@react-navigation/native";
 import React, { useState } from "react";
-import { ActivityIndicator, Image, Route, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, Image, Route, StyleSheet } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
 var Parse = require("parse/react-native");
@@ -27,7 +27,9 @@ export const successScreen = ({ route, navigation }: Props) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  let listener: any = undefined
+  var intervalListener: any = undefined
+  var timeoutListener: any = undefined
+
   let paidConfirmedByPayplug = undefined,
     paidConfirmedByStripe = undefined
   //payplugError = undefined,
@@ -39,6 +41,12 @@ export const successScreen = ({ route, navigation }: Props) => {
     resa.set('id', route.params.resaId);
 
     await resa.fetch()
+    if(resa.get('engagModeResa') === 'SurPlace'){
+      clearInterval(intervalListener)
+      clearTimeout(timeoutListener)
+      setLoading(false)
+      return false
+    }
     paidConfirmedByPayplug = resa.get('paidConfirmedByPayplug')
     paidConfirmedByStripe = resa.get('paidConfirmedByStripe')
     //payplugError = resa.get('payplugError')
@@ -47,18 +55,25 @@ export const successScreen = ({ route, navigation }: Props) => {
     if (isFocused) {
       if (paidConfirmedByPayplug || paidConfirmedByStripe) { // || payplugError || stripePaymentErrorMessage))
         setLoading(false)
-        clearInterval(listener)
+        clearTimeout(timeoutListener)
+        clearInterval(intervalListener)
       }
       else if (paidConfirmedByPayplug === false || paidConfirmedByStripe === false) {
         setError(true)
-        clearInterval(listener)
+        clearTimeout(timeoutListener)
+        clearInterval(intervalListener)
       }
     }
   }
 
   useEffect(() => {
-    listener = setInterval(subscribe, 2000);
-    return () => clearInterval(listener)
+    intervalListener = setInterval(subscribe, 2000);
+    timeoutListener = setTimeout(() => {
+        Alert.alert("Nous n’avons pas réussi à déterminer avec votre banque l’état de votre paiement. Merci de contacter le 0696450445 pour vérification manuelle")
+        clearInterval(intervalListener)
+        navigation.navigate("TablesScreen")
+    }, 10000)
+    return () => clearInterval(intervalListener)
   }, [])
 
   return loading ? (
