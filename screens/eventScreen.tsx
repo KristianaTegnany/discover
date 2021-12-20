@@ -69,7 +69,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [noteCommande, setNoteCommande] = useState('')
-  const [numcover, setNumcover] = useState(1)
+  const [numguest, setNumguest] = useState(1)
   const [loading, setLoading] = useState(false);
   const [isResaConfirmed, setIsResaConfirmed] = useState(false)
   const [paymentchoice, setPaychoice] = useState(null);
@@ -77,7 +77,6 @@ export const EventScreen = ({ route, navigation }: Props) => {
   const [mode, setMode] = useState<string>();
   const [total, setTotal] = useState<number>(0);
   const [enabledModes, setEnabledModes] = useState<string[]>();
-  const [expanded, setExpanded] = useState<number>(-1);
   const [selectedPricevarIndexes, setSelectedPricevarIndexes] = useState<{id: string, index: number}[]>([]);
   const [lineitems, setLineitems] = useState<any[]>([]);
   
@@ -228,8 +227,9 @@ export const EventScreen = ({ route, navigation }: Props) => {
             (a: any, b: any) => (a.numChoiced || 0) + (b.numChoiced || 0)
           );
         if ((typeof sum === 'object'? sum.numChoiced : sum) != fc.numExact ) {
-          textCheckFormulas.push(`Merci de saisir le nombre indiqué ${fc.numExact} pour : ` + fc.cattitle)   
+          textCheckFormulas.push(`${fc.cattitle}: Merci d'en sélectionner ${fc.numExact}`)   
         }
+        else textCheckFormulas.push('')
       })
     return textCheckFormulas
   }
@@ -240,15 +240,11 @@ export const EventScreen = ({ route, navigation }: Props) => {
     if(line.persoData?.length > 0)
       line.persoData.forEach((pd: any) => {
         if (pd.mandatory && pd.values.filter((value: any) => value.checked).length === 0) {
-          textCheckPersos.push(`Merci de saisir le nombre indiqué pour : ` + pd.name)   
+          textCheckPersos.push(`${pd.name}: Merci de sélectionner le nombre indiqué`)   
         }
+        else textCheckPersos.push('')
       })
     return textCheckPersos
-  }
-
-  async function deleteFromLines(index: number) {
-    let newLineitems = lineitems.filter((obj, i) => i !== index);
-    setLineitems(Object.assign([], newLineitems));
   }
 
   async function addQuantityFromLines(index: number) {
@@ -362,12 +358,12 @@ export const EventScreen = ({ route, navigation }: Props) => {
     setLineitems(Object.assign([], newLineitems));
   };
 
-  const savePerso = (mandatory: boolean, checked: boolean, value: any, price: any, maxFree: number, maxPaid: number, name: string, lineitems: any) => {
-    let quant = lineitems[expanded].quantity || 0
-    let savePersoData = lineitems[expanded].persoData
+  const savePerso = (index: number, mandatory: boolean, checked: boolean, value: any, price: any, maxFree: number, maxPaid: number, name: string, lineitems: any) => {
+    let quant = lineitems[index].quantity || 0
+    let savePersoData = lineitems[index].persoData
     let objIndex = savePersoData.findIndex((obj: any) => obj.name == name);
     
-    let newLineitem = lineitems[expanded]
+    let newLineitem = lineitems[index]
     let newLineitems = lineitems
 
     newLineitem = {
@@ -396,7 +392,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
       })
     }
     
-    newLineitems[expanded] = newLineitem
+    newLineitems[index] = newLineitem
     return newLineitems
   }
 
@@ -435,7 +431,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
       let newLineitems = lineitems;
       newLineitems[index] = newLineitem;
       const checked = newLineitem.persoData[i]
-      newLineitems = savePerso(checked.mandatory, checked.values[j].checked, checked.values[j].value, checked.values[j].price,checked.max,checked.maxpaid,checked.name, newLineitems)
+      newLineitems = savePerso(index, checked.mandatory, checked.values[j].checked, checked.values[j].value, checked.values[j].price,checked.max,checked.maxpaid,checked.name, newLineitems)
       // addtoBasket(lineitems[index].id,"formule")
       setLineitems(Object.assign([], newLineitems));
     }
@@ -475,7 +471,6 @@ export const EventScreen = ({ route, navigation }: Props) => {
             })
           }}
         >
-
           {
             !isResaConfirmed &&
             <>
@@ -493,12 +488,12 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   </Text>
                   <NumericInput
                     onLimitReached={(isMax, msg) => Alert.alert("Vous avez atteint la limite de places restantes.")}
-                    value={numcover}
+                    value={numguest}
                     textColor={textColor}
                     minValue={1}
                     maxValue={event?.seatleft}
                     containerStyle={{ marginLeft: 20, marginTop: 10 }}
-                    onChange={(value) => setNumcover(value)}
+                    onChange={(value) => setNumguest(value)}
                   />
                 </>
               }
@@ -547,9 +542,9 @@ export const EventScreen = ({ route, navigation }: Props) => {
                 value={noteCommande}
                 onChangeText={text => setNoteCommande(text)}
               />
-              {event?.freeconfirm !== true &&
+              {!event?.freeconfirm &&
                 <Text style={{ fontFamily: 'geometria-regular', marginTop: 20 }}>
-                  Vous allez être redirigé vers la page de paiement {paymentchoice == "stripeOptin" ? "Stripe" : "Payplug"} pour régler : {numcover * ((event?.price || 0) + total)}€TTC
+                  Vous allez être redirigé vers la page de paiement {paymentchoice == "stripeOptin" ? "Stripe" : "Payplug"} pour régler : {numguest * ((event?.price || 0) + total)}€TTC
                 </Text>
               }
             </>
@@ -610,8 +605,16 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   email: email,
                 },
               ];
+              reservationRaw.set(
+                "date",
+                moment.tz("America/Martinique").toDate()
+              );
+              reservationRaw.set("order", true); // ?
+              reservationRaw.set("process", "appdisco");
+
               reservationRaw.set("guest", guestRaw)
               reservationRaw.set("guestFlat", arrayGuest)
+              reservationRaw.set("numguest", numguest)
               reservationRaw.set("event", eventRaw)
               reservationRaw.set("intcust", IntcustRaw)
               reservationRaw.set("line_items", lineitems? lineitems.filter((line) => line.quantity > 0).map((line) => {
@@ -631,6 +634,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   name: line.name,
                   description: line.description,
                   amount,
+                  quantity: line.quantity,
                   pricevar: pricevar && pricevar.name,
                   taxrate: (line.tva && line.tva.rate)? line.tva.rate : 0,
                   taxname: (line.tva && line.tva.name)? line.tva.name : 'Non spécifié',
@@ -644,8 +648,18 @@ export const EventScreen = ({ route, navigation }: Props) => {
               }) : [])
               reservationRaw.set("OnWaitingList", false)
               reservationRaw.set("engagModeResa", "Event")
+              reservationRaw.set("status", "En cours"); // en cours
+              reservationRaw.set("delifare", 0);
+              reservationRaw.set("orderAmount", ((event?.price || 0) + total) * numguest);
+              reservationRaw.set("notes", noteCommande);
+              reservationRaw.set("source", {
+                utm_campaign: "APP",
+                utm_medium: Platform.OS,
+                utm_source: Platform.Version,
+                utm_content: "APP",
+              });
               await reservationRaw.save()
-              if (event?.freeconfirm == true) {
+              if (event?.freeconfirm) {
                 let params = {
                   myresid: reservationRaw.id,
                   firstname: firstname,
@@ -655,7 +669,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   itid: event.itid,
                   note: "",
                   agreed: true,
-                  numguest: numcover
+                  numguest: numguest
                 };
                 const res = await Parse.Cloud.run("editRes4FreeDisco", params);
 
@@ -674,7 +688,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     const params10 = {
                       token: installation.attributes.deviceToken,
                       title: 'Vous avez une nouvelle réservation sur TABLE',
-                      body: 'Au nom de ' + firstname + ' ' + lastname + ', ' + numcover + ' couverts pour votre évènement ' + event.title + '. Faites chauffer les casseroles !',
+                      body: 'Au nom de ' + firstname + ' ' + lastname + ', ' + numguest + ' couverts pour votre évènement ' + event.title + '. Faites chauffer les casseroles !',
                     };
                     Parse.Cloud.run("sendPush", params10);
                   })
@@ -691,7 +705,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     customerlastname: lastname,
                     customerphone: phone,
                     type: "order",
-                    amount: ((event?.price || 0) + total) * numcover,
+                    amount: ((event?.price || 0) + total) * numguest,
                     apikeypp: IntcustRaw.attributes.apikeypp,
                     mode: 'Event',
                     noukarive: false,
@@ -701,6 +715,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     "getPayPlugPaymentUrlRN",
                     params1
                   );
+                  
                   setCrenModalVisible(false)
 
                   // navigate and options payLink
@@ -714,10 +729,9 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     hour: moment.tz("America/Martinique").format('HH:mm')
                   });
                 } else if (IntcustRaw.attributes.paymentChoice === "stripeOptin") {
-
                   let params = {
                     stripeAccount: IntcustRaw.attributes.stripeAccId,
-                    amount: (((event?.price || 0) + total)) * numcover,
+                    amount: (((event?.price || 0) + total)) * numguest,
                     customeremail: email,
                     name: firstname + lastname,
                     resaid: reservationRaw.id,
@@ -726,14 +740,16 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     noukarive: false,
                     toutalivrer: false
                   };
-
-
+                  
                   const {
                     paymentIntent,
                     ephemeralKey,
                     customer,
                   } = await Parse.Cloud.run("stripeCheckoutForRN", params);
 
+                  console.log(paymentIntent,
+                    ephemeralKey,
+                    customer)
 
                   let ERR = {};
                   setCrenModalVisible(false)
@@ -745,14 +761,17 @@ export const EventScreen = ({ route, navigation }: Props) => {
                     paymentIntentClientSecret: paymentIntent,
                   });
 
+                  console.log(ERR)
                   if (!ERR) {
                     setLoading(true);
                   }
 
                   let clientSecret = paymentIntent;
                   const { error } = await presentPaymentSheet({
-                    clientSecret,
+                    clientSecret
                   });
+
+                  console.log(error)
 
                   if (error) {
                     if (error.code == "Canceled") {
@@ -796,7 +815,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           style={styles.image}
           resizeMode="cover"
         />
-        <View style={{ top: -40, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingTop: 20 }}>
+        <View style={{ top: -40, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingTop: 20, flex: 1 }}>
           <Text style={styles.title}>{event?.title} </Text>
           <Text style={styles.subtitle2}>{event?.restaurant}</Text>
           <Text style={styles.subtitle}>{event?.date} - {event?.time}</Text>
@@ -811,6 +830,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
           </View>
 
           <Text style={styles.subtitle2}>Nombre places restantes : {event?.seatleft}</Text>
+          <Text style={styles.subtitle3}>Cet évènement est disponible : </Text>
           {
             enabledModes && enabledModes.length > 0 &&
             <View style={styles.modeContainer}>
@@ -828,16 +848,14 @@ export const EventScreen = ({ route, navigation }: Props) => {
                   key={index} 
                   index={index} 
                   line={line}
+                  freeconfirm={event?.freeconfirm || false}
                   engagModeResa={mode}
                   selectedPricevarIndexes={selectedPricevarIndexes}
                   setSelectedPricevarIndexes={(val: any) => setSelectedPricevarIndexes(val)}
-                  expanded={expanded}
-                  setExpanded={setExpanded}
                   checkMessFormula={checkMessFormula}
                   checkMessPerso={checkMessPerso}
                   addQuantityFromLines={addQuantityFromLines}
                   removeQuantityFromLines={removeQuantityFromLines}
-                  deleteFromLines={deleteFromLines}
                   addFormulaMenuChoice={addFormulaMenuChoice}
                   removeFormulaMenuChoice={removeFormulaMenuChoice}
                   updatePersoNumChecked={updatePersoNumChecked}
@@ -848,22 +866,23 @@ export const EventScreen = ({ route, navigation }: Props) => {
                 key={index} 
                 index={index} 
                 line={line}
+                freeconfirm={event?.freeconfirm || false}
                 engagModeResa={mode}
                 selectedPricevarIndexes={selectedPricevarIndexes}
                 setSelectedPricevarIndexes={(val: any) => setSelectedPricevarIndexes(val)}
-                checkMessFormula={checkMessFormula}
-                checkMessPerso={checkMessPerso}
                 addQuantityFromLines={addQuantityFromLines}
                 removeQuantityFromLines={removeQuantityFromLines}
-                deleteFromLines={deleteFromLines}
               />
             )
           })}
-          <Text style={styles.totalText}>Total: {(event?.price || 0) + total}€TTC</Text>
         </View>
       </ScrollView>
       {(event?.seatleft || 0) == 0 &&
         <Text style={{ fontFamily: "geometria-regular", margin: 20, alignSelf: "center", fontSize: 15, color: "red" }}>Complet ! Plus de places disponibles</Text>}
+      {
+        !event?.freeconfirm &&
+        <Text style={styles.totalText}>Total: {(event?.price || 0) + total}€TTC</Text>
+      }
       {(event?.seatleft || 0) > 0 &&
         <TouchableOpacity
           onPress={() => {
@@ -937,6 +956,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontFamily: "geometria-bold",
   },
+  subtitle3: {
+    fontSize: 14,
+    marginLeft: 20,
+    flexWrap: "wrap",
+    fontFamily: "geometria-bold"
+  },
   text: {
     fontSize: 16,
     padding: 4,
@@ -992,7 +1017,7 @@ const styles = StyleSheet.create({
   },
   totalText: {
     backgroundColor: "rgb(255,194,64)",
-    marginTop: 20,
+    marginBottom: 10,
     marginHorizontal: 30,
     padding: 10,
     fontSize: 18,
