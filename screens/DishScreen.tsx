@@ -463,7 +463,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
                           handleChangePersoMenu(pers.name, value.value)
                         }
                         style={{
-                          elevation: 8,
                           marginTop: 10,
                           marginHorizontal: 9,
                           marginBottom: 10,
@@ -494,7 +493,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
                           handleChangePersoMenu(pers.name, value.value)
                         }
                         style={{
-                          elevation: 8,
                           marginTop: 10,
                           marginHorizontal: 9,
                           marginBottom: 10,

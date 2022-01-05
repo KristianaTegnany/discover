@@ -1,29 +1,35 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Text, View } from "./Themed";
+import { Text, useThemeColor, View } from "./Themed";
 import { ListItem } from "react-native-elements";
 import { Checkbox } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import RadioItem from './RadioItem';
 
-export function LineItem({ line, index, freeconfirm, children, engagModeResa, selectedPricevarIndexes, setSelectedPricevarIndexes, addQuantityFromLines, removeQuantityFromLines }: { line: any, index: number, freeconfirm: boolean, children?: any, engagModeResa: string | undefined, selectedPricevarIndexes: { id: string, index: number }[], setSelectedPricevarIndexes:  (val: { id: string, index: number}[]) => void, addQuantityFromLines: (index: number) => void, removeQuantityFromLines: (index: number) => void }){
+export function LineItem({ line, index, alacarte, freeconfirm, children, engagModeResa, selectedPricevarIndexes, setSelectedPricevarIndexes, addQuantityFromLines, removeQuantityFromLines }: { line: any, index: number, alacarte: boolean, freeconfirm: boolean, children?: any, engagModeResa: string | undefined, selectedPricevarIndexes: { id: string, index: number }[], setSelectedPricevarIndexes:  (val: { id: string, index: number}[]) => void, addQuantityFromLines: (index: number) => void, removeQuantityFromLines: (index: number) => void }){
+  const color = useThemeColor({ light: 'black', dark: 'white' }, "text");
+  const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, "background");
+
   const [, update] = useState<{}>()
   return (
     <View>
-      <ListItem bottomDivider containerStyle={styles.containerStyle}>
-        <ListItem containerStyle={styles.containerStyle2}>
+      <ListItem bottomDivider containerStyle={[styles.containerStyle, { backgroundColor }]}>
+        <ListItem containerStyle={[styles.containerStyle2, { backgroundColor }]}>
           <ListItem.Content>
             <Text style={styles.defaultFamilyBold}>
                 {line.name}
             </Text>
-            <Text
-              style={styles.lineTitle}
-            >
-              {line.pricevarcheck && line.pricevars && line.pricevars.length > 0? '~' : (parseFloat(line.amount || 0).toFixed(2)+'€')}
-            </Text>
+            {
+              alacarte &&
+              <Text
+                style={styles.lineTitle}
+              >
+                {line.pricevarcheck && line.pricevars && line.pricevars.length > 0? '~' : (parseFloat(line.amount || 0).toFixed(2)+'€')}
+              </Text>
+            }
           </ListItem.Content>
           {
-            !freeconfirm &&
+            alacarte &&
             <>
               <Ionicons
                 name="remove-circle"
@@ -33,7 +39,7 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                 }
               />
               <ListItem.Subtitle
-                style={styles.menuChoiceText}
+                style={[styles.menuChoiceText, { color }]}
               >
                 {line.quantity || 0}
               </ListItem.Subtitle>
@@ -75,7 +81,9 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
 };
 
 
-  export function LineItemCollapse({ line, index, freeconfirm, engagModeResa, selectedPricevarIndexes, setSelectedPricevarIndexes, checkMessFormula, checkMessPerso, addQuantityFromLines, removeQuantityFromLines, addFormulaMenuChoice, removeFormulaMenuChoice, updatePersoNumChecked } : { line: any, index: number, freeconfirm: boolean, engagModeResa: string | undefined, selectedPricevarIndexes: { id: string, index: number }[], setSelectedPricevarIndexes: (val: { id: string, index: number}[]) => void, checkMessFormula: (index: number) => string[], checkMessPerso: (index: number) => string[], addQuantityFromLines: (index: number) => void, removeQuantityFromLines: (index: number) => void, addFormulaMenuChoice: (index: number, i:number, j: number) => void, removeFormulaMenuChoice: (index: number, i:number, j: number) => void, updatePersoNumChecked: (index: number, i:number, j: number) => void }){
+  export function LineItemCollapse({ line, index, alacarte, freeconfirm, engagModeResa, selectedPricevarIndexes, setSelectedPricevarIndexes, checkMessFormula, checkMessPerso, addQuantityFromLines, removeQuantityFromLines, addFormulaMenuChoice, removeFormulaMenuChoice, updatePersoNumChecked } : { line: any, index: number, alacarte: boolean, freeconfirm: boolean, engagModeResa: string | undefined, selectedPricevarIndexes: { id: string, index: number }[], setSelectedPricevarIndexes: (val: { id: string, index: number}[]) => void, checkMessFormula: (index: number) => string[], checkMessPerso: (index: number) => string[], addQuantityFromLines: (index: number) => void, removeQuantityFromLines: (index: number) => void, addFormulaMenuChoice: (index: number, i:number, j: number) => void, removeFormulaMenuChoice: (index: number, i:number, j: number) => void, updatePersoNumChecked: (index: number, i:number, j: number) => void }){
+    const color = useThemeColor({ light: 'black', dark: 'white' }, "text");
+    const backgroundColor = useThemeColor({ light: 'white', dark: 'black' }, "background");
     const formulaErrors = checkMessFormula(index),
           persoErrors = checkMessPerso(index)
     
@@ -83,6 +91,7 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
       <LineItem
         line={line}
         index={index}
+        alacarte={alacarte}
         freeconfirm={freeconfirm}
         engagModeResa={engagModeResa}
         selectedPricevarIndexes={selectedPricevarIndexes}
@@ -98,11 +107,11 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                   j === 0 &&
                   <ListItem containerStyle={styles.containerStyle3} key={"titre"+ i} bottomDivider>
                     {
-                      !freeconfirm && formulaErrors?.length > 0 && formulaErrors[i] !== '' &&
+                      alacarte && formulaErrors?.length > 0 && formulaErrors[i] !== '' &&
                         <Text key={i} style={styles.errorText} >{formulaErrors[i]}</Text>
                     }
                     {
-                      (freeconfirm || (formulaErrors?.length === 0 || formulaErrors[i] === '')) &&
+                      (!alacarte || (formulaErrors?.length === 0 || formulaErrors[i] === '')) &&
                       <Text
                         style={styles.choixText}
                       >
@@ -111,7 +120,7 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                     }
                   </ListItem> 
                 }
-                <ListItem bottomDivider>
+                <ListItem bottomDivider containerStyle={{ backgroundColor }}>
                   <ListItem.Content>
                     <Text
                       style={styles.menuText}
@@ -120,7 +129,7 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                     </Text>
                   </ListItem.Content>
                   {
-                    !freeconfirm &&
+                    alacarte &&
                     <>
                       <Ionicons
                         name="remove-circle"
@@ -130,7 +139,7 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                         }
                       />
                       <ListItem.Subtitle
-                        style={styles.menuChoiceText}
+                        style={[styles.menuChoiceText, { color }]}
                       >
                         {menu.numChoiced || 0}
                       </ListItem.Subtitle>
@@ -151,13 +160,13 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
           line.persoData && line.persoData.map((perso: any, i: number) => {
             return (
               <View key={'perso'+i}>
-                <ListItem containerStyle={{padding: 5, justifyContent: 'center'}} key={"titre"+ i} bottomDivider>
+                <ListItem containerStyle={{ padding: 5, justifyContent: 'center' }} key={"titre"+ i} bottomDivider>
                   {
-                    !freeconfirm && persoErrors?.length > 0 && persoErrors[i] !== '' &&
+                    alacarte && persoErrors?.length > 0 && persoErrors[i] !== '' &&
                       <Text key={i} style={styles.errorText} >{persoErrors[i]}</Text>
                   }
                   {
-                    (freeconfirm || (persoErrors?.length === 0 || persoErrors[i] === '')) &&
+                    (!alacarte || (persoErrors?.length === 0 || persoErrors[i] === '')) &&
                     <Text
                       style={styles.persoNameText}
                     >
@@ -165,7 +174,7 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                     </Text>
                   }
                 </ListItem> 
-                <ListItem bottomDivider>
+                <ListItem bottomDivider containerStyle={{ backgroundColor }}>
                   <ListItem.Content>
                     {
                       perso.values.length > 0 &&
@@ -175,14 +184,15 @@ export function LineItem({ line, index, freeconfirm, children, engagModeResa, se
                           {perso.values.map((value: any, j: number) => (
                             <View key={'perso'+i+''+j} style={{flexDirection: 'row', alignItems: 'center'}}>
                               {
-                                !freeconfirm &&
+                                alacarte &&
                                 <Checkbox.Android
                                   onPress={() => updatePersoNumChecked(index, i, j)}
                                   color="#F50F50"
+                                  uncheckedColor={color}
                                   status={value.checked ? "checked" : "unchecked"}
                                 />
                               }
-                              <Text>{value.value} {(value.price || 0).toFixed(2)}€</Text>
+                              <Text style={styles.text}>{value.value} {alacarte && ((value.price || 0).toFixed(2)+'€')}</Text>
                             </View>
                           ))}
                         </View>
@@ -221,7 +231,8 @@ const styles = StyleSheet.create({
         fontFamily: "geometria-bold"
     },
     errorText: { fontFamily: "geometria-bold", textAlign: 'center', color:'#ff5050', fontSize: 12, width: '100%' },
-    defaultFamilyBold: { fontFamily: "geometria-bold", marginBottom: 10, fontSize: 18, flexWrap: 'wrap' },
+    defaultFamilyBold: { fontFamily: "geometria-bold", fontSize: 18, flexWrap: 'wrap' },
+    text: { fontFamily: "geometria-regular" },
     pricevarContainer: {
         borderTopColor: "#e3e6f0",
         paddingHorizontal: 20,
@@ -272,7 +283,7 @@ const styles = StyleSheet.create({
     menuChoiceText: {
       marginTop: 2,
       fontSize: 18,
-      width: 20,
+      width: 25,
       textAlign: 'center',
       fontFamily: "geometria-regular"
     }

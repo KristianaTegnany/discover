@@ -22,7 +22,7 @@ import VersionCheck from 'react-native-version-check';
 
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize("table");
-Parse.serverURL = 'https://api.tablebig.com/parse' /*'http://192.168.46.149:8080/parse' `https://prodtableserver.osc-fr1.scalingo.io/parse`; `https://pptableserver.osc-fr1.scalingo.io/parse`*/;
+Parse.serverURL = 'https://api.tablebig.com/parse' /*'http://192.168.46.149:8080/parse'; `https://prodtableserver.osc-fr1.scalingo.io/parse`; `https://pptableserver.osc-fr1.scalingo.io/parse`*/;
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -199,7 +199,7 @@ const App = () => {
       <Provider store={store}>
         <StripeProvider
           stripeAccountId={stripeAccIdRestoValue}
-          publishableKey="pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg" // "" pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl// 
+          publishableKey="pk_live_oSFogrn8ZMJM8byziUY0Wngh00QiPeTyNg" //</Provider> "pk_test_9xQUuFXcOEHexlaI2vurArT200gKRfx5Gl"
         >
           <AppearanceProvider>
             <Navigation colorScheme={colorScheme} />

@@ -63,6 +63,9 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   const [zip, setZip] = useState('');
   const [notecom, setNotecom] = useState();
   const [totalCashBasket, setTotalCashBasket] = useState(0);
+  const [totalCashBasketTF, setTotalCashBasketTF] = useState(0);
+  const [sumOfsavePersoDataSumsPerLine, setSumOfsavePersoDataSumsPerLine] = useState<number []>([])
+  const [sumOfFormulaSupSumsPerLine, setSumOfFormulaSupSumsPerLine] = useState<number []>([])
   const [intcust, setIntcust] = useState({
     id: "",
     apikeypp: "",
@@ -110,7 +113,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     }
   }
   async function onChangeTextEmail(email: any) {
-    setEmail(email.trim().toLowerCase());
+    setEmail(email);
   }
 
   async function onChangeTextFirstname(firstname: any) {
@@ -136,10 +139,18 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
   async function calculusTotalCashBasket() {
     // doit prendre en compte les quantités dans le sum ma gueule ba ouais c mon comportement
     let sumRaw = 0;
-    products.map((product) => {
+    let totTF = 0;
+    let newSumOfsavePersoDataSumsPerLine: number[] = []
+    let newSumOfFormulaSupSumsPerLine: number[] = []
+        
+    products.map((product, i) => {
+      newSumOfsavePersoDataSumsPerLine.push(0)
+      newSumOfFormulaSupSumsPerLine.push(0)
+        
       sumRaw = sumRaw + product.quantity * product.amount;
       if (product.persoData) {
         product.persoData.forEach((pers: any) => {
+          newSumOfsavePersoDataSumsPerLine[i] += (pers.allPersoSum || 0);
           pers.values.forEach((value: any) => {
             if (value.price && value.price > 0) {
               sumRaw = sumRaw + value.price * product.quantity;
@@ -153,11 +164,17 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           fc.menus.forEach((menu: any) => {
             if (menu.tar && menu.tar > 0) {
               sumRaw = sumRaw + menu.tar * product.quantity;
+              newSumOfFormulaSupSumsPerLine[i] +=
+                menu.tar * product.quantity;
             }
           });
         });
       }
+      totTF += (product.amount + newSumOfsavePersoDataSumsPerLine[i] + newSumOfFormulaSupSumsPerLine[i]) / (1 + parseFloat(product.taxerate) / 100)
     });
+    setSumOfsavePersoDataSumsPerLine(newSumOfsavePersoDataSumsPerLine)
+    setSumOfFormulaSupSumsPerLine(newSumOfFormulaSupSumsPerLine)
+    setTotalCashBasketTF(totTF)
     setTotalCashBasket(sumRaw % 1 === 0 ? sumRaw : Math.round(sumRaw * 100) / 100)
   }
 
@@ -359,7 +376,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
     let blockGo = false;
     setLoading(true);
 
-    if (!email || EmailValidator.validate(email) == false) {
+    if (!email || EmailValidator.validate(email.trim().toLowerCase()) == false) {
       Alert.alert(
         "Merci de vérifier votre adresse email. Le format est incorrect."
       );
@@ -441,7 +458,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
 
       if (testOC && testOD && testDelayCren && testNoonNight && testQty) {
         let params = {
-          email: email,
+          email: email.trim().toLowerCase(),
           itid: intcust.id,
         };
         const res = await Parse.Cloud.run("getGuest", params);
@@ -450,7 +467,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
         if (res.length == 0) {
           guestRaw.set("firstname", firstname);
           guestRaw.set("lastname", lastname);
-          guestRaw.set("email", email);
+          guestRaw.set("email", email.trim().toLowerCase());
           await guestRaw.save();
         } else if (res.length > 0) {
           guestRaw.id = res[0].id;
@@ -472,10 +489,18 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             firstname: firstname,
             lastname: lastname,
             mobilephone: phone,
-            email: email,
+            email: email.trim().toLowerCase(),
           },
         ];
-        resaRaw.set("line_items", products);
+        resaRaw.set("line_items", products.map((line, i) => {
+          return {
+            ...line,
+            allAmount: line.amount + sumOfFormulaSupSumsPerLine[i] + sumOfsavePersoDataSumsPerLine[i]
+          }
+        }));
+        resaRaw.set("orderAmount", totalCashBasket.toString())
+        resaRaw.set("orderTFAmount", totalCashBasketTF.toString())
+
         var Intcust = Parse.Object.extend("Intcust");
         let intcustRawY = new Intcust();
         intcustRawY.id = intcust.id;
@@ -552,7 +577,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             itid: intcust.id,
             winl: "window.location.host",
             resaid: resaRaw.id,
-            customeremail: email,
+            customeremail: email.trim().toLowerCase(),
             customerfirstname: firstname,
             customerlastname: lastname,
             customerphone: phone,
@@ -588,7 +613,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
           let params = {
             stripeAccount: intcust.stripeAccId,
             amount: totalCashBasket + Number(delifare),
-            customeremail: email,
+            customeremail: email.trim().toLowerCase(),
             name: firstname + lastname,
             resaid: resaRaw.id,
             mode: bookingType,
@@ -597,14 +622,26 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             toutalivrer: intcust.option_DeliveryByToutAlivrer,
           };
 
+          console.log(JSON.stringify(params))
           const {
             paymentIntent,
             ephemeralKey,
             customer,
           } = await Parse.Cloud.run("stripeCheckoutForRN", params);
 
+          console.log(
+            paymentIntent,
+            ephemeralKey,
+            customer,
+          )
           let ERR = {};
 
+          console.log({
+            merchantDisplayName: intcust.corporation,
+            customerId: customer,
+            customerEphemeralKeySecret: ephemeralKey,
+            paymentIntentClientSecret: paymentIntent,
+          })
           ERR = await initPaymentSheet({
             merchantDisplayName: intcust.corporation,
             customerId: customer,
@@ -612,7 +649,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             paymentIntentClientSecret: paymentIntent,
           });
 
-
+          console.log(ERR)
           if (!ERR) {
             setLoading(true);
           }
@@ -717,6 +754,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
               fontSize: 15,
               borderColor: "grey",
             }}
+            autoCapitalize={"none"}
             onChangeText={onChangeTextEmail}
             placeholderTextColor='white'
             placeholder="addresse@email.com"

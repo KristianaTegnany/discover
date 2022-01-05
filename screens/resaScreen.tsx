@@ -63,7 +63,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
     }
   }
   async function onChangeTextEmail(email: any) {
-    setEmail(email.trim().toLowerCase());
+    setEmail(email);
   }
 
   async function onChangeTextFirstname(firstname: any) {
@@ -87,7 +87,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
     let blockGo = false;
 
     if (email) {
-      if (EmailValidator.validate(email) == false) {
+      if (EmailValidator.validate(email.trim().toLowerCase()) == false) {
         blockGo = true;
         Alert.alert(
           "Merci de vérifier votre adresse email. Le format est incorrect."
@@ -163,7 +163,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
       const Intcust = Parse.Object.extend("Intcust");
 
       var query = new Parse.Query(Guest);
-      query.equalTo("email", email);
+      query.equalTo("email", email.trim().toLowerCase());
       return query
         .first()
         .then(async (result: any) => {
@@ -172,7 +172,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
             guest.set("firstname", firstname);
             guest.set("lastname", lastname);
             guest.set("mobilephone", phone);
-            guest.set("email", email);
+            guest.set("email", email.trim().toLowerCase());
             let it = new Intcust();
             it.id = myintcust.id;
             guest.set("intcust", it);
@@ -230,7 +230,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
             result.set("firstname", firstname);
             result.set("lastname", lastname);
             result.set("mobilephone", phone);
-            result.set("email", email);
+            result.set("email", email.trim().toLowerCase());
             result.set("notes", notecom);
             let it = new Intcust();
             it.id = myintcust.id;
@@ -360,6 +360,7 @@ export const resaScreen = ({ route, navigation }: Props) => {
             fontSize: 15,
             borderColor: "grey",
           }}
+          autoCapitalize={"none"}
           onChangeText={onChangeTextEmail}
           placeholder="addresse@email.com"
           value={email}
