@@ -731,14 +731,16 @@ export const RestoScreen = ({ route, navigation }: Props) => {
                       {bh.daysOfWeek} {bh.startTime}-{bh.endTime}
                     </Text>
                   ))}
-                <Text style={styles.textPiti}>
-                  Fin de commande :
-                </Text>
-                {myintcust.noNightTakeAway !== true && (
+                {myintcust.noNightTakeAway !== true &&
+                  <Text style={styles.textPiti}>
+                    Fin de commande :
+                  </Text>
+                }
+                {myintcust.noNightTakeAway !== true &&
                   <Text style={styles.textPiti}>
                     🕛  Midi : {myintcust.onsitenoonblock}{" "} 🕛 Soir : {myintcust.onsitenightblock}{" "}
                   </Text>
-                )}
+                }
               </View>
             )}
 

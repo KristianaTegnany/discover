@@ -593,7 +593,7 @@ export const custInfoScreen = ({ route, navigation }: Props) => {
             "getPayPlugPaymentUrlRN",
             params1
           );
-
+          Alert.alert(JSON.stringify(response))
           // navigate and options payLink
           navigation.navigate("paymentScreen", {
             restoId: restoId,
