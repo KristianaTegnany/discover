@@ -7,6 +7,10 @@ import {
   Route,
   StyleSheet,
 } from "react-native";
+import moment from "moment-timezone";
+moment.tz.add(
+  "America/Martinique|FFMT AST ADT|44.k 40 30|0121|-2mPTT.E 2LPbT.E 19X0|39e4"
+);
 import { ListItem } from "react-native-elements";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationScreenProp } from "react-navigation";
@@ -44,7 +48,7 @@ interface IMenu {
   persoMenu: [];
   price: number;
   pricevarcheck?: boolean;
-  pricevars?: { name: string; price: string; }[]
+  pricevars?: { name: string; price: string; }[];
 }
 
 export const DishScreen = ({ route, navigation }: Props) => {
@@ -104,18 +108,19 @@ export const DishScreen = ({ route, navigation }: Props) => {
     setPersoMenu(menuRaw.persoMenu);
   }
 
-  function handleChangePersoMenu(pers: any, value: any) {
+  function handleChangePersoMenu(pers: string, value: string) {
     if (persoMenu) {
       const i = persoMenu?.findIndex((item: any) => item.name == pers);
       const j = persoMenu[i].values.findIndex(
         (item: any) => item.value == value
       );
-      persoMenu[i].values[j].checked = !persoMenu[i].values[j].checked;
-      persoMenu[i].numChecked = (persoMenu[i].numChecked || 0) + 1;
-      if (pers.price == 0 || !pers.price) {
-        persoMenu[i].numCheckedFree = (persoMenu[i].numCheckedFree || 0) + 1;
-      } else if (pers.price && pers.price > 0) {
-        persoMenu[i].numCheckedPaid = (persoMenu[i].numCheckedPaid || 0) + 1;
+      const checked = !persoMenu[i].values[j].checked;
+      persoMenu[i].values[j].checked = checked;
+      persoMenu[i].numChecked = (persoMenu[i].numChecked || 0) + (checked? 1 : -1);
+      if (persoMenu[i].values[j].price == 0 || !persoMenu[i].values[j].price) {
+        persoMenu[i].numCheckedFree = (persoMenu[i].numCheckedFree || 0) + (checked? 1 : -1);
+      } else if (persoMenu[i].values[j].price && persoMenu[i].values[j].price > 0) {
+        persoMenu[i].numCheckedPaid = (persoMenu[i].numCheckedPaid || 0) + (checked? 1 : -1);
       }
       setPersoMenu([...persoMenu]);
     }
@@ -182,14 +187,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
     }
   }
 
-  function getMenuTitle(menuid: any) {
-    let Menu = Parse.Object.extend("Menu");
-    let menu = new Menu();
-    menu.id = menuid;
-    menu.fetch();
-    return menu.attributes.title;
-  }
-
   async function addToBasket() {
     if (menu?.pricevarcheck && selectedVarIndex === -1) {
       Alert.alert('Veuillez choisir la variation souhaitée')
@@ -228,6 +225,14 @@ export const DishScreen = ({ route, navigation }: Props) => {
         );
         Stop = true;
       }
+      else if(parseInt(perso.numCheckedFree || 0) > parseInt(perso.max || 0)){
+        Alert.alert("Désolé",perso.name + ': ' + (parseInt(perso.max || 0)) + " gratuit maximum.")
+        Stop = true;
+      }
+      else if(parseInt(perso.numCheckedPaid || 0) > parseInt(perso.maxpaid || 0)){
+        Alert.alert("Désolé", perso.name + ': ' + (parseInt(perso.maxpaid || 0)) + " maximum.")
+        Stop = true;
+      }
     });
 
     if (Stop == false) {
@@ -255,7 +260,12 @@ export const DishScreen = ({ route, navigation }: Props) => {
         taxrate:menu?.tva && menu?.tva.rate ? menu?.tva.rate : 0,
         taxname:menu?.tva && menu?.tva.name ? menu?.tva.name : "",
         ...pricevars,
+        taxerate: menu?.tva?.rate || 0,
+        taxename: menu?.tva?.name || "Non spécifié",
+        userId: 'selfcare',
+        createdAt: moment.tz("America/Martinique").format('DD/MM/YYYY HH:mm'),
         currency: "eur",
+        typeProcess: "VENTE",
         quantity: 1,
         persoData: persoRaw || [],
         formulaChoiced: fcRaw || [],
@@ -363,7 +373,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
                             fontFamily: "geometria-regular",
                           }}
                         >
-                          {getMenuTitle(menu.menuid)}{" "}
+                          {menu.title}{" "}
                         </ListItem.Title>
 
                         {menu.tar > 0 && (
@@ -456,7 +466,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
                           handleChangePersoMenu(pers.name, value.value)
                         }
                         style={{
-                          elevation: 8,
                           marginTop: 10,
                           marginHorizontal: 9,
                           marginBottom: 10,
@@ -487,7 +496,6 @@ export const DishScreen = ({ route, navigation }: Props) => {
                           handleChangePersoMenu(pers.name, value.value)
                         }
                         style={{
-                          elevation: 8,
                           marginTop: 10,
                           marginHorizontal: 9,
                           marginBottom: 10,
@@ -517,7 +525,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
           ))}
       </ScrollView>
       <TouchableOpacity
-        onPress={() => addToBasket()}
+        onPress={addToBasket}
         style={styles.appButtonContainer}
       >
         <Text style={styles.appButtonText}>🧺 Ajouter au panier</Text>

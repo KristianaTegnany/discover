@@ -11,7 +11,7 @@ import { View } from "../components/Themed";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
-import { Avatar, ListItem } from "react-native-elements";
+import { Avatar, ListItem, Icon } from "react-native-elements";
 import { useSelector } from "react-redux";
 import { ProductItem } from "../global";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -72,6 +72,11 @@ export const orderScreen = ({ route, navigation }: Props) => {
 
   const backgroundColor = useThemeColor(
     { light: "white", dark: "black" },
+    "background"
+  );
+
+  const basketBackgroundColor = useThemeColor(
+    { light: "rgb(255, 255, 200)", dark: "grey" },
     "background"
   );
   const textColor = useThemeColor({ light: "black", dark: "white" }, "text");
@@ -223,53 +228,56 @@ export const orderScreen = ({ route, navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-      <ListItem
-        bottomDivider
-        containerStyle={{
-          backgroundColor: backgroundColor,
-          borderColor: "transparent",
-        }}
-        onPress={gotoBasket}
-      >
-        <ListItem.Content>
-          <ListItem.Title
-            style={{
-              marginTop: 9,
-              color: textColor,
-              fontSize: 18,
-              fontFamily: "geometria-bold",
-            }}
-          >
-            Voir le panier{" "}
-          </ListItem.Title>
-          {totalQuantityBasket > 1 && (
-            <ListItem.Subtitle
+      {
+        totalQuantityBasket > 0 &&
+        <ListItem
+          bottomDivider
+          containerStyle={{
+            backgroundColor: basketBackgroundColor,
+            borderColor: "transparent",
+          }}
+          onPress={gotoBasket}
+        >
+          <ListItem.Content>
+            <ListItem.Title
               style={{
-                marginTop: 2,
+                marginTop: 9,
                 color: textColor,
-                fontSize: 16,
-                fontFamily: "geometria-regular",
+                fontSize: 18,
+                fontFamily: "geometria-bold",
               }}
             >
-              {totalQuantityBasket} articles - {totalCashBasket} €
-            </ListItem.Subtitle>
-          )}
+              Voir le panier et payer{" "}
+            </ListItem.Title>
+            {totalQuantityBasket > 1 && (
+              <ListItem.Subtitle
+                style={{
+                  marginTop: 2,
+                  color: textColor,
+                  fontSize: 16,
+                  fontFamily: "geometria-regular",
+                }}
+              >
+                {totalQuantityBasket} articles - {totalCashBasket} €
+              </ListItem.Subtitle>
+            )}
 
-          {totalQuantityBasket < 2 && (
-            <ListItem.Subtitle
-              style={{
-                marginTop: 2,
-                color: textColor,
-                fontSize: 16,
-                fontFamily: "geometria-regular",
-              }}
-            >
-              {totalQuantityBasket} article - {totalCashBasket} €
-            </ListItem.Subtitle>
-          )}
-        </ListItem.Content>
-        <ListItem.Chevron />
-      </ListItem>
+            {totalQuantityBasket < 2 && (
+              <ListItem.Subtitle
+                style={{
+                  marginTop: 2,
+                  color: textColor,
+                  fontSize: 16,
+                  fontFamily: "geometria-regular",
+                }}
+              >
+                {totalQuantityBasket} article - {totalCashBasket} €
+              </ListItem.Subtitle>
+            )}
+          </ListItem.Content>
+          <Icon name='shopping-basket' type='font-awesome' color={textColor} tvParallaxProperties={{}}/>
+        </ListItem>
+      }
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         <View style={{ flex: 1 }}>
           {!cats ||
@@ -349,7 +357,7 @@ export const orderScreen = ({ route, navigation }: Props) => {
                                   source={{ uri: menu.imageUrl || " " }}
                                 />
                               )}
-                              <ListItem.Chevron />
+                              <ListItem.Chevron tvParallaxProperties={{}} />
                             </ListItem>
                           </View>
                         );

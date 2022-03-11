@@ -8,6 +8,7 @@ const findInArray = (data: any, state: any) => {
     (element: any) =>
       element.id === data.id &&
       element.pricevar === data.pricevar &&
+      element.amount === data.amount &&
       isEqual(element.persoData, data.persoData) &&
       isEqual(element.formulaChoiced, data.formulaChoiced)
   );

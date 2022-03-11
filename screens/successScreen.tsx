@@ -26,8 +26,11 @@ export const successScreen = ({ route, navigation }: Props) => {
   const isFocused = useIsFocused()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [pending, setPending] = useState(false)
 
-  let listener: any = undefined
+  var intervalListener: any = undefined
+  var timeoutListener: any = undefined
+
   let paidConfirmedByPayplug = undefined,
     paidConfirmedByStripe = undefined
   //payplugError = undefined,
@@ -39,6 +42,12 @@ export const successScreen = ({ route, navigation }: Props) => {
     resa.set('id', route.params.resaId);
 
     await resa.fetch()
+    if(resa.get('engagModeResa') === 'SurPlace'){
+      clearInterval(intervalListener)
+      clearTimeout(timeoutListener)
+      setLoading(false)
+      return false
+    }
     paidConfirmedByPayplug = resa.get('paidConfirmedByPayplug')
     paidConfirmedByStripe = resa.get('paidConfirmedByStripe')
     //payplugError = resa.get('payplugError')
@@ -47,18 +56,35 @@ export const successScreen = ({ route, navigation }: Props) => {
     if (isFocused) {
       if (paidConfirmedByPayplug || paidConfirmedByStripe) { // || payplugError || stripePaymentErrorMessage))
         setLoading(false)
-        clearInterval(listener)
+        clearTimeout(timeoutListener)
+        clearInterval(intervalListener)
       }
       else if (paidConfirmedByPayplug === false || paidConfirmedByStripe === false) {
+        setLoading(false)
         setError(true)
-        clearInterval(listener)
+        clearTimeout(timeoutListener)
+        clearInterval(intervalListener)
       }
     }
   }
 
+  const goHome = () => {
+    navigation.navigate("TablesScreen");
+  }
+
+  const listenToPayment = () => {
+    setLoading(true)
+    intervalListener = setInterval(subscribe, 2000);
+    timeoutListener = setTimeout(() => {
+        setPending(true)
+        setLoading(false)
+        clearInterval(intervalListener)
+    }, 10000)
+  }
+
   useEffect(() => {
-    listener = setInterval(subscribe, 2000);
-    return () => clearInterval(listener)
+    listenToPayment()
+    return () => clearInterval(intervalListener)
   }, [])
 
   return loading ? (
@@ -69,6 +95,27 @@ export const successScreen = ({ route, navigation }: Props) => {
   ) : error ? (
     <View style={{ flex: 1, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
       <Text style={styles.textError}>Erreur de paiement. {'\n\n'} Merci de contacter le support au 0696450445 {'\n'} - Whatsapp de préférence</Text>
+    </View>
+  ) : pending? (
+    <View style={{ flex: 1, backgroundColor: '#0000FF', justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={styles.textErrorEm}>Contactez-nous en urgence par WhatsApp au 0696450445 pour vérification manuelle.</Text>
+      <Text style={styles.textError}>Nous n’avons pas réussi à déterminer avec votre banque l’état de votre paiement.</Text>
+      <TouchableOpacity
+        style={styles.appButtonContainerRetry}
+        onPress={listenToPayment}
+      >
+        <Text style={styles.btnBackRetry}>
+          Revérifier le paiement
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.appButtonContainer}
+        onPress={goHome}
+      >
+        <Text style={styles.btnBack}>
+          Revenir à l'accueil
+        </Text>
+      </TouchableOpacity>
     </View>
   ) : (
     <View style={styles.container}>
@@ -135,17 +182,10 @@ export const successScreen = ({ route, navigation }: Props) => {
       </ScrollView>
       <TouchableOpacity
         style={styles.appButtonContainer}
-        onPress={() => {
-          navigation.navigate("TablesScreen");
-        }}
+        onPress={goHome}
       >
         <Text
-          style={{
-            fontSize: 16,
-            alignSelf: "center",
-            color: "white",
-            fontFamily: "geometria-bold",
-          }}
+          style={styles.btnBack}
         >
           Revenir à l'accueil
         </Text>
@@ -165,9 +205,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 30,
     marginLeft: 30,
-
     paddingVertical: 13,
     paddingHorizontal: 14,
+    width: 200
+  },
+  appButtonContainerRetry: {
+    elevation: 8,
+    marginBottom: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    marginRight: 30,
+    marginLeft: 30,
+    marginTop: 20,
+    paddingVertical: 13,
+    paddingHorizontal: 14
   },
   appButtonText: {
     fontSize: 18,
@@ -215,8 +266,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     margin: 20,
+    lineHeight: 18,
     fontFamily: "geometria-bold",
     color: 'white'
+  },
+  textErrorEm: {
+    textAlign: 'center',
+    fontSize: 20,
+    margin: 20,
+    lineHeight: 28,
+    fontFamily: "geometria-bold",
+    color: 'white'
+  },
+  btnBack: {
+    fontSize: 16,
+    alignSelf: "center",
+    color: "white",
+    fontFamily: "geometria-bold",
+  },
+  btnBackRetry: {
+    fontSize: 16,
+    alignSelf: "center",
+    color: "#0000FF",
+    fontFamily: "geometria-bold",
   }
 });
 

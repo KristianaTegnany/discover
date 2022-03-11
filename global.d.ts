@@ -12,6 +12,7 @@ export interface ProductItem {
   added?: boolean;
   restoId: string;
   pricevar?: string;
+  taxerate: string;
 }
 
 export interface selectedIntcustStripeAccountId {

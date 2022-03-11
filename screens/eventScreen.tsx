@@ -1,4 +1,4 @@
-import { NavigationState } from "@react-navigation/native";
+import { NavigationState, useIsFocused } from "@react-navigation/native";
 import * as React from "react";
 import {
   ActivityIndicator,
@@ -23,8 +23,12 @@ import { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import NumericInput from "react-native-numeric-input";
-import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
+import { useStripe } from "@stripe/stripe-react-native";
 import * as EmailValidator from "email-validator";
+import RadioItem from "../components/RadioItem";
+import { LineItem, LineItemCollapse } from "../components/LineItemsComponent";
+import Loading from "../components/Loading";
+import RadioButton from "../components/Radio";
 
 interface NavigationParams {
   text: string;
@@ -46,26 +50,52 @@ interface IEvent {
   price: number;
   infoline: string,
   freeconfirm: boolean,
+  alacarte: boolean,
+  menu: any[],
   itid: string,
-  seatleft: number
+  seatleft: number,
+  onsiteOptin: boolean,
+  takeAwayOptin: boolean,
+  deliveryOptin: boolean
 }
 
 export const EventScreen = ({ route, navigation }: Props) => {
-  const [html, setHtml] = useState()
+  const isFocused = useIsFocused()
+  const [loading, setLoading] = useState<boolean>(true)
+  const [html, setHtml] = useState<string>('')
   const [event, setEvent] = useState<IEvent>();
   const [resaid, setResaId] = useState(null)
-  const [paymentSheetEnabled, setPaymentSheetEnabled] = useState(false);
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [crenModalVisible, setCrenModalVisible] = useState(false);
   const [firstname, setFirstname] = useState('')
   const [lastname, setLastname] = useState('')
   const [phone, setPhone] = useState('')
+  const [intcustCityChoice, setIntcustCityChoice] = useState([
+    {
+      city: "",
+      tar: 0,
+      checked: false
+    }
+  ]);
+  const [line1, setLine1] = useState('');
+  const [city, setCity] = useState('');
+  const [zip, setZip] = useState('');
+  const [delifare, setDelifare] = useState(0);
   const [email, setEmail] = useState('')
-  const [numcover, setNumcover] = useState(1)
-  const [loading, setLoading] = useState(false);
+  const [noteCommande, setNoteCommande] = useState('')
+  const [numguest, setNumguest] = useState(1)
   const [isResaConfirmed, setIsResaConfirmed] = useState(false)
   const [paymentchoice, setPaychoice] = useState(null);
 
+  const [mode, setMode] = useState<string>();
+  const [total, setTotal] = useState<number>(0);
+  const [totalTF, setTotalTF] = useState<number>(0);
+  const [sumOfsavePersoDataSumsPerLine, setSumOfsavePersoDataSumsPerLine] = useState<number []>([])
+  const [sumOfFormulaSupSumsPerLine, setSumOfFormulaSupSumsPerLine] = useState<number []>([])
+  const [enabledModes, setEnabledModes] = useState<string[]>();
+  const [selectedPricevarIndexes, setSelectedPricevarIndexes] = useState<{id: string, index: number}[]>([]);
+  const [lineitems, setLineitems] = useState<any[]>([]);
+  
   const [keyboard, setKeyboard] = useState(0)
   const [offset, setOffset] = useState(0)
 
@@ -77,7 +107,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
   const tagsStyles = {
     p: { fontFamily: "geometria-regular", fontSize: 18, color: textColor },
     li: { fontFamily: "geometria-regular", fontSize: 18, color: textColor },
-
+    div: { fontFamily: "geometria-regular", fontSize: 18, color: textColor },
   };
 
   function useThemeColor(
@@ -94,11 +124,15 @@ export const EventScreen = ({ route, navigation }: Props) => {
     }
   }
   async function prepareFetch() {
+    setLoading(true)
     var Event = Parse.Object.extend("Event");
     let eventRaw = new Event();
     eventRaw.id = route.params.eventId;
-    setHtml(eventRaw.attributes.description)
-    console.log(eventRaw.attributes.description)
+    await eventRaw.fetch()
+    await eventRaw.attributes.intcust.fetch()
+    setIntcustCityChoice(eventRaw.attributes.intcust.attributes.citiesChoice2);
+    setCity(eventRaw.attributes.intcust.attributes.citiesChoice2[0].city);
+    setHtml(`<div>${eventRaw.attributes.description}</div>`)
     setEvent({
       id: eventRaw.id || "",
       imageUrl: eventRaw?.attributes.image?._url || "",
@@ -112,18 +146,37 @@ export const EventScreen = ({ route, navigation }: Props) => {
       freeconfirm: eventRaw.attributes.freeconfirm || null,
       seatleft: eventRaw.attributes.seatleft || 0,
       itid: eventRaw.attributes.intcust.id || true,
+      menu: eventRaw.attributes.menu || [],
+      alacarte: eventRaw.attributes.alacarte,
+      onsiteOptin: eventRaw.attributes.onsiteOptin,
+      takeAwayOptin: eventRaw.attributes.takeAwayOptin,
+      deliveryOptin: eventRaw.attributes.deliveryOptin
     });
-    var Intcust = Parse.Object.extend("Intcust")
-    let IntcustRaw = new Intcust()
-    IntcustRaw.id = eventRaw.attributes.intcust.id
-    await IntcustRaw.fetch()
-    setPaychoice(IntcustRaw.attributes.paymentChoice)
+    //console.log(JSON.stringify(eventRaw.attributes.menu))
+    if(eventRaw.attributes.menu && eventRaw.attributes.menu.length > 0)
+    setLineitems(Object.assign([], eventRaw.attributes.menu))
+    const modes : any = { SurPlace: eventRaw.attributes.onsiteOptin, TakeAway : eventRaw.attributes.takeAwayOptin, Delivery: eventRaw.attributes.deliveryOptin }
+    const newEnabledModes = Object.keys(modes).filter((key:string) => modes[key])
+    setEnabledModes(newEnabledModes)
+    if(newEnabledModes.length === 1){
+      setMode(newEnabledModes[0])
+      if (newEnabledModes[0] === 'Delivery') {
+        setDelifare(eventRaw.attributes.intcust.attributes.citiesChoice2[0].tar);
+      }
+      else {
+        setDelifare(0);
+      }
+    }
+    setPaychoice(eventRaw.attributes.intcust.attributes.paymentChoice)
+    setLoading(false)
   }
   useEffect(() => {
-    prepareFetch()
-  }, []);
+    calculusSumAll();
+  }, [lineitems]);
 
   useEffect(() => {
+    if(isFocused)
+      prepareFetch()
     const k1 = Keyboard.addListener('keyboardDidShow', e => {
       setKeyboard(e.endCoordinates.height)
     })
@@ -132,7 +185,7 @@ export const EventScreen = ({ route, navigation }: Props) => {
       k1.remove()
       k2.remove()
     }
-  }, [])
+  }, [isFocused])
 
   const reset = () => {
     setFirstname('')
@@ -141,12 +194,571 @@ export const EventScreen = ({ route, navigation }: Props) => {
     setEmail('')
   }
 
-  return (
+  const calculusSumAll = () => {
+    let sumOfsavePersoDataSums = 0;
+    let sumOfFormulaSupSums = 0;
+    let newSumOfsavePersoDataSumsPerLine: number[] = [];
+    let newSumOfFormulaSupSumsPerLine: number[] = [];
+    let tot = 0;
+    let totTF = 0;
+    const filteredLineitems = lineitems? lineitems.filter((line) => line.quantity > 0) : []
+    if (filteredLineitems.length > 0) {
+      tot = filteredLineitems.reduce(
+        (accumulateur, valeurCourante) => {
+          let amount = parseFloat(valeurCourante.amount)
+          if(valeurCourante.pricevarcheck && valeurCourante.pricevars && valeurCourante.pricevars.length > 0){
+            const index = selectedPricevarIndexes.length > 0? selectedPricevarIndexes.findIndex((selectedPricevar: any) => selectedPricevar.id === valeurCourante.id) : -1
+            if(index === -1)
+              Alert.alert('Erreur', 'Veuillez sélectionner une variation pour '+ valeurCourante.name)
+            else { 
+              const pricevar = valeurCourante.pricevars[selectedPricevarIndexes[index].index]
+              amount = mode? (mode === 'Delivery'? parseFloat(pricevar.pricevardelivery) : mode === 'TakeAway'? parseFloat(pricevar.pricevartakeaway) : mode === 'SurPlace'? parseFloat(pricevar.pricevaronsite) : 0 ) : 0
+            }
+          }
+          return accumulateur + parseInt(valeurCourante.quantity) * amount
+        },
+        0
+      );
+
+      filteredLineitems.map((line, i: number) => {
+        newSumOfsavePersoDataSumsPerLine.push(0)
+        newSumOfFormulaSupSumsPerLine.push(0)
+        if (line.persoData) {
+          line.persoData.map((perso: any) => {
+            newSumOfsavePersoDataSumsPerLine[i] += (perso.allPersoSum || 0);
+          });
+          sumOfsavePersoDataSums += newSumOfsavePersoDataSumsPerLine[i]
+        }
+
+        if (line.formulaChoice) {
+          line.formulaChoice.map((fc: any) => {
+            fc.menus.map((menu: any) => {
+              if(menu.tar){
+                newSumOfFormulaSupSumsPerLine[i] +=
+                menu.tar * (menu.numChoiced || 0) * line.quantity;
+              }
+
+            });
+            sumOfFormulaSupSums += newSumOfFormulaSupSumsPerLine[i]
+          });
+        }
+        let amount = parseFloat(line.amount)
+        if(line.pricevarcheck && line.pricevars && line.pricevars.length > 0){
+          const index = selectedPricevarIndexes.length > 0? selectedPricevarIndexes.findIndex((selectedPricevar: any) => selectedPricevar.id === line.id) : -1
+          if(index === -1)
+            Alert.alert('Erreur', 'Veuillez sélectionner une variation pour '+ line.name)
+          else { 
+            const pricevar = line.pricevars[selectedPricevarIndexes[index].index]
+            amount = mode? (mode === 'Delivery'? parseFloat(pricevar.pricevardelivery) : mode === 'TakeAway'? parseFloat(pricevar.pricevartakeaway) : mode === 'SurPlace'? parseFloat(pricevar.pricevaronsite) : 0 ) : 0
+          }
+        }
+        console.log(newSumOfsavePersoDataSumsPerLine[i], newSumOfFormulaSupSumsPerLine[i])
+        totTF += (amount + newSumOfsavePersoDataSumsPerLine[i] + newSumOfFormulaSupSumsPerLine[i]) / (1 + parseFloat((line.tva && line.tva.rate)? line.tva.rate : 0) / 100)
+      });
+      tot = tot + (sumOfsavePersoDataSums + sumOfFormulaSupSums);
+    }
+    setSumOfsavePersoDataSumsPerLine(newSumOfsavePersoDataSumsPerLine)
+    setSumOfFormulaSupSumsPerLine(newSumOfFormulaSupSumsPerLine)
+    setTotalTF(totTF);
+    setTotal(tot);
+  }
+
+  const checkMessFormula = (index: number) => {
+    let textCheckFormulas: string[] = []
+    let line = lineitems[index]
+    if(line.formulaChoice?.length > 0)
+      line.formulaChoice.forEach((fc: any) => {
+        const sum =
+          fc.menus.reduce(
+            (a: number, b: any) => a + (b.numChoiced || 0), 0
+          );
+        if ((typeof sum === 'object'? sum.numChoiced : sum) != (fc.numExact * (line.quantity || 0))) {
+          textCheckFormulas.push(`${fc.cattitle}: Merci d'en sélectionner ${fc.numExact * (line.quantity || 0)}`)   
+        }
+        else textCheckFormulas.push('')
+      })
+    return textCheckFormulas
+  }
+
+  const checkMessPerso = (index: number) => {
+    let textCheckPersos: string[] = []
+    let line = lineitems[index]
+    if(line.persoData?.length > 0)
+      line.persoData.forEach((pd: any) => {
+        if (pd.mandatory && pd.values.filter((value: any) => value.checked).length === 0) {
+          textCheckPersos.push(`${pd.name}: Merci de sélectionner le nombre indiqué`)   
+        }
+        else textCheckPersos.push('')
+      })
+    return textCheckPersos
+  }
+
+  async function addQuantityFromLines(index: number) {
+    let newLineitems = lineitems;
+    let newQuantity = (newLineitems[index].quantity || 0) + 1
+    newLineitems[index] = {
+      ...newLineitems[index],
+      quantity: newQuantity,
+      persoData: !newLineitems[index].persoData? [] : newLineitems[index].persoData.map((perso: any) => {
+        return {
+          ...perso,
+          allPersoSum: !perso.values? 0 : perso.values.filter((value: any) => value.checked).reduce(
+            (accumulateur: any, valeurCourante: any) => accumulateur + (newQuantity * parseFloat(valeurCourante.price || 0)),
+            0
+          ),
+          values: !perso.values? [] : perso.values.map((value: any) => {
+            return {
+              ...value,
+              number: newQuantity
+            }
+          })
+        }
+      })
+    };
+    setLineitems(Object.assign([], newLineitems));
+  }
+
+  async function removeQuantityFromLines(index: number) {
+    let newLineitems = lineitems;
+    if (lineitems[index].quantity > 0){
+      let newQuantity = newLineitems[index].quantity - 1
+      newLineitems[index] = {
+        ...newLineitems[index],
+        quantity: newQuantity,
+        persoData: !newLineitems[index].persoData? [] : newLineitems[index].persoData.map((perso: any) => {
+          return {
+            ...perso,
+            allPersoSum: !perso.values? 0 : perso.values.filter((value: any) => value.checked).reduce(
+              (accumulateur: any, valeurCourante: any) => accumulateur + (newQuantity * parseFloat(valeurCourante.price || 0)),
+              0
+            ),
+            values: !perso.values? [] : perso.values.map((value: any) => {
+              return {
+                ...value,
+                number: newQuantity
+              }
+            })
+          }
+        })
+      };
+    }
+    setLineitems(Object.assign([], newLineitems));
+  }
+
+  const addFormulaMenuChoice = (index: number, i: number, j:number) => {
+    const numExact = lineitems[index].formulaChoice[i].numExact;
+    const sum =
+      lineitems[index].formulaChoice[i].menus.reduce(
+        (a: any, b: any) => (a.numChoiced || 0) + (b.numChoiced || 0)
+      );
+      if ((typeof sum === 'object'? sum.numChoiced : sum) + 1 > (numExact * (lineitems[index].quantity || 0))) {
+        Alert.alert("Erreur", "Désolé : " + (numExact * (lineitems[index].quantity || 0)) + " maximum.");
+      return;
+    }
+    const newLineitem = {
+      ...lineitems[index],
+      formulaChoice: lineitems[index].formulaChoice.map((cat: any, ii: number) => {
+        if (ii === i)
+          return {
+            ...cat,
+            menus: cat.menus.map((menu: any, jj: number) => {
+              if (jj === j)
+                return {
+                  ...menu,
+                  numChoiced: (menu.numChoiced || 0) + 1,
+                };
+              else return menu;
+            }),
+          };
+        else return cat;
+      })
+    };
+
+    let newLineitems = lineitems;
+    newLineitems[index] = newLineitem;
+    setLineitems(Object.assign([], newLineitems));
+   
+  };
+
+  const removeFormulaMenuChoice = (index: number, i: number, j: number) => {
+    const newLineitem = {
+      ...lineitems[index],
+      formulaChoice: lineitems[index].formulaChoice.map((cat: any, ii: number) => {
+        if (ii === i)
+          return {
+            ...cat,
+            menus: cat.menus.map((menu: any, jj: number) => {
+              if (jj === j)
+                return {
+                  ...menu,
+                  numChoiced: menu.numChoiced > 1 ? menu.numChoiced - 1 : 0,
+                };
+              else return menu;
+            }),
+          };
+        else return cat;
+      }),
+    };
+    let newLineitems = lineitems;
+    newLineitems[index] = newLineitem;
+    setLineitems(Object.assign([], newLineitems));
+  };
+
+  const savePerso = (index: number, mandatory: boolean, checked: boolean, value: any, price: any, maxFree: number, maxPaid: number, name: string, lineitems: any) => {
+    let quant = lineitems[index].quantity || 0
+    let savePersoData = lineitems[index].persoData
+    let objIndex = savePersoData.findIndex((obj: any) => obj.name == name);
+    
+    let newLineitem = lineitems[index]
+    let newLineitems = lineitems
+
+    newLineitem = {
+      ...newLineitem,
+      persoData: newLineitem.persoData?.map((perso: any, i: number) => {
+        if(i === objIndex)
+          return {
+            ...perso,
+            choicestring: checked? (perso.choicestring || "") + " " + value : perso.choicestring?.replace(value, ""),
+            allPersoSum: (perso.allPersoSum || 0) + price * quant * (checked? 1 : -1),
+            numChecked: (perso.numChecked || 0) + (checked? 1 : -1),
+            numCheckedFree: perso.values.filter((val: any) => val.value === value)[0].price === 0? (perso.numCheckedFree || 0) + (checked? 1 : -1) : perso.numCheckedFree,
+            numCheckedPaid: perso.values.filter((val: any) => val.value === value)[0].price > 0? (perso.numCheckedPaid || 0) + (checked? 1 : -1) : perso.numCheckedPaid,
+            values: perso.values.map((val: any) => {
+              if(val.value === value)
+                return {
+                  ...val,
+                  number: quant,
+                  sumval: val.price * quant,
+                  checked
+                }
+              else return val
+            })
+          }
+        else return perso
+      })
+    }
+    
+    newLineitems[index] = newLineitem
+    return newLineitems
+  }
+
+  const updatePersoNumChecked = (index: number, i: number, j: number) => {
+    let alreadyblocked = false
+    const currentPersoData = lineitems[index].persoData[i]
+    if (currentPersoData.values[j].price === 0 && (currentPersoData.numCheckedFree || 0) === currentPersoData.maxFree && alreadyblocked === false) {
+      Alert.alert("Erreur", "Désolé : " + currentPersoData.max + " gratuit maximum.");        
+      alreadyblocked = true;
+    }
+
+    if (currentPersoData.values[j].price > 0 && (currentPersoData.numCheckedPaid || 0) === currentPersoData.maxPaid && alreadyblocked === false) {
+      Alert.alert("Erreur", "Désolé : " + currentPersoData.maxpaid + " maximum.");
+      alreadyblocked = true;
+    }
+
+    if(!alreadyblocked){
+      const newLineitem = {
+        ...lineitems[index],
+        persoData: lineitems[index].persoData.map((perso: any, ii: number) => {
+          if (ii === i)
+            return {
+              ...perso,
+              values: perso.values.map((value: any, jj: number) => {
+                if (jj === j)
+                  return {
+                    ...value,
+                    checked: !value.checked,
+                  };
+                else return value;
+              }),
+            };
+          else return perso;
+        }),
+      };
+      let newLineitems = lineitems;
+      newLineitems[index] = newLineitem;
+      const checked = newLineitem.persoData[i]
+      newLineitems = savePerso(index, checked.mandatory, checked.values[j].checked, checked.values[j].value, checked.values[j].price,checked.max,checked.maxpaid,checked.name, newLineitems)
+      // addtoBasket(lineitems[index].id,"formule")
+      setLineitems(Object.assign([], newLineitems));
+    }
+  };
+  
+  const reserver = async () => {
+    if (EmailValidator.validate(email.trim().toLocaleLowerCase()) == false) {
+      Alert.alert("Vérifiez le format de votre adresse email.")
+    }
+
+    if (isResaConfirmed) {
+      navigation.navigate('TablesScreen')
+      setCrenModalVisible(false)
+    }
+    else if (!isResaConfirmed && EmailValidator.validate(email.trim().toLocaleLowerCase()) == true) {
+      // TO DO
+      // payant ou gratuit 
+      var Reservation = Parse.Object.extend("Reservation")
+      let reservationRaw = new Reservation()
+      var Event = Parse.Object.extend("Event")
+      let eventRaw = new Event()
+      eventRaw.id = route.params.eventId
+      var Intcust = Parse.Object.extend("Intcust")
+      let IntcustRaw = new Intcust()
+      IntcustRaw.id = event?.itid
+      await IntcustRaw.fetch()
+      let params = {
+        email: email.trim().toLocaleLowerCase(),
+        itid: IntcustRaw.id,
+      };
+      const res = await Parse.Cloud.run("getGuest", params);
+      var Guest = Parse.Object.extend("Guest");
+      let guestRaw = new Guest();
+      if (res.length == 0) {
+        guestRaw.set("firstname", firstname);
+        guestRaw.set("lastname", lastname);
+        guestRaw.set("email", email.trim().toLocaleLowerCase());
+        await guestRaw.save();
+      } else if (res.length > 0) {
+        guestRaw.id = res[0].id;
+      }
+      let arrayGuest = [
+        {
+          firstname: firstname,
+          lastname: lastname,
+          mobilephone: phone,
+          email: email.trim().toLocaleLowerCase(),
+        },
+      ];
+      reservationRaw.set(
+        "date",
+        moment.tz("America/Martinique").toDate()
+      );
+      reservationRaw.set("order", true); // ?
+      reservationRaw.set("process", "appdisco");
+
+      reservationRaw.set("guest", guestRaw)
+      reservationRaw.set("guestFlat", arrayGuest)
+      reservationRaw.set("numguest", numguest)
+      reservationRaw.set("event", eventRaw)
+      reservationRaw.set("intcust", IntcustRaw)
+      reservationRaw.set("line_items", lineitems? lineitems.map((line, i) => {
+        let amount = parseFloat(line.amount)
+        let pricevar
+        if(line.pricevarcheck && line.pricevars && line.pricevars.length > 0){
+          const index = selectedPricevarIndexes.length > 0? selectedPricevarIndexes.findIndex((selectedPricevar: any) => selectedPricevar.id === line.id) : -1
+          if(index === -1)
+            Alert.alert('Erreur', 'Veuillez sélectionner une variation pour '+ line.name)
+          else { 
+            pricevar = line.pricevars[selectedPricevarIndexes[index].index]
+            amount = mode? (mode === 'Delivery'? parseFloat(pricevar.pricevardelivery) : mode === 'TakeAway'? parseFloat(pricevar.pricevartakeaway) : mode === 'SurPlace'? parseFloat(pricevar.pricevaronsite) : 0 ) : 0
+          }
+        }
+        return {
+          id: line.id,
+          name: line.name,
+          description: line.description,
+          amount,
+          allAmount: parseFloat(line.amount) + sumOfFormulaSupSumsPerLine[i] + sumOfsavePersoDataSumsPerLine[i],
+          quantity: line.quantity,
+          pricevar: pricevar && pricevar.name,
+          taxrate: (line.tva && line.tva.rate)? line.tva.rate : 0,
+          taxname: (line.tva && line.tva.name)? line.tva.name : 'Non spécifié',
+          userId: 'selfcare',
+          createdAt: moment.tz("America/Martinique").format('DD/MM/YYYY HH:mm'),
+          typeProcess: "VENTE",
+          currency: 'eur',
+          formulaChoiced: line.formulaChoice,
+          persoData: line.persoData
+        }
+      }).filter(line => line.quantity > 0) : [])
+      reservationRaw.set("OnWaitingList", false)
+      reservationRaw.set("engagModeResa", "Event")
+      reservationRaw.set("eventSelectedMode", mode)
+      reservationRaw.set("status", "En cours"); // en cours
+      if (mode === "Delivery") {
+        const res = await Parse.Cloud.run("getDeliveryAsSeating", { itid: event?.itid });
+        reservationRaw.set("seating", res[0]); // en cours
+        let arraySeating = [
+          {
+            name: res[0].attributes.name,
+            type: res[0].attributes.type,
+            description: res[0].attributes.description,
+            capacity: res[0].attributes.capacity,
+          },
+        ];
+
+        reservationRaw.set("seatingFlat", arraySeating);
+
+        let deliveryAdressRaw = [
+          {
+            "name": "adrress",
+            "full": line1 + zip + city,
+            "line1": line1,
+            "zip": zip,
+            "city": city,
+            "latitude": 0,
+            "longitude": 0,
+            "note": ""
+          }
+        ]
+        reservationRaw.set("deliveryAdressFlat", deliveryAdressRaw);
+      }
+      reservationRaw.set("delifare", mode === 'Delivery' ? Number(delifare) : 0);
+      reservationRaw.set("orderAmount", ((event?.alacarte? total : (event?.price || 0)) * numguest + (mode === 'Delivery' ? Number(delifare) : 0)).toString());
+      reservationRaw.set("orderTFAmount", ((event?.alacarte? totalTF: (event?.price || 0)) * numguest + (mode === 'Delivery' ? Number(delifare) : 0)).toString());
+      reservationRaw.set("notes", noteCommande);
+      reservationRaw.set("source", {
+        utm_campaign: "APP",
+        utm_medium: Platform.OS,
+        utm_source: Platform.Version,
+        utm_content: "APP",
+      });
+      const reservationRes = await reservationRaw.save()
+      if (event?.freeconfirm) {
+        let params = {
+          myresid: reservationRes.id,
+          firstname: firstname,
+          lastname: lastname,
+          email: email.trim().toLocaleLowerCase(),
+          phone: phone,
+          itid: event.itid,
+          note: "",
+          agreed: true,
+          numguest: numguest
+        };
+        const res = await Parse.Cloud.run("editRes4FreeDisco", params);
+
+        setResaId(res.id)
+        setIsResaConfirmed(true)
+        const params40 = {
+          itid: event.itid
+        };
+        const employeesOfIntcust = await Parse.Cloud.run("getEmployees", params40);
+        employeesOfIntcust.map(async (user: any) => {
+          const params50 = {
+            employeeId: user.id,
+          };
+          const installationsOfEmployee = await Parse.Cloud.run("getInstallationsOfEmployees", params50);
+          installationsOfEmployee.map((installation: any) => {
+            const params10 = {
+              token: installation.attributes.deviceToken,
+              title: 'Vous avez une nouvelle réservation sur TABLE',
+              body: 'Au nom de ' + firstname + ' ' + lastname + ', ' + numguest + ' couverts pour votre évènement ' + event.title + '. Faites chauffer les casseroles !',
+            };
+            Parse.Cloud.run("sendPush", params10);
+          })
+        })
+      } else {
+        // si payant go to payment payplug ou stripe 
+        if (IntcustRaw.attributes.paymentChoice !== "stripeOptin") {
+          const params1 = {
+            itid: IntcustRaw.id,
+            winl: "www.tablebig.com",
+            resaid: reservationRes.id,
+            customeremail: email.trim().toLocaleLowerCase(),
+            customerfirstname: firstname,
+            customerlastname: lastname,
+            customerphone: phone,
+            type: "order",
+            amount: (event?.alacarte? total : (event?.price || 0)) * numguest + (mode === 'Delivery' ? Number(delifare) : 0),
+            apikeypp: IntcustRaw.attributes.apikeypp,
+            mode: 'Event',
+            noukarive: false,
+            toutalivrer: false
+          };
+          const response = await Parse.Cloud.run(
+            "getPayPlugPaymentUrlRN",
+            params1
+          );
+          
+          setCrenModalVisible(false)
+
+          // navigate and options payLink
+          navigation.navigate("paymentScreen", {
+            restoId: IntcustRaw.id,
+            paylink: response,
+            bookingType: "Event",
+            resaId: reservationRes.id,
+            amount: (event?.alacarte? total : (event?.price || 0)) * numguest + (mode === 'Delivery' ? Number(delifare) : 0),
+            day: moment.tz("America/Martinique"),
+            hour: moment.tz("America/Martinique").format('HH:mm')
+          });
+        } else if (IntcustRaw.attributes.paymentChoice === "stripeOptin") {
+          setLoading(true)
+          setCrenModalVisible(false)
+          let params = {
+            stripeAccount: IntcustRaw.attributes.stripeAccId,
+            amount: (event?.alacarte? total : (event?.price || 0)) * numguest + (mode === 'Delivery' ? Number(delifare) : 0),
+            customeremail: email.trim().toLocaleLowerCase(),
+            name: firstname + lastname,
+            resaid: reservationRes.id,
+            mode: "Event",
+            paidType: "order",
+            noukarive: false,
+            toutalivrer: false
+          };
+          
+          console.log(JSON.stringify(params))
+          const {
+            paymentIntent,
+            ephemeralKey,
+            customer,
+          } = await Parse.Cloud.run("stripeCheckoutForRN", params);
+
+          console.log(paymentIntent,
+            ephemeralKey,
+            customer)
+
+          let ERR = {};
+
+          console.log({
+            merchantDisplayName: IntcustRaw.attributes.corporation,
+            customerId: customer,
+            customerEphemeralKeySecret: ephemeralKey,
+            paymentIntentClientSecret: paymentIntent,
+          })
+          ERR = await initPaymentSheet({
+            merchantDisplayName: IntcustRaw.attributes.corporation,
+            customerId: customer,
+            customerEphemeralKeySecret: ephemeralKey,
+            paymentIntentClientSecret: paymentIntent,
+          });
+
+          console.log(ERR)
+          
+          let clientSecret = paymentIntent;
+          const { error } = await presentPaymentSheet({
+            clientSecret
+          });
+
+          console.log(error)
+
+          if (error) {
+            if (error.code == "Canceled") {
+              Alert.alert("Paiement annulé");
+            } else {
+              Alert.alert(`Error code: ${error.code}`, error.message);
+            }
+          } else {
+            Alert.alert("Paiement réussi.");
+            navigation.navigate("successScreen", {
+              bookingType: 'Event',
+              resaId: reservationRes.id,
+              amount: (event?.alacarte? total : (event?.price || 0)) * numguest + (mode === 'Delivery' ? Number(delifare) : 0),
+              day: moment.tz("America/Martinique"),
+              hour: moment.tz("America/Martinique").format('HH:mm')
+            });
+          }
+          setLoading(false);
+        }
+      }
+    }
+  }
+
+  return loading?
+    <Loading/> :
     <View style={styles.container}>
       <Modal
         isVisible={crenModalVisible}
         onModalHide={reset}
-        onSwipeComplete={(e) => setCrenModalVisible(false)}
         onBackButtonPress={() => setCrenModalVisible(false)}
         onBackdropPress={() => setCrenModalVisible(false)}
         style={{
@@ -155,81 +767,160 @@ export const EventScreen = ({ route, navigation }: Props) => {
           ...(Platform.OS !== "android" && {
             zIndex: 10,
           }),
-          backgroundColor: backgroundColor,
+          backgroundColor,
           position: 'absolute',
-          bottom: offset > 0 && keyboard > 0 ? keyboard - offset : 0,
+          bottom: Platform.OS === 'ios'? keyboard : 0,
           width: '100%',
           borderTopRightRadius: 10,
           borderTopLeftRadius: 10,
           height: 530
         }}
       >
-        <View
-          style={{
-            backgroundColor: backgroundColor,
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            backgroundColor,
             padding: 20,
-            borderRadius: 10,
-            elevation: 10,
+            borderTopRightRadius: 10,
+            borderTopLeftRadius: 10,
             ...(Platform.OS !== "android" && {
               zIndex: 100,
             })
           }}
         >
-
           {
             !isResaConfirmed &&
             <>
-              <Text style={{ fontFamily: 'geometria-regular' }}>
+              {
+                event?.freeconfirm &&
+                <Text style={{ fontFamily: 'geometria-bold', marginBottom: 10 }}>
+                  Reservez gratuitement
+                </Text>
+              }
+              {
+                !event?.alacarte &&
+                <>
+                  <Text style={styles.label}>
+                    Nombre de convives
+                  </Text>
+                  <NumericInput
+                    onLimitReached={(isMax, msg) => Alert.alert("Vous avez atteint la limite de places restantes.")}
+                    value={numguest}
+                    textColor={textColor}
+                    minValue={1}
+                    maxValue={event?.seatleft}
+                    containerStyle={{ marginLeft: 20, marginTop: 10 }}
+                    onChange={(value) => setNumguest(value)}
+                  />
+                </>
+              }
+              <Text style={styles.label}>
+                Email
+              </Text>
+              <TextInput
+                style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
+                value={email}
+                autoCapitalize={"none"}
+                onChangeText={text => setEmail(text)}
+              />
+              <Text style={styles.label}>
                 Prénom(s)
               </Text>
               <TextInput
-                onFocus={() => setOffset(300)}
                 style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
                 value={firstname}
                 onChangeText={text => setFirstname(text)}
               />
-              <Text style={{ fontFamily: 'geometria-regular' }}>
+              <Text style={styles.label}>
                 Nom de famille
               </Text>
               <TextInput
-                onFocus={() => setOffset(225)}
                 style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
                 value={lastname}
                 onChangeText={text => setLastname(text)}
               />
-              <Text style={{ fontFamily: 'geometria-regular' }}>
-                Numéro de portable
+              <Text style={styles.label}>
+                Numéro de téléphone portable
               </Text>
               <TextInput
-                onFocus={() => setOffset(155)}
                 style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
                 value={phone}
                 onChangeText={text => setPhone(text)}
               />
-              <Text style={{ fontFamily: 'geometria-regular' }}>
-                Adresse email
+              {
+                mode === "Delivery" &&
+                <>
+                  <Text style={styles.label}>
+                    L'adresse à laquelle vous souhaitez être livré
+                  </Text>
+
+                  <TextInput
+                    style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
+                    onChangeText={text => setLine1(text)}
+                    placeholderTextColor='white'
+                    placeholder="5 rue des accacias"
+                    value={line1}
+                  />
+
+                  <Text style={styles.label}>Code Postal</Text>
+
+                  <TextInput
+                    style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
+                    onChangeText={text => setZip(text)}
+                    placeholderTextColor='white'
+                    placeholder="97200"
+                    value={zip}
+                  />
+
+                  <Text style={styles.label}>
+                    Choisir une ville / zone de livraison
+                  </Text>
+
+                  {intcustCityChoice &&
+                    intcustCityChoice.map((item: any, i: any) => (
+                      <View
+                        key={i}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginHorizontal: 30,
+                          marginTop: 10,
+                        }}
+                      >
+                        <Text
+                          key={item.city + "text"}
+                          style={{ fontFamily: "geometria-regular" }}
+                        >
+                          {item.city}{" "}
+                          {item.tar && item.tar > 0 && "+" + item.tar + "€"}
+                        </Text>
+                        <RadioButton
+                          key={item.city + "radio"}
+                          onPress={() => {
+                            setCity(item.city);
+                            setDelifare(Number(item.tar));
+                          }}
+                          color="#ff5050"
+                          status={city === item.city ? "checked" : "unchecked"}
+                          value={city}
+                          style={{ marginRight: 80 }}
+                        />
+                      </View>
+                    ))}
+                </>
+              }
+              <Text style={styles.label}>
+                Note de commande
               </Text>
               <TextInput
-                onFocus={() => setOffset(80)}
                 style={[styles.textInput, { color: textColor, fontFamily: "geometria-regular" }]}
-                value={email}
-                onChangeText={text => setEmail(text)}
+                value={noteCommande}
+                onChangeText={text => setNoteCommande(text)}
               />
-              <Text style={{ fontFamily: 'geometria-regular' }}>
-                Nombre de places
-              </Text>
-              <NumericInput
-                onLimitReached={(isMax, msg) => Alert.alert("Vous avez atteint la limite de places restantes.")}
-                value={numcover}
-                textColor={textColor}
-                minValue={1}
-                maxValue={event?.seatleft}
-                containerStyle={{ marginLeft: 20, marginTop: 10 }}
-                onChange={(value) => setNumcover(value)}
-              />
-              {event?.freeconfirm !== true &&
+              {!event?.freeconfirm &&
                 <Text style={{ fontFamily: 'geometria-regular', marginTop: 20 }}>
-                  Vous allez être redirigé vers la page de paiement {paymentchoice == "stripeOptin" ? "Stripe" : "Payplug"} pour régler : {numcover * (event?.price || 0)}€TTC
+                  Vous allez être redirigé vers la page de paiement {paymentchoice == "stripeOptin" ? "Stripe" : "Payplug"} pour régler : {numguest * ((event?.price || 0) + total)}€TTC
                 </Text>
               }
             </>
@@ -244,194 +935,16 @@ export const EventScreen = ({ route, navigation }: Props) => {
               <Text>Notez-le et conservez-le</Text>
             </View>
           }
-        </View>
+        </ScrollView>
         <TouchableOpacity
-          onPress={async () => {
-            if (EmailValidator.validate(email) == false) {
-              Alert.alert("Vérifiez le format de votre adresse email.")
-            }
-
-            if (isResaConfirmed) {
-              navigation.navigate('TablesScreen')
-              setCrenModalVisible(false)
-            }
-            else if (!isResaConfirmed && EmailValidator.validate(email) == true) {
-              // TO DO
-              // payant ou gratuit 
-              var Reservation = Parse.Object.extend("Reservation")
-              let reservationRaw = new Reservation()
-              var Event = Parse.Object.extend("Event")
-              let eventRaw = new Event()
-              eventRaw.id = route.params.eventId
-              var Intcust = Parse.Object.extend("Intcust")
-              let IntcustRaw = new Intcust()
-              IntcustRaw.id = event?.itid
-              let params = {
-                email: email,
-                itid: IntcustRaw.id,
-              };
-              const res = await Parse.Cloud.run("getGuest", params);
-              var Guest = Parse.Object.extend("Guest");
-              let guestRaw = new Guest();
-              if (res.length == 0) {
-                guestRaw.set("firstname", firstname);
-                guestRaw.set("lastname", lastname);
-                guestRaw.set("email", email);
-                await guestRaw.save();
-              } else if (res.length > 0) {
-                guestRaw.id = res[0].id;
-              }
-              let arrayGuest = [
-                {
-                  firstname: firstname,
-                  lastname: lastname,
-                  mobilephone: phone,
-                  email: email,
-                },
-              ];
-              reservationRaw.set("guest", guestRaw)
-              reservationRaw.set("guestFlat", arrayGuest)
-              reservationRaw.set("event", eventRaw)
-              reservationRaw.set("intcust", IntcustRaw)
-              reservationRaw.set("OnWaitingList", false)
-              reservationRaw.set("engagModeResa", "Event")
-              await reservationRaw.save()
-              if (event?.freeconfirm == true) {
-                let params = {
-                  myresid: reservationRaw.id,
-                  firstname: firstname,
-                  lastname: lastname,
-                  email: email,
-                  phone: phone,
-                  itid: event.itid,
-                  note: "",
-                  agreed: true,
-                  numguest: numcover
-                };
-                const res = await Parse.Cloud.run("editRes4FreeDisco", params);
-
-                setResaId(res.id)
-                setIsResaConfirmed(true)
-                const params40 = {
-                  itid: event.itid,
-                };
-                const employeesOfIntcust = await Parse.Cloud.run("getEmployees", params40);
-                employeesOfIntcust.map(async (user: any) => {
-                  const params50 = {
-                    employeeId: user.id,
-                  };
-                  const installationsOfEmployee = await Parse.Cloud.run("getInstallationsOfEmployees", params50);
-                  installationsOfEmployee.map((installation: any) => {
-                    const params10 = {
-                      token: installation.attributes.deviceToken,
-                      title: 'Vous avez une nouvelle réservation sur TABLE',
-                      body: 'Au nom de ' + firstname + ' ' + lastname + ', ' + numcover + ' couverts pour votre évènement ' + event.title + '. Faites chauffer les casseroles !',
-                    };
-                    Parse.Cloud.run("sendPush", params10);
-                  })
-                })
-              } else {
-                // si payant go to payment payplug ou stripe 
-                if (IntcustRaw.attributes.paymentChoice !== "stripeOptin") {
-                  const params1 = {
-                    itid: IntcustRaw.id,
-                    winl: "www.tablebig.com",
-                    resaid: reservationRaw.id,
-                    customeremail: email,
-                    customerfirstname: firstname,
-                    customerlastname: lastname,
-                    customerphone: phone,
-                    type: "order",
-                    amount: (event?.price || 0) * numcover,
-                    apikeypp: IntcustRaw.attributes.apikeypp,
-                    mode: 'Event',
-                    noukarive: false,
-                    toutalivrer: false
-
-
-                  };
-                  const response = await Parse.Cloud.run(
-                    "getPayPlugPaymentUrlRN",
-                    params1
-                  );
-                  setCrenModalVisible(false)
-
-                  // navigate and options payLink
-                  navigation.navigate("paymentScreen", {
-                    restoId: IntcustRaw.id,
-                    paylink: response,
-                    bookingType: "Event",
-                    resaId: reservationRaw.id,
-                    amount: event?.price,
-                  });
-                } else if (IntcustRaw.attributes.paymentChoice == "stripeOptin") {
-
-                  let params = {
-                    stripeAccount: IntcustRaw.attributes.stripeAccId,
-                    amount: (event?.price || 0) * numcover,
-                    customeremail: email,
-                    name: firstname + lastname,
-                    resaid: reservationRaw.id,
-                    mode: "Event",
-                    paidType: "order",
-                    noukarive: false,
-                    toutalivrer: false
-                  };
-
-
-                  const {
-                    paymentIntent,
-                    ephemeralKey,
-                    customer,
-                  } = await Parse.Cloud.run("stripeCheckoutForRN", params);
-
-
-                  let ERR = {};
-                  setCrenModalVisible(false)
-
-                  ERR = await initPaymentSheet({
-                    merchantDisplayName: IntcustRaw.attributes.corporation,
-                    customerId: customer,
-                    customerEphemeralKeySecret: ephemeralKey,
-                    paymentIntentClientSecret: paymentIntent,
-                  });
-
-                  if (!ERR) {
-                    setLoading(true);
-                  }
-
-                  let clientSecret = paymentIntent;
-                  const { error } = await presentPaymentSheet({
-                    clientSecret,
-                  });
-
-                  if (error) {
-                    if (error.code == "Canceled") {
-                      Alert.alert("Paiement annulé");
-                    } else {
-                      Alert.alert(`Error code: ${error.code}`, error.message);
-                    }
-                  } else {
-                    Alert.alert("Paiement réussi.");
-                    navigation.navigate("successScreen", {
-                      bookingType: 'Event',
-                      resaId: reservationRaw.id,
-                      amount: event?.price,
-                    });
-                  }
-                  setPaymentSheetEnabled(false);
-                  setLoading(false);
-                }
-              }
-            }
-          }}
+          onPress={reserver}
           style={styles.appButtonContainer}
           disabled={!isResaConfirmed && (!firstname || !lastname || !phone || !email)}
         >
-          <Text style={styles.appButtonText}>{isResaConfirmed ? 'Revenir à l\'accueil' : 'Confirmer'}</Text>
+          <Text style={styles.appButtonText}>{isResaConfirmed ? 'Revenir à l\'accueil' : (event?.freeconfirm ? 'Confirmer gratuitement' : 'Confirmer')}</Text>
         </TouchableOpacity>
       </Modal>
-      <ScrollView style={styles.wrap}>
+      <ScrollView style={styles.wrap} showsVerticalScrollIndicator={false}>
         {!event?.imageUrl ||
           (event.imageUrl == "" && (
             <View style={styles.wrapindicator}>
@@ -444,14 +957,11 @@ export const EventScreen = ({ route, navigation }: Props) => {
           }}
           style={styles.image}
           resizeMode="cover"
-        ></Image>
-        <View style={{ top: -40, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingTop: 20 }}>
+        />
+        <View style={styles.content}>
           <Text style={styles.title}>{event?.title} </Text>
           <Text style={styles.subtitle2}>{event?.restaurant}</Text>
           <Text style={styles.subtitle}>{event?.date} - {event?.time}</Text>
-          <Text style={styles.subtitle2}>Tarif unique : {event?.price}€TTC</Text>
-          <Text style={styles.subtitle2}>Infoline : {event?.infoline}</Text>
-
           <View style={styles.wrapwebview}>
             <HTML
               source={{ html: html || " a" }}
@@ -459,26 +969,79 @@ export const EventScreen = ({ route, navigation }: Props) => {
               contentWidth={400}
             />
           </View>
-
+          {
+            !event?.alacarte &&
+            <Text style={styles.subtitle2}>Tarif unique : {event?.price}€TTC</Text>
+          }
+          <Text style={styles.subtitle2}>Infoline : {event?.infoline}</Text>
           <Text style={styles.subtitle2}>Nombre places restantes : {event?.seatleft}</Text>
-
+          <Text style={styles.subtitle3}>Sélectionner un mode : </Text>
+          {
+            enabledModes && enabledModes.length > 0 &&
+            <View style={styles.modeContainer}>
+              {
+                enabledModes.map(enabledMode => (
+                  <RadioItem key={enabledMode} checked={mode === enabledMode} setChecked={() => setMode(enabledMode)} title={enabledMode === "SurPlace"? "Sur Place" : enabledMode === "Delivery"? "En livraison" : "A emporter"}/>
+                ))
+              }
+            </View>
+          }
+          {lineitems.map((line, index) => {
+            if (line.formulaChoice && line.formulaChoice.length > 0 || line.persoData && line.persoData.length > 0)
+              return (
+                <LineItemCollapse 
+                  key={index} 
+                  index={index} 
+                  line={line}
+                  alacarte={event?.alacarte || false}
+                  freeconfirm={event?.freeconfirm || false}
+                  engagModeResa={mode}
+                  selectedPricevarIndexes={selectedPricevarIndexes}
+                  setSelectedPricevarIndexes={(val: any) => setSelectedPricevarIndexes(val)}
+                  checkMessFormula={checkMessFormula}
+                  checkMessPerso={checkMessPerso}
+                  addQuantityFromLines={addQuantityFromLines}
+                  removeQuantityFromLines={removeQuantityFromLines}
+                  addFormulaMenuChoice={addFormulaMenuChoice}
+                  removeFormulaMenuChoice={removeFormulaMenuChoice}
+                  updatePersoNumChecked={updatePersoNumChecked}
+                />
+              )
+            else return(
+              <LineItem 
+                key={index} 
+                index={index} 
+                line={line}
+                alacarte={event?.alacarte || false}
+                freeconfirm={event?.freeconfirm || false}
+                engagModeResa={mode}
+                selectedPricevarIndexes={selectedPricevarIndexes}
+                setSelectedPricevarIndexes={(val: any) => setSelectedPricevarIndexes(val)}
+                addQuantityFromLines={addQuantityFromLines}
+                removeQuantityFromLines={removeQuantityFromLines}
+              />
+            )
+          })}
         </View>
       </ScrollView>
       {(event?.seatleft || 0) == 0 &&
         <Text style={{ fontFamily: "geometria-regular", margin: 20, alignSelf: "center", fontSize: 15, color: "red" }}>Complet ! Plus de places disponibles</Text>}
+      {
+        !event?.freeconfirm &&
+        <Text style={styles.totalText}>Total: {event?.alacarte? total : (event?.price || 0)}€TTC</Text>
+      }
       {(event?.seatleft || 0) > 0 &&
         <TouchableOpacity
           onPress={() => {
             setCrenModalVisible(true);
+            console.log(mode)
           }}
           style={styles.appButtonContainer}
         >
-          <Text style={styles.appButtonText}>Réservez</Text>
+          <Text style={styles.appButtonText}>{event?.freeconfirm? 'Réservez gratuitement' : 'Payer'}</Text>
         </TouchableOpacity>
       }
     </View>
-
-  );
 };
 
 const styles = StyleSheet.create({
@@ -539,6 +1102,13 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontFamily: "geometria-bold",
   },
+  subtitle3: {
+    fontSize: 14,
+    marginTop: 10,
+    marginLeft: 20,
+    flexWrap: "wrap",
+    fontFamily: "geometria-bold"
+  },
   text: {
     fontSize: 16,
     padding: 4,
@@ -587,7 +1157,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: 'grey',
     borderWidth: 1
-  }
+  },
+  modeContainer: {
+    marginLeft: 10,
+    marginBottom: 10
+  },
+  totalText: {
+    backgroundColor: "rgb(255,194,64)",
+    marginBottom: 10,
+    marginHorizontal: 30,
+    padding: 10,
+    fontSize: 18,
+    textAlign: "center",
+    fontFamily: "geometria-bold",
+  },
+  content: { top: -40, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingTop: 20, flex: 1 },
+  label: { fontFamily: 'geometria-regular' }
 });
 
 export default EventScreen;
