@@ -38,7 +38,8 @@ interface IMenu {
   id: string;
   imageUrl: any;
   title: string;
-  description: string;
+  description: string
+  tva: { code: string, name: string, rate: number };
   formulaChoiced: [];
   persoMenu: [];
   price: number;
@@ -87,6 +88,7 @@ export const DishScreen = ({ route, navigation }: Props) => {
       formulaChoiced: menu.attributes.formulaChoice || [],
       persoMenu: menu.attributes.persoMenu,
       price: Number(menu.attributes.price),
+      tva: menu.attributes.tva,
       quantity: 1,
       resto: menu.attributes.intcust.id,
       pricevarcheck: menu.attributes.pricevarcheck,
@@ -249,6 +251,9 @@ export const DishScreen = ({ route, navigation }: Props) => {
         name: menu?.title,
         description: menu?.description,
         amount: menu?.price,
+        code:menu?.tva && menu?.tva.code ? menu?.tva.code : "",
+        taxrate:menu?.tva && menu?.tva.rate ? menu?.tva.rate : 0,
+        taxname:menu?.tva && menu?.tva.name ? menu?.tva.name : "",
         ...pricevars,
         currency: "eur",
         quantity: 1,
