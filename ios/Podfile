@@ -8,8 +8,6 @@ target 'TableDiscover' do
   use_unimodules!
   config = use_native_modules!
   
-  pod 'Firebase/Analytics'
-
   use_react_native!(:path => config["reactNativePath"])
 
   # Uncomment to opt-in to using Flipper
